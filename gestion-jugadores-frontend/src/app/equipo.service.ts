@@ -1,0 +1,22 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Equipo } from './equipo';
+import baserUrl from './login/services/helper';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EquipoService {
+
+  constructor(private http: HttpClient) { }
+
+  crearEquipo(equipo: Equipo, userId: number): Observable<Equipo> {
+    return this.http.post<Equipo>(`${baserUrl}/equipos/registrar/${userId}`, equipo);
+  }
+
+  obtenerEquiposPorUsuario(userId: number): Observable<Equipo[]> {
+    return this.http.get<Equipo[]>(`${baserUrl}/equipos/usuario/${userId}`);
+    
+  }
+}

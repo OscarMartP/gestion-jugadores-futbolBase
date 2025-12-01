@@ -1,0 +1,16 @@
+.seccion-izquierda {
+  display: flex;
+  align-items: center;
+}
+
+.seccion-derecha {
+  margin-left: auto;
+}
+
+.noSubrayado a {
+  text-decoration: none;
+}
+
+.seccion-derecha a {
+  font-size: 18px;
+}

@@ -1,0 +1,45 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Crear Nuevo Equipo</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form [formGroup]="equipoForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Nombre del Equipo</mat-label>
+          <input matInput formControlName="nombre" required>
+          <mat-error *ngIf="equipoForm.get('nombre')?.hasError('required')">
+            El nombre es obligatorio
+          </mat-error>
+          <mat-error *ngIf="equipoForm.get('nombre')?.hasError('minlength')">
+            Mínimo 3 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Duración de partido (minutos)</mat-label>
+          <input matInput type="number" formControlName="duracionPartido" min="1" max="120" required>
+          <mat-error *ngIf="equipoForm.get('duracionPartido')?.hasError('required')">
+            La duración es obligatoria
+          </mat-error>
+          <mat-error *ngIf="equipoForm.get('duracionPartido')?.hasError('min')">
+            Mínimo 1 minuto
+          </mat-error>
+          <mat-error *ngIf="equipoForm.get('duracionPartido')?.hasError('max')">
+            Máximo 120 minutos
+          </mat-error>
+        </mat-form-field>
+
+        <div class="button-row">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!equipoForm.valid">
+            Crear Equipo
+          </button>
+          <button mat-raised-button type="button" [routerLink]="['/jugadores']">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

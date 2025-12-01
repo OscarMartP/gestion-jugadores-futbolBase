@@ -1,0 +1,23 @@
+<h2>Lista jugadores</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Nombre</th>
+      <th scope="col">Apellido</th>
+      <th scope="col">Posicion</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Recorrer mi lista de jugadores -->
+    <tr *ngFor= "let jugador of jugadores">
+      <td>{{jugador.nombre}}</td>
+      <td>{{jugador.apellido}}</td>
+      <td>{{jugador.posicion}}</td>
+      <td>
+        <button (click)= "actualizarJugador(jugador.id)" class="btn btn-info">Editar</button>
+        <button (click)= "eliminarJugador(jugador.id)" class="btn btn-danger" style="margin-left : 10px">Eliminar</button>
+        <button (click)= "verDetallesDelJugador(jugador.id)" class="btn btn-primary" style="margin-left : 10px">Detalles</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

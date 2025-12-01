@@ -1,0 +1,36 @@
+<mat-toolbar color="primary" class="noSubrayado">
+  <div class="seccion-izquierda">
+    <a class="navbar-item" [routerLink]="'/'">
+      <span class="material-icons">home</span>
+      &nbsp; Inicio
+    </a>
+    <span class="example-spacer"></span>
+    <!-- <span *ngIf="isLoggedIn">
+      <a class="navbar-item" [routerLink]="'jugadores'">
+        <span class="material-icons">sports_soccer</span>
+        &nbsp; Gestion Jugadores
+      </a>
+    </span> -->
+    <!-- <span *ngIf="isLoggedIn">
+      <a class="navbar-item" [routerLink]="'registrar-jugador'">
+        <span class="material-icons">person_add</span>
+        &nbsp; Añadir Jugador
+      </a>
+    </span> -->
+
+  </div>
+  <div class="seccion-derecha">
+    <span class="example-spacer"></span>
+    <span *ngIf="!isLoggedIn">
+      <a mat-button [routerLink]="'/registro'">Iniciar sesión</a>
+      <a mat-button [routerLink]="'/signup'">Registrar</a>
+    </span>
+    <span *ngIf="isLoggedIn">
+      <button mat-button (click)="logout()">Cerrar sesión</button>
+      <button *ngIf="isLoggedIn && user" mat-button style="margin-right: 10px" class="example-icon favorite-icon"
+        aria-label="Example icon-button with heart icon" [routerLink]="'/admin/profile'">
+        {{ user.username }}
+      </button>
+    </span>
+  </div>
+</mat-toolbar>
