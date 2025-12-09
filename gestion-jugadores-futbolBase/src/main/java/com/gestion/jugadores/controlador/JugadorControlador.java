@@ -3,6 +3,7 @@ package com.gestion.jugadores.controlador;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.security.core.Authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,18 +39,32 @@ public class JugadorControlador {
 	
 	@Autowired
 	private EquipoService equipoService;
+    
+		@Autowired
+		private com.gestion.jugadores.repositorio.UsuarioRepository usuarioRepository;
 	
 	
-	// Metodo para listar todos los jugadores
+	// Metodo para listar jugadores
+	// Si se proporciona 'equipoId' devuelve jugadores de ese equipo
+	// Si no se proporciona, devuelve jugadores de todos los equipos del usuario autenticado
 	@GetMapping("/jugadores")
-	public List<Jugador> listarTodosLosJugadores() {
-		return repositorio.findAll();
-	}
-	
-	// Filtrado de jugadores
-	@GetMapping("/jugadores/equipo/{equipoId}")
-	public List<Jugador> filtrarJugadoresPorEquipo(@PathVariable Long equipoId) {
-		return repositorio.findByEquipo_Id(equipoId);
+	public ResponseEntity<List<Jugador>> listarJugadores(@RequestParam(required = false) Long equipoId, Authentication authentication) {
+		if (equipoId != null) {
+			return ResponseEntity.ok(jugadorService.obtenerPorEquipo(equipoId));
+		}
+
+		if (authentication == null) {
+			return ResponseEntity.status(401).build();
+		}
+
+		String username = authentication.getName();
+		com.gestion.jugadores.modelo.Usuario usuario = usuarioRepository.findByUsername(username);
+		if (usuario == null) {
+			return ResponseEntity.status(404).build();
+		}
+
+		List<Jugador> jugadores = jugadorService.obtenerPorUsuario(usuario.getId());
+		return ResponseEntity.ok(jugadores);
 	}
 
 	

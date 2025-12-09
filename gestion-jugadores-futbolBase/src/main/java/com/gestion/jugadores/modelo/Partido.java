@@ -24,23 +24,33 @@ public class Partido {
 	 @Column(nullable = false)
 	 private Integer duracion;
 
+	 @Column(name = "partido_activo", nullable = false)
+    private Boolean partidoActivo = false;
+
 	 public Partido() {}
 
-	 public Partido(Equipo equipo, LocalDateTime fecha, Integer duracion) {
+	 public Partido(Equipo equipo, LocalDateTime fecha, Integer duracion, Boolean partidoActivo) {
 	        this.equipo = equipo;
 	        this.fecha = fecha;
 	        this.duracion = duracion;
+			this.partidoActivo = partidoActivo;
 	 }
 
 	 public Long getId() { return id; }
 	 public Equipo getEquipo() { return equipo; }
 	 public LocalDateTime getFecha() { return fecha; }
 	 public Integer getDuracion() { return duracion; }
+	  public Boolean getPartidoActivo() {
+        return partidoActivo;
+    }
 
 	 public void setId(Long id) { this.id = id; }
 	 public void setEquipo(Equipo equipo) { this.equipo = equipo; }
 	 public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
 	 public void setDuracion(Integer duracion) { this.duracion = duracion; }
+	  public void setPartidoActivo(Boolean partidoActivo) {
+        this.partidoActivo = partidoActivo;
+    }
 	}
 
 

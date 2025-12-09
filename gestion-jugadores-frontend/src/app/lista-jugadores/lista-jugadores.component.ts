@@ -37,8 +37,11 @@ export class ListaJugadoresComponent implements OnInit {
         next: (equipos) => {
           if (equipos?.length > 0) {
             this.equipos = equipos;
-  
-            this.equipoId = equipos[0].id;
+
+              // Añadir opción 'Todos' al inicio
+              this.equipos.unshift({ id: 0, nombre: 'Todos' } as Equipo);
+
+              this.equipoId = 0; // valor por defecto: 'Todos'
   
             // 🔥 Aquí rellenamos el FormGroup si existe
             this.jugadorForm?.patchValue({
@@ -65,10 +68,23 @@ export class ListaJugadoresComponent implements OnInit {
   
 
   
-  private obtenerJugadores(): void {
-    console.log('Equipo ID:', this.equipoId);
-    if (this.equipoId) {
-      this.jugadorServicio.obtenerJugadoresPorEquipoId(this.equipoId).subscribe({
+  public obtenerJugadores(): void {
+    console.log('Equipo ID (raw):', this.equipoId);
+    const id = Number(this.equipoId);
+    console.log('Equipo ID (number):', id);
+    if (id === 0) {
+      // Obtener todos los jugadores del usuario autenticado
+      this.jugadorServicio.obtenerJugadoresPorUsuario().subscribe({
+        next: (dato) => {
+          this.jugadores = dato;
+        },
+        error: (err) => {
+          console.error('Error al obtener jugadores por usuario:', err);
+          alert('Error al cargar los jugadores');
+        }
+      });
+    } else if (!isNaN(id) && id > 0) {
+      this.jugadorServicio.obtenerJugadoresPorEquipoId(id).subscribe({
         next: (dato) => {
           this.jugadores = dato;
         },
@@ -77,7 +93,18 @@ export class ListaJugadoresComponent implements OnInit {
           alert('Error al cargar los jugadores');
         }
       });
+    } else {
+      // caso no válido: limpiar lista
+      this.jugadores = [];
     }
+  }
+
+  getEquipoNombre(equipoId: number | null | undefined): string {
+    if (equipoId == null) return '';
+    const idNum = Number(equipoId);
+    if (isNaN(idNum)) return '';
+    const eq = this.equipos.find(e => e.id === idNum);
+    return eq ? eq.nombre : '';
   }
 
   actualizarJugador(id: number) {

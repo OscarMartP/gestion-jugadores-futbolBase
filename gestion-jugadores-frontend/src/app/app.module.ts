@@ -42,6 +42,8 @@ import { EquipoService } from './equipo.service';
 import { PartidoCrearComponent } from './partido-crear.component';
 import { PartidoModoComponent } from './partido-modo.component';
 import { SelectorJugadoresComponent } from './graficos/selector-jugadores/selector-jugadores.component';
+import { GestionarPartidosComponent } from './components/gestionar-partidos/gestionar-partidos.component';
+import { HistorialPartidosComponent } from './historial-partidos/historial-partidos.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +63,9 @@ import { SelectorJugadoresComponent } from './graficos/selector-jugadores/select
     CrearEquipoComponent,
     PartidoCrearComponent,
     PartidoModoComponent,
-    SelectorJugadoresComponent
+    SelectorJugadoresComponent,
+    GestionarPartidosComponent,
+    HistorialPartidosComponent
   ],
   imports: [
     BrowserModule,

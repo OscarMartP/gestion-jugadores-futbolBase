@@ -2,7 +2,7 @@
   <mat-action-list>
     <div mat-subheader>Menu</div>
 
-    <button routerLink="/admin" mat-list-item>
+    <button mat-list-item routerLink="/admin">
       <mat-icon mat-list-icon>home</mat-icon> Inicio
     </button>
 
@@ -10,20 +10,12 @@
       <mat-icon mat-list-icon>account_circle</mat-icon> Perfil
     </button>
 
-    <button mat-list-item routerLink="/jugadores" class="button">
-      <mat-icon mat-list-icon>sports_soccer</mat-icon> Gestión Jugadores
-    </button>
-
-    <button mat-list-item routerLink="/registrar-jugador" class="button">
+    <button mat-list-item routerLink="/registrar-jugador">
       <mat-icon mat-list-icon>person_add</mat-icon> Añadir Jugador
     </button>
 
-    <button mat-list-item [routerLink]="['/modo-partido', equipoId]">
-      <mat-icon mat-list-icon>play_circle_outline</mat-icon> Modo Partido
-    </button>
-
-    <button mat-list-item [routerLink]="['/selector-jugadores', equipoId]">
-      <mat-icon mat-list-icon>play_circle_outline</mat-icon> Selector Jugadores
+    <button mat-list-item routerLink="/jugadores">
+      <mat-icon mat-list-icon>sports_soccer</mat-icon> Gestión Jugadores
     </button>
 
     <button mat-list-item routerLink="/crear-equipo">
@@ -31,8 +23,19 @@
     </button>
 
     <button mat-list-item routerLink="/crear-partido">
-      <mat-icon mat-list-icon>add_circle</mat-icon>
-        Crear Partido
+      <mat-icon mat-list-icon>add_circle</mat-icon> Crear Partido
+    </button>
+
+    <button mat-list-item routerLink="/iniciar-partido">
+      <mat-icon mat-list-icon>play_circle_outline</mat-icon> Iniciar Partido
+    </button>
+
+    <button mat-list-item routerLink="/gestionar-partidos">
+      <mat-icon mat-list-icon>settings</mat-icon> Gestionar Partidos
+    </button>
+
+    <button mat-list-item routerLink="/historial-partidos">
+      <mat-icon mat-list-icon>history</mat-icon> Historial
     </button>
 
   </mat-action-list>

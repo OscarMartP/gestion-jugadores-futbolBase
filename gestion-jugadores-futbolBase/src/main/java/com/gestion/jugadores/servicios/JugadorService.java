@@ -8,5 +8,7 @@ public interface JugadorService {
 
 	Jugador saveJugador(Jugador jugador, Long equipoId);
 	Jugador obtenerJugadorPorId(Long id);
+	List<Jugador> obtenerPorEquipo(Long equipoId);
+	List<Jugador> obtenerPorUsuario(Long usuarioId);
 
 }

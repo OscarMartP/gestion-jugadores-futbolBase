@@ -1,23 +1,10 @@
 <mat-toolbar color="primary" class="noSubrayado">
-  <div class="seccion-izquierda">
-    <a class="navbar-item" [routerLink]="'/'">
+  <!-- Navbar simplificado: solo título y acciones de sesión -->
+  <div class="seccion-izquierda" style="display:flex; align-items:center; gap:12px;">
+    <a mat-button color="accent" class="home-button" [routerLink]="'/admin'" title="Ir al panel">
       <span class="material-icons">home</span>
-      &nbsp; Inicio
     </a>
-    <span class="example-spacer"></span>
-    <!-- <span *ngIf="isLoggedIn">
-      <a class="navbar-item" [routerLink]="'jugadores'">
-        <span class="material-icons">sports_soccer</span>
-        &nbsp; Gestion Jugadores
-      </a>
-    </span> -->
-    <!-- <span *ngIf="isLoggedIn">
-      <a class="navbar-item" [routerLink]="'registrar-jugador'">
-        <span class="material-icons">person_add</span>
-        &nbsp; Añadir Jugador
-      </a>
-    </span> -->
-
+    <span class="app-title">Gestion Jugadores</span>
   </div>
   <div class="seccion-derecha">
     <span class="example-spacer"></span>
@@ -28,7 +15,7 @@
     <span *ngIf="isLoggedIn">
       <button mat-button (click)="logout()">Cerrar sesión</button>
       <button *ngIf="isLoggedIn && user" mat-button style="margin-right: 10px" class="example-icon favorite-icon"
-        aria-label="Example icon-button with heart icon" [routerLink]="'/admin/profile'">
+        aria-label="user-profile" [routerLink]="'/admin/profile'">
         {{ user.username }}
       </button>
     </span>

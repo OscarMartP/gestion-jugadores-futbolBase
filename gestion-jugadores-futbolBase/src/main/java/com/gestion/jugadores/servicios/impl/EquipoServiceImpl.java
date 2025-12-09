@@ -38,9 +38,36 @@ public class EquipoServiceImpl implements EquipoService {
     }
 
     @Override
+    public Equipo registrarEquipoParaUsername(Equipo equipo, String username) {
+        if (username == null || username.isEmpty()) {
+            throw new ValidacionException("Username inválido");
+        }
+        Usuario usuario = usuarioRepository.findByUsername(username);
+        if (usuario == null) {
+            throw new ValidacionException("Usuario no encontrado");
+        }
+        // Reutilizar validaciones usando el id del usuario
+        validarDatosEquipo(equipo, usuario.getId());
+        equipo.setUsuario(usuario);
+        return equipoRepository.save(equipo);
+    }
+
+    @Override
     public List<Equipo> obtenerEquiposPorUsuario(Long usuarioId) {
         validarIdUsuario(usuarioId);
         return equipoRepository.findByUsuarioId(usuarioId);
+    }
+
+    @Override
+    public List<Equipo> obtenerEquiposPorUsername(String username) {
+        if (username == null || username.isEmpty()) {
+            throw new ValidacionException("Username inválido");
+        }
+        Usuario usuario = usuarioRepository.findByUsername(username);
+        if (usuario == null) {
+            throw new ValidacionException("Usuario no encontrado");
+        }
+        return equipoRepository.findByUsuarioId(usuario.getId());
     }
 
     @Override

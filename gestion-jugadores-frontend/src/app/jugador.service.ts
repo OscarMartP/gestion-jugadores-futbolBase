@@ -38,7 +38,14 @@ export class JugadorService {
   obtenerJugadoresPorEquipoId(equipoId: number): Observable<Jugador[]> {
     const token = localStorage.getItem('token');
     const headers = token ? new HttpHeaders().set('Authorization', `Bearer ${token}`) : undefined;
-    return this.httpClient.get<Jugador[]>(`${this.baseURL}/equipo/${equipoId}`, { headers });
+    // El backend expone GET /api/v1/jugadores?equipoId=ID
+    return this.httpClient.get<Jugador[]>(`${this.baseURL}?equipoId=${equipoId}`, { headers });
+  }
+
+  obtenerJugadoresPorUsuario(): Observable<Jugador[]> {
+    const token = localStorage.getItem('token');
+    const headers = token ? new HttpHeaders().set('Authorization', `Bearer ${token}`) : undefined;
+    return this.httpClient.get<Jugador[]>(`${this.baseURL}`, { headers });
   }
 
   getEquiposPorUsuario(usuarioId: number): Observable<Equipo[]> {

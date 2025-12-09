@@ -13,16 +13,15 @@ import { ProfileComponent } from './login/pages/profile/profile.component';
 import { CrearEquipoComponent } from './components/crear-equipo/crear-equipo.component';
 import { PartidoCrearComponent } from './partido-crear.component';
 import { PartidoModoComponent } from './partido-modo.component';
+import { GestionarPartidosComponent } from './components/gestionar-partidos/gestionar-partidos.component';
 import { SelectorJugadoresComponent } from './graficos/selector-jugadores/selector-jugadores.component';
 
-
-
-//RUTAS APLICACION
+// RUTAS APLICACION
 const routes: Routes = [
   { path: 'jugadores', component: ListaJugadoresComponent },
   {
     path: '',
-    component: HomeComponent,
+    redirectTo: 'admin',
     pathMatch: 'full'
   },
   {
@@ -39,28 +38,30 @@ const routes: Routes = [
   { path: 'actualizar-jugador/:id', component: ActualizarJugadorComponent },
   { path: 'jugador-detalles/:id', component: JugadorDetallesComponent },
   {
-    path:'admin',
-    component:DashboardComponent,
-    
-    children:[
+    path: 'admin',
+    component: DashboardComponent,
+    children: [
       {
-        path:'profile',
-        component:ProfileComponent
+        path: 'profile',
+        component: ProfileComponent
       }
     ]
   },
   {
-    path:'user-dashboard',
-    component:UserDashboardComponent,
-    pathMatch:'full',
-    
+    path: 'user-dashboard',
+    component: UserDashboardComponent,
+    pathMatch: 'full'
   },
+  
+  // ===== RUTAS DE PARTIDOS =====
   { path: 'crear-equipo', component: CrearEquipoComponent },
   { path: 'crear-partido', component: PartidoCrearComponent },
-  { path: 'modo-partido/:equipoId', component: PartidoModoComponent },
-  { path: 'selector-jugadores/:equipoId', component: SelectorJugadoresComponent }
-
-
+  { path: 'iniciar-partido', component: PartidoModoComponent },
+  { path: 'gestionar-partidos', component: GestionarPartidosComponent },
+  { path: 'selector-jugadores/:equipoId', component: SelectorJugadoresComponent },
+  
+  // Rutas antiguas (mantener para compatibilidad)
+  { path: 'modo-partido/:equipoId', component: PartidoModoComponent }
 ];
 
 @NgModule({

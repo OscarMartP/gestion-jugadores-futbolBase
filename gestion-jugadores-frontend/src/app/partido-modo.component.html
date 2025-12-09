@@ -1,24 +1,197 @@
-<div class="modo-partido-container">
-    <h2>Modo Partido</h2>
-  
-    <div class="timer-section">
-      <p><strong>Tiempo:</strong> {{ formatearTiempo() }}</p>
-      <button (click)="toggleTimer()">
-        {{ timerActivo ? 'Pausar' : 'Reanudar' }} Partido
-      </button>
+<div class="container mt-5">
+  <!-- ===== FASE 1: Seleccionar Partido ===== -->
+  <div *ngIf="!enModoJuego" class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">⚽ Iniciar Partido</h3>
     </div>
-  
-    <div class="jugadores-lista">
-      <div *ngFor="let jugador of jugadores" class="jugador-card">
-        <h3>{{ jugador.nombre }} {{ jugador.apellido }} ({{ jugador.posicion }})</h3>
-        <div class="botones-evento">
-          <button (click)="registrarEvento(jugador.id, 'gol')">Gol</button>
-          <button (click)="registrarEvento(jugador.id, 'asistencia')">Asistencia</button>
-          <button (click)="registrarEvento(jugador.id, 'robo')">Robo</button>
-          <button (click)="registrarEvento(jugador.id, 'pase_clave')">Pase Clave</button>
-          <button (click)="registrarEvento(jugador.id, 'perdida')">Pérdida</button>
+
+    <div class="card-body">
+      <!-- Mensaje de feedback -->
+      <div *ngIf="mensaje" 
+           class="alert" 
+           [ngClass]="{'alert-success': tipoMensaje === 'success', 'alert-danger': tipoMensaje === 'error', 'alert-info': tipoMensaje === 'info'}"
+           role="alert">
+        {{ mensaje }}
+      </div>
+
+      <!-- Spinner de carga -->
+      <div *ngIf="cargando" class="text-center mb-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
         </div>
+      </div>
+
+      <!-- Selector de Equipo -->
+      <div class="row mb-4" *ngIf="!cargando">
+        <div class="col-md-6">
+          <label for="equipoSelect" class="form-label">
+            <strong>1. Selecciona tu equipo:</strong>
+          </label>
+          <select 
+            id="equipoSelect" 
+            class="form-select" 
+            [ngModel]="equipoSeleccionado"
+            (ngModelChange)="onEquipoSeleccionado($event)"
+            [disabled]="equipos.length === 0 || cargando">
+            <option *ngFor="let equipo of equipos" 
+                    [ngValue]="equipo">
+              {{ equipo.nombre }}
+            </option>
+          </select>
+          <small class="text-muted" *ngIf="equipos.length === 0">
+            No tienes equipos. Crea uno en "Crear Equipo".
+          </small>
+        </div>
+      </div>
+
+      <!-- Selector de Partido -->
+      <div class="row mb-4" *ngIf="!cargando && equipoSeleccionado">
+        <div class="col-md-6">
+          <label for="partidoSelect" class="form-label">
+            <strong>2. Selecciona un partido:</strong>
+          </label>
+          <select 
+            id="partidoSelect" 
+            class="form-select" 
+            [ngModel]="partidoSeleccionado"
+            (ngModelChange)="onPartidoSeleccionado($event)"
+            [disabled]="partidos.length === 0 || cargando">
+            <option *ngFor="let partido of partidos" 
+                    [ngValue]="partido">
+              {{ partido.fecha | date: 'dd/MM/yyyy HH:mm' }}
+            </option>
+          </select>
+          <small class="text-muted" *ngIf="partidos.length === 0">
+            No hay partidos disponibles. Crea uno en "Crear Partido".
+          </small>
+        </div>
+      </div>
+
+      <!-- Resumen del partido seleccionado -->
+      <div class="card bg-light mb-4" *ngIf="!cargando && partidoSeleccionado">
+        <div class="card-body">
+          <h5 class="card-title">📋 Resumen del Partido</h5>
+          <p>
+            <strong>Equipo:</strong> {{ equipoSeleccionado.nombre }}
+          </p>
+          <p>
+            <strong>Fecha:</strong> {{ partidoSeleccionado.fecha | date: 'dd/MM/yyyy HH:mm' }}
+          </p>
+          <p>
+            <strong>Duración:</strong> {{ equipoSeleccionado.duracionPartido }} minutos
+          </p>
+          <p>
+            <strong>Jugadores:</strong> {{ equipoSeleccionado.jugadores?.length || 0 }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Botón Iniciar Partido -->
+      <div class="d-grid gap-2" *ngIf="!cargando && partidoSeleccionado">
+        <button 
+          class="btn btn-success btn-lg" 
+          (click)="iniciarPartido()"
+          [disabled]="cargando">
+          🟢 Iniciar Partido
+        </button>
       </div>
     </div>
   </div>
+
+  <!-- ===== FASE 2: Modo Juego ===== -->
+  <div *ngIf="enModoJuego && partidoActivo" class="card shadow">
+    <div class="card-header bg-success text-white">
+      <h3 class="mb-0">⚽ En Vivo - Partido Activo</h3>
+    </div>
+
+    <div class="card-body">
+      <!-- Información del partido en vivo -->
+      <div class="alert alert-success" role="alert">
+        <h5>✓ Partido en progreso</h5>
+        <p>
+          <strong>Equipo:</strong> {{ equipoSeleccionado.nombre }} <br>
+          <strong>Iniciado:</strong> {{ partidoActivo.fecha | date: 'dd/MM/yyyy HH:mm' }}
+        </p>
+      </div>
+
+      <!-- Timer -->
+      <div class="timer-section card mb-4">
+        <div class="card-body text-center">
+          <h4>Tiempo: <span class="badge bg-primary">{{ formatearTiempo() }}</span></h4>
+          <button 
+            class="btn"
+            [ngClass]="timerActivo ? 'btn-warning' : 'btn-info'"
+            (click)="toggleTimer()"
+            [disabled]="cargando">
+            {{ timerActivo ? '⏸️ Pausar' : '▶️ Reanudar' }} Partido
+          </button>
+        </div>
+      </div>
+
+      <!-- Registro de eventos -->
+      <h5 class="mb-3">Registrar Eventos</h5>
+      <div class="jugadores-lista">
+        <div *ngIf="jugadores.length === 0" class="alert alert-warning">
+          Cargando jugadores...
+        </div>
+        <div *ngFor="let jugador of jugadores" class="card mb-3 jugador-card">
+          <div class="card-body">
+            <h6 class="card-title">
+              {{ jugador.nombre }} {{ jugador.apellido }} 
+              <span class="badge bg-secondary">{{ jugador.posicion }}</span>
+            </h6>
+            <div class="botones-evento d-flex gap-2 flex-wrap">
+              <button 
+                class="btn btn-sm btn-success" 
+                (click)="registrarEvento(jugador.id, 'gol')"
+                [disabled]="cargando">
+                ⚽ Gol
+              </button>
+              <button 
+                class="btn btn-sm btn-info" 
+                (click)="registrarEvento(jugador.id, 'asistencia')"
+                [disabled]="cargando">
+                🎯 Asistencia
+              </button>
+              <button 
+                class="btn btn-sm btn-warning" 
+                (click)="registrarEvento(jugador.id, 'robo')"
+                [disabled]="cargando">
+                🚷 Robo
+              </button>
+              <button 
+                class="btn btn-sm btn-primary" 
+                (click)="registrarEvento(jugador.id, 'pase_clave')"
+                [disabled]="cargando">
+                🔑 Pase Clave
+              </button>
+              <button 
+                class="btn btn-sm btn-danger" 
+                (click)="registrarEvento(jugador.id, 'perdida')"
+                [disabled]="cargando">
+                ❌ Pérdida
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de control -->
+      <div class="d-grid gap-2 d-sm-flex justify-content-center mt-4">
+        <button 
+          class="btn btn-success btn-lg" 
+          (click)="finalizarPartido()"
+          [disabled]="cargando">
+          ✓ Finalizar Partido
+        </button>
+        <button 
+          class="btn btn-outline-danger btn-lg" 
+          (click)="cancelarPartido()"
+          [disabled]="cargando">
+          ✗ Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
   

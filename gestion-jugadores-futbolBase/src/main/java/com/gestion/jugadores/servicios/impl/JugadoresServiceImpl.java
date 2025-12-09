@@ -33,6 +33,16 @@ public class JugadoresServiceImpl implements JugadorService{
                 .orElseThrow(() -> new ResourceNotFoundException("Jugador no encontrado con ID: " + id));
     }
 
+    @Override
+    public List<Jugador> obtenerPorEquipo(Long equipoId) {
+        return jugadorRepositorio.findByEquipo_Id(equipoId);
+    }
+
+    @Override
+    public List<Jugador> obtenerPorUsuario(Long usuarioId) {
+        return jugadorRepositorio.findByUsuarioId(usuarioId);
+    }
+
     /*@Override
     public Jugador crearJugador(Jugador jugador, Long equipoId) {
         // Validaciones adicionales pueden ir aquí

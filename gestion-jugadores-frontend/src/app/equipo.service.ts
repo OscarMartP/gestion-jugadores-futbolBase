@@ -19,4 +19,14 @@ export class EquipoService {
     return this.http.get<Equipo[]>(`${baserUrl}/equipos/usuario/${userId}`);
     
   }
+
+  // Registrar equipo para el usuario autenticado (no pasar userId)
+  crearEquipoMe(equipo: Equipo): Observable<Equipo> {
+    return this.http.post<Equipo>(`${baserUrl}/equipos/registrar`, equipo);
+  }
+
+  // Obtener equipos del usuario autenticado
+  obtenerEquiposMe(): Observable<Equipo[]> {
+    return this.http.get<Equipo[]>(`${baserUrl}/equipos/me`);
+  }
 }
