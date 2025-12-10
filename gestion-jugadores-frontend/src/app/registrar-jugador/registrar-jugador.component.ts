@@ -60,9 +60,7 @@ export class RegistrarJugadorComponent implements OnInit {
       nombre: this.jugadorForm.value.nombre,
       apellido: this.jugadorForm.value.apellido,
       posicion: this.jugadorForm.value.posicion,
-      equipo: {
-        id: this.jugadorForm.value.equipoId
-      }
+      equipoId: this.jugadorForm.value.equipoId
     };
   
     this.jugadorServicio.registrarJugador(jugadorData).subscribe({
