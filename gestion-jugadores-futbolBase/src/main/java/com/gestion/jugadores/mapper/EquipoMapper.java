@@ -1,6 +1,7 @@
 package com.gestion.jugadores.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import com.gestion.jugadores.dto.EquipoDTO;
 import com.gestion.jugadores.modelo.Equipo;
 
@@ -11,8 +12,10 @@ import com.gestion.jugadores.modelo.Equipo;
 @Mapper(componentModel = "spring")
 public interface EquipoMapper {
 
+    @Mapping(target = "jugadores", ignore = true)
     EquipoDTO toDto(Equipo equipo);
 
+    @Mapping(target = "jugadores", ignore = true)
     Equipo toEntity(EquipoDTO equipoDTO);
 
 }

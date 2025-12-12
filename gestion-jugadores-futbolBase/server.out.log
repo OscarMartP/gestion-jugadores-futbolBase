@@ -1,0 +1,182 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v2.5.6)
+
+2025-12-10 14:57:39.744  INFO 10376 --- [           main] .j.GestionJugadoresFutbolBaseApplication : Starting GestionJugadoresFutbolBaseApplication v1.0 using Java 24.0.2 on DESKTOP-5DEJGCG with PID 10376 (C:\Users\Oscar\Documents\ESTUDIOS\CertificacionJava\gestion-jugadores-futbolBase\gestion-jugadores-futbolBase\target\gestion-jugadores-futbolBase-1.0.jar started by Oscar in C:\Users\Oscar\Documents\ESTUDIOS\CertificacionJava\gestion-jugadores-futbolBase\gestion-jugadores-futbolBase)
+2025-12-10 14:57:39.752  INFO 10376 --- [           main] .j.GestionJugadoresFutbolBaseApplication : No active profile set, falling back to default profiles: default
+2025-12-10 14:57:40.725  INFO 10376 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-10 14:57:40.843  INFO 10376 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 104 ms. Found 6 JPA repository interfaces.
+2025-12-10 14:57:41.290  INFO 10376 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@4a07d605' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2025-12-10 14:57:41.297  INFO 10376 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2025-12-10 14:57:41.668  INFO 10376 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2025-12-10 14:57:41.687  INFO 10376 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-10 14:57:41.688  INFO 10376 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.54]
+2025-12-10 14:57:41.755  INFO 10376 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-10 14:57:41.755  INFO 10376 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1917 ms
+2025-12-10 14:57:41.966  INFO 10376 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-10 14:57:42.032  INFO 10376 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.32.Final
+2025-12-10 14:57:42.186  INFO 10376 --- [           main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2025-12-10 14:57:42.300  INFO 10376 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-10 14:57:42.794  INFO 10376 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-10 14:57:42.813  INFO 10376 --- [           main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+2025-12-10 14:57:44.002  INFO 10376 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2025-12-10 14:57:44.018  INFO 10376 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-10 14:57:44.496  WARN 10376 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-10 14:57:45.154  INFO 10376 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5f5effb0, org.springframework.security.web.context.SecurityContextPersistenceFilter@4832f03b, org.springframework.security.web.header.HeaderWriterFilter@5b275811, org.springframework.web.filter.CorsFilter@25d0cb3a, org.springframework.security.web.authentication.logout.LogoutFilter@7a45d714, com.gestion.jugadores.configuraciones.JwtAuthenticationFilter@1305c126, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5a8816cc, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4b31a708, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@345cbf40, org.springframework.security.web.session.SessionManagementFilter@18371d89, org.springframework.security.web.access.ExceptionTranslationFilter@3e5fd2b1, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@3134153d]
+2025-12-10 14:57:45.401  INFO 10376 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2025-12-10 14:57:45.413  INFO 10376 --- [           main] .j.GestionJugadoresFutbolBaseApplication : Started GestionJugadoresFutbolBaseApplication in 6.233 seconds (JVM running for 6.803)
+2025-12-10 14:58:42.040  INFO 10376 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-10 14:58:42.041  INFO 10376 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-12-10 14:58:42.042  INFO 10376 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+Token invalido , no empieza con bearer string
+El token no es valido
+Hibernate: 
+    select
+        jugador0_.id as id1_2_,
+        jugador0_.apellido as apellido2_2_,
+        jugador0_.equipo_id as equipo_i5_2_,
+        jugador0_.nombre as nombre3_2_,
+        jugador0_.posicion as posicion4_2_ 
+    from
+        jugadores jugador0_ 
+    left outer join
+        equipo equipo1_ 
+            on jugador0_.equipo_id=equipo1_.equipo_id 
+    where
+        equipo1_.equipo_id=?
+Hibernate: 
+    select
+        usuario0_.id as id1_6_,
+        usuario0_.apellido as apellido2_6_,
+        usuario0_.email as email3_6_,
+        usuario0_.enabled as enabled4_6_,
+        usuario0_.nombre as nombre5_6_,
+        usuario0_.password as password6_6_,
+        usuario0_.perfil as perfil7_6_,
+        usuario0_.username as username8_6_ 
+    from
+        usuarios usuario0_ 
+    where
+        usuario0_.username=?
+Hibernate: 
+    select
+        usuariorol0_.usuario_id as usuario_3_5_0_,
+        usuariorol0_.usuario_rol_id as usuario_1_5_0_,
+        usuariorol0_.usuario_rol_id as usuario_1_5_1_,
+        usuariorol0_.rol_rol_id as rol_rol_2_5_1_,
+        usuariorol0_.usuario_id as usuario_3_5_1_,
+        rol1_.rol_id as rol_id1_4_2_,
+        rol1_.rol_nombre as rol_nomb2_4_2_ 
+    from
+        usuario_rol usuariorol0_ 
+    left outer join
+        roles rol1_ 
+            on usuariorol0_.rol_rol_id=rol1_.rol_id 
+    where
+        usuariorol0_.usuario_id=?
+Hibernate: 
+    select
+        equipo0_.equipo_id as equipo_i1_0_,
+        equipo0_.duracion_partido as duracion2_0_,
+        equipo0_.nombre as nombre3_0_,
+        equipo0_.usuario_id as usuario_4_0_ 
+    from
+        equipo equipo0_ 
+    left outer join
+        usuarios usuario1_ 
+            on equipo0_.usuario_id=usuario1_.id 
+    where
+        usuario1_.id=?
+Hibernate: 
+    select
+        jugadores0_.equipo_id as equipo_i5_2_0_,
+        jugadores0_.id as id1_2_0_,
+        jugadores0_.id as id1_2_1_,
+        jugadores0_.apellido as apellido2_2_1_,
+        jugadores0_.equipo_id as equipo_i5_2_1_,
+        jugadores0_.nombre as nombre3_2_1_,
+        jugadores0_.posicion as posicion4_2_1_ 
+    from
+        jugadores jugadores0_ 
+    where
+        jugadores0_.equipo_id=?
+Hibernate: 
+    select
+        usuario0_.id as id1_6_,
+        usuario0_.apellido as apellido2_6_,
+        usuario0_.email as email3_6_,
+        usuario0_.enabled as enabled4_6_,
+        usuario0_.nombre as nombre5_6_,
+        usuario0_.password as password6_6_,
+        usuario0_.perfil as perfil7_6_,
+        usuario0_.username as username8_6_ 
+    from
+        usuarios usuario0_ 
+    where
+        usuario0_.username=?
+Hibernate: 
+    select
+        usuariorol0_.usuario_id as usuario_3_5_0_,
+        usuariorol0_.usuario_rol_id as usuario_1_5_0_,
+        usuariorol0_.usuario_rol_id as usuario_1_5_1_,
+        usuariorol0_.rol_rol_id as rol_rol_2_5_1_,
+        usuariorol0_.usuario_id as usuario_3_5_1_,
+        rol1_.rol_id as rol_id1_4_2_,
+        rol1_.rol_nombre as rol_nomb2_4_2_ 
+    from
+        usuario_rol usuariorol0_ 
+    left outer join
+        roles rol1_ 
+            on usuariorol0_.rol_rol_id=rol1_.rol_id 
+    where
+        usuariorol0_.usuario_id=?
+Hibernate: 
+    select
+        usuario0_.id as id1_6_,
+        usuario0_.apellido as apellido2_6_,
+        usuario0_.email as email3_6_,
+        usuario0_.enabled as enabled4_6_,
+        usuario0_.nombre as nombre5_6_,
+        usuario0_.password as password6_6_,
+        usuario0_.perfil as perfil7_6_,
+        usuario0_.username as username8_6_ 
+    from
+        usuarios usuario0_ 
+    where
+        usuario0_.username=?
+Hibernate: 
+    select
+        usuariorol0_.usuario_id as usuario_3_5_0_,
+        usuariorol0_.usuario_rol_id as usuario_1_5_0_,
+        usuariorol0_.usuario_rol_id as usuario_1_5_1_,
+        usuariorol0_.rol_rol_id as rol_rol_2_5_1_,
+        usuariorol0_.usuario_id as usuario_3_5_1_,
+        rol1_.rol_id as rol_id1_4_2_,
+        rol1_.rol_nombre as rol_nomb2_4_2_ 
+    from
+        usuario_rol usuariorol0_ 
+    left outer join
+        roles rol1_ 
+            on usuariorol0_.rol_rol_id=rol1_.rol_id 
+    where
+        usuariorol0_.usuario_id=?
+Hibernate: 
+    select
+        jugador0_.id as id1_2_,
+        jugador0_.apellido as apellido2_2_,
+        jugador0_.equipo_id as equipo_i5_2_,
+        jugador0_.nombre as nombre3_2_,
+        jugador0_.posicion as posicion4_2_ 
+    from
+        jugadores jugador0_ cross 
+    join
+        equipo equipo1_ 
+    where
+        jugador0_.equipo_id=equipo1_.equipo_id 
+        and equipo1_.usuario_id=?
+2025-12-10 16:07:26.639  WARN 10376 --- [l-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=38m42s585ms266µs).

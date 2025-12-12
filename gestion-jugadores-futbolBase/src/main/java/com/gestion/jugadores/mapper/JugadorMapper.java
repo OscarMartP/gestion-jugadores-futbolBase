@@ -13,6 +13,7 @@ import com.gestion.jugadores.modelo.Jugador;
 public interface JugadorMapper {
 
     @Mapping(source = "equipo.id", target = "equipoId")
+    @Mapping(target = "equipo", ignore = true)
     JugadorDTO toDto(Jugador jugador);
 
     @Mapping(target = "equipo", ignore = true)

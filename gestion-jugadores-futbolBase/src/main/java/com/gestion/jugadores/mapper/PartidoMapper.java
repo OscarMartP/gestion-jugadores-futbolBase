@@ -11,8 +11,11 @@ import com.gestion.jugadores.modelo.Partido;
 @Mapper(componentModel = "spring")
 public interface PartidoMapper {
 
+    // When mapping Partido -> PartidoDTO, avoid mapping Equipo.jugadores to prevent recursion
+    @org.mapstruct.Mapping(target = "equipo.jugadores", ignore = true)
     PartidoDTO toDto(Partido partido);
 
+    @org.mapstruct.Mapping(target = "partidoActivo", defaultValue = "false")
     Partido toEntity(PartidoDTO partidoDTO);
 
 }

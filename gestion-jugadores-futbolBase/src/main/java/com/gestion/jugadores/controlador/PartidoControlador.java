@@ -34,6 +34,10 @@ public class PartidoControlador {
     @PostMapping
     public ResponseEntity<PartidoDTO> crearPartido(@RequestBody PartidoDTO partidoDTO) {
         Partido partido = partidoMapper.toEntity(partidoDTO);
+        // Ensure partidoActivo is not null to avoid DB NOT NULL constraint violations
+        if (partido.getPartidoActivo() == null) {
+            partido.setPartidoActivo(false);
+        }
         Partido creado = partidoService.crearPartido(partido);
         return ResponseEntity.status(HttpStatus.CREATED).body(partidoMapper.toDto(creado));
     }
@@ -89,6 +93,12 @@ public class PartidoControlador {
     @PutMapping("/{id}")
     public ResponseEntity<PartidoDTO> actualizarPartido(@PathVariable Long id, @RequestBody PartidoDTO partidoDTO) {
         Partido partido = partidoMapper.toEntity(partidoDTO);
+        // Prevent null partidoActivo from overwriting existing value
+        if (partido.getPartidoActivo() == null) {
+            // load existing partido to preserve current partidoActivo if necessary
+            Partido existente = partidoService.obtenerPartidoPorId(id);
+            partido.setPartidoActivo(existente != null ? existente.getPartidoActivo() : false);
+        }
         Partido actualizado = partidoService.actualizarPartido(id, partido);
         return ResponseEntity.ok(partidoMapper.toDto(actualizado));
     }
