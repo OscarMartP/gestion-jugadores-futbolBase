@@ -1,0 +1,554 @@
+=====================================================================
+INSTRUCCIONES COMPLETAS PARA DESPLEGAR EL PROYECTO
+SISTEMA DE GESTIÓN DE JUGADORES DE FÚTBOL BASE
+=====================================================================
+
+Este documento contiene las instrucciones paso a paso para instalar y 
+desplegar el proyecto en un dispositivo nuevo sin ninguna instalación previa.
+
+=====================================================================
+TABLA DE CONTENIDOS
+=====================================================================
+1. Requisitos del Sistema
+2. Instalación de Prerequisitos
+3. Clonación del Repositorio
+4. Configuración de Base de Datos
+5. Configuración del Backend (Spring Boot)
+6. Configuración del Frontend (Angular)
+7. Ejecución del Proyecto
+8. Verificación del Despliegue
+9. Solución de Problemas Comunes
+
+=====================================================================
+1. REQUISITOS DEL SISTEMA
+=====================================================================
+
+Sistema Operativo: Windows 10/11, macOS, o Linux
+Conexión a Internet: Requerida para descargar dependencias
+Espacio en Disco: Mínimo 5 GB libres
+RAM: Mínimo 8 GB recomendados
+
+=====================================================================
+2. INSTALACIÓN DE PREREQUISITOS
+=====================================================================
+
+PASO 2.1: INSTALAR GIT
+-----------------------
+Windows:
+1. Descargar Git desde: https://git-scm.com/download/win
+2. Ejecutar el instalador descargado
+3. Durante la instalación, mantener las opciones por defecto
+4. Verificar instalación: Abrir PowerShell/CMD y ejecutar:
+   git --version
+
+macOS:
+1. Abrir Terminal
+2. Ejecutar: xcode-select --install
+   O instalar desde: https://git-scm.com/download/mac
+
+Linux (Ubuntu/Debian):
+sudo apt update
+sudo apt install git
+
+
+PASO 2.2: INSTALAR JAVA JDK 17
+-------------------------------
+Windows:
+1. Descargar OpenJDK 17 desde: https://adoptium.net/
+2. Seleccionar: Version 17 (LTS), HotSpot, Windows x64
+3. Ejecutar el instalador
+4. IMPORTANTE: Marcar la opción "Add to PATH"
+5. Verificar instalación: Abrir PowerShell/CMD y ejecutar:
+   java -version
+   javac -version
+   (Debe mostrar versión 17.x.x)
+
+macOS:
+brew install openjdk@17
+
+Linux (Ubuntu/Debian):
+sudo apt update
+sudo apt install openjdk-17-jdk
+
+
+PASO 2.3: INSTALAR APACHE MAVEN
+--------------------------------
+Windows:
+1. Descargar Maven desde: https://maven.apache.org/download.cgi
+2. Descargar el archivo "Binary zip archive"
+3. Extraer en C:\Program Files\Apache\Maven (crear carpetas si no existen)
+4. Configurar Variable de Entorno:
+   - Buscar "Variables de entorno" en el menú inicio
+   - En "Variables del sistema", hacer clic en "Nueva"
+   - Nombre: MAVEN_HOME
+   - Valor: C:\Program Files\Apache\Maven\apache-maven-3.9.x
+   - Editar la variable "Path" y agregar: %MAVEN_HOME%\bin
+5. Reiniciar PowerShell/CMD
+6. Verificar instalación:
+   mvn -version
+
+macOS:
+brew install maven
+
+Linux (Ubuntu/Debian):
+sudo apt update
+sudo apt install maven
+
+
+PASO 2.4: INSTALAR NODE.JS Y NPM
+---------------------------------
+Windows/macOS/Linux:
+1. Descargar Node.js LTS desde: https://nodejs.org/
+2. Ejecutar el instalador (incluye npm automáticamente)
+3. Durante instalación, marcar: "Automatically install necessary tools"
+4. Verificar instalación: Abrir nueva terminal y ejecutar:
+   node --version
+   npm --version
+   (Node debe ser v18.x.x o superior, npm debe ser 9.x.x o superior)
+
+
+PASO 2.5: INSTALAR ANGULAR CLI
+-------------------------------
+En PowerShell/Terminal/CMD:
+npm install -g @angular/cli@17
+
+Verificar instalación:
+ng version
+
+
+PASO 2.6: INSTALAR DOCKER DESKTOP (RECOMENDADO)
+------------------------------------------------
+Windows:
+1. Descargar Docker Desktop desde: https://www.docker.com/products/docker-desktop/
+2. Ejecutar el instalador
+3. Durante instalación, habilitar WSL 2 si se solicita
+4. Reiniciar el sistema
+5. Abrir Docker Desktop y completar la configuración inicial
+6. Verificar instalación:
+   docker --version
+   docker compose version
+
+macOS:
+1. Descargar Docker Desktop para Mac desde el sitio oficial
+2. Instalar arrastrando a Applications
+3. Abrir Docker Desktop desde Applications
+
+Linux (Ubuntu/Debian):
+sudo apt update
+sudo apt install docker.io docker-compose
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+(Cerrar sesión y volver a iniciar para aplicar cambios)
+
+
+PASO 2.7 (ALTERNATIVA): INSTALAR MySQL MANUALMENTE
+---------------------------------------------------
+Si NO deseas usar Docker, instala MySQL directamente:
+
+Windows:
+1. Descargar MySQL Installer desde: https://dev.mysql.com/downloads/installer/
+2. Ejecutar el instalador
+3. Seleccionar "Developer Default"
+4. Configurar durante instalación:
+   - Root Password: 1234
+   - Puerto: 3306
+5. Completar instalación
+
+macOS:
+brew install mysql
+brew services start mysql
+mysql_secure_installation
+
+Linux (Ubuntu/Debian):
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl start mysql
+sudo systemctl enable mysql
+sudo mysql_secure_installation
+
+
+=====================================================================
+3. CLONACIÓN DEL REPOSITORIO
+=====================================================================
+
+PASO 3.1: CLONAR EL PROYECTO
+-----------------------------
+1. Abrir PowerShell/Terminal/CMD
+2. Navegar a la carpeta donde deseas clonar el proyecto:
+   cd C:\Users\TuUsuario\Documents
+   (o la ruta que prefieras)
+
+3. Clonar el repositorio:
+   git clone https://github.com/OscarMartP/gestion-jugadores-futbolBase.git
+
+4. Entrar al directorio del proyecto:
+   cd gestion-jugadores-futbolBase
+
+
+=====================================================================
+4. CONFIGURACIÓN DE BASE DE DATOS
+=====================================================================
+
+OPCIÓN A: USANDO DOCKER (RECOMENDADO)
+--------------------------------------
+1. Asegurarse de que Docker Desktop esté ejecutándose
+
+2. En la raíz del proyecto, ejecutar:
+   docker compose up -d
+
+3. Verificar que el contenedor esté corriendo:
+   docker ps
+   (Debe aparecer "mysql_control_jugadores")
+
+4. La base de datos se creará automáticamente con:
+   - Nombre: control_jugadores
+   - Usuario: root
+   - Contraseña: 1234
+   - Puerto: 3306
+
+
+OPCIÓN B: USANDO MySQL INSTALADO LOCALMENTE
+--------------------------------------------
+1. Abrir MySQL Workbench o línea de comandos MySQL:
+   mysql -u root -p
+
+2. Crear la base de datos:
+   CREATE DATABASE control_jugadores;
+
+3. Verificar que la base de datos existe:
+   SHOW DATABASES;
+
+4. Salir de MySQL:
+   exit;
+
+
+=====================================================================
+5. CONFIGURACIÓN DEL BACKEND (Spring Boot)
+=====================================================================
+
+PASO 5.1: VERIFICAR CONFIGURACIÓN
+----------------------------------
+1. Navegar a la carpeta del backend:
+   cd gestion-jugadores-futbolBase
+
+2. Abrir el archivo: src/main/resources/application.properties
+
+3. Verificar que la configuración sea correcta:
+   spring.datasource.url=jdbc:mysql://localhost:3306/control_jugadores
+   spring.datasource.username=root
+   spring.datasource.password=1234
+
+4. Si usas credenciales diferentes, modificar username y password
+
+
+PASO 5.2: COMPILAR EL BACKEND
+------------------------------
+Desde la carpeta gestion-jugadores-futbolBase:
+
+1. Limpiar y compilar el proyecto:
+   mvn clean package -DskipTests
+
+2. Este proceso puede tomar varios minutos la primera vez
+   (Maven descargará todas las dependencias)
+
+3. Al finalizar, debe mostrar: BUILD SUCCESS
+
+
+PASO 5.3: EJECUTAR EL BACKEND
+------------------------------
+Desde la carpeta gestion-jugadores-futbolBase:
+
+Opción 1 - Ejecutar con Maven:
+mvn spring-boot:run
+
+Opción 2 - Ejecutar el JAR generado:
+java -jar target/gestion-jugadores-futbolBase-1.0.jar
+
+El backend estará disponible en: http://localhost:8080
+
+NOTA: Dejar esta terminal abierta con el backend ejecutándose
+
+
+=====================================================================
+6. CONFIGURACIÓN DEL FRONTEND (Angular)
+=====================================================================
+
+PASO 6.1: INSTALAR DEPENDENCIAS
+--------------------------------
+1. Abrir una NUEVA terminal (dejar el backend corriendo)
+
+2. Navegar a la carpeta del frontend:
+   cd gestion-jugadores-frontend
+
+3. Instalar dependencias de Node.js:
+   npm install
+
+4. Este proceso puede tomar varios minutos la primera vez
+
+
+PASO 6.2: EJECUTAR EL FRONTEND
+-------------------------------
+Desde la carpeta gestion-jugadores-frontend:
+
+ng serve
+
+O alternativamente:
+npm start
+
+El frontend estará disponible en: http://localhost:4200
+
+NOTA: Dejar esta terminal abierta con el frontend ejecutándose
+
+
+=====================================================================
+7. EJECUCIÓN DEL PROYECTO
+=====================================================================
+
+RESUMEN DE SERVICIOS EN EJECUCIÓN:
+-----------------------------------
+Terminal 1: Base de Datos
+   - Docker: docker compose up -d (puerto 3306)
+   - O MySQL corriendo como servicio
+
+Terminal 2: Backend (Spring Boot)
+   - Carpeta: gestion-jugadores-futbolBase
+   - Comando: mvn spring-boot:run
+   - URL: http://localhost:8080
+   - API REST: http://localhost:8080/api/v1/
+
+Terminal 3: Frontend (Angular)
+   - Carpeta: gestion-jugadores-frontend
+   - Comando: ng serve
+   - URL: http://localhost:4200
+
+
+ORDEN DE INICIO:
+----------------
+1. Iniciar Base de Datos (Docker o MySQL)
+2. Iniciar Backend (esperar a que inicie completamente)
+3. Iniciar Frontend
+
+
+=====================================================================
+8. VERIFICACIÓN DEL DESPLIEGUE
+=====================================================================
+
+PASO 8.1: VERIFICAR BASE DE DATOS
+----------------------------------
+docker ps
+(Debe mostrar contenedor mysql_control_jugadores corriendo)
+
+
+PASO 8.2: VERIFICAR BACKEND
+----------------------------
+Abrir navegador y visitar:
+http://localhost:8080/api/v1/jugadores
+
+Si está funcionando correctamente, debe devolver una respuesta JSON
+(puede estar vacía [] si no hay datos aún)
+
+
+PASO 8.3: VERIFICAR FRONTEND
+-----------------------------
+Abrir navegador y visitar:
+http://localhost:4200
+
+Debe cargar la aplicación Angular sin errores
+
+
+PASO 8.4: VERIFICAR INTEGRACIÓN COMPLETA
+-----------------------------------------
+1. Desde la interfaz de Angular (http://localhost:4200)
+2. Intentar registrar un usuario nuevo
+3. Intentar hacer login
+4. Intentar crear un equipo o jugador
+5. Verificar que las operaciones funcionen correctamente
+
+
+=====================================================================
+9. SOLUCIÓN DE PROBLEMAS COMUNES
+=====================================================================
+
+PROBLEMA: "Puerto 8080 ya está en uso"
+SOLUCIÓN:
+Windows:
+   netstat -ano | findstr :8080
+   taskkill /PID <número_proceso> /F
+
+macOS/Linux:
+   lsof -ti:8080 | xargs kill -9
+
+
+PROBLEMA: "Puerto 3306 ya está en uso"
+SOLUCIÓN:
+   - Detener otros servicios MySQL
+   - O cambiar puerto en docker-compose.yml y application.properties
+
+
+PROBLEMA: "Cannot connect to database"
+SOLUCIÓN:
+   1. Verificar que MySQL/Docker esté corriendo
+   2. Verificar credenciales en application.properties
+   3. Verificar que la base de datos "control_jugadores" exista
+
+
+PROBLEMA: "mvn no se reconoce como comando"
+SOLUCIÓN:
+   1. Verificar que MAVEN_HOME esté en variables de entorno
+   2. Verificar que %MAVEN_HOME%\bin esté en PATH
+   3. Reiniciar terminal
+
+
+PROBLEMA: "ng no se reconoce como comando"
+SOLUCIÓN:
+   npm install -g @angular/cli@17
+   Reiniciar terminal
+
+
+PROBLEMA: "Error de compilación en Backend"
+SOLUCIÓN:
+   1. Verificar versión de Java: java -version (debe ser 17)
+   2. Limpiar cache de Maven:
+      mvn clean
+      Eliminar carpeta .m2/repository (opcional)
+   3. Recompilar: mvn clean install
+
+
+PROBLEMA: "Error de dependencias en Frontend"
+SOLUCIÓN:
+   1. Eliminar carpeta node_modules
+   2. Eliminar archivo package-lock.json
+   3. Ejecutar: npm install
+   4. Si persiste: npm cache clean --force
+
+
+PROBLEMA: "CORS errors en navegador"
+SOLUCIÓN:
+   - El backend ya tiene configuración CORS
+   - Verificar que frontend use http://localhost:8080 en las peticiones
+   - Verificar que ambos servicios estén corriendo
+
+
+PROBLEMA: "Error de MapStruct en compilación"
+SOLUCIÓN:
+   1. mvn clean
+   2. Eliminar carpeta target/
+   3. mvn clean package -DskipTests
+
+
+PROBLEMA: "StackOverflowError en el backend"
+SOLUCIÓN:
+   - Ya está corregido en la rama main
+   - Asegurarse de tener la última versión: git pull origin main
+
+
+=====================================================================
+COMANDOS RÁPIDOS DE REFERENCIA
+=====================================================================
+
+INICIAR TODO EL PROYECTO:
+--------------------------
+# Terminal 1 (Base de Datos)
+docker compose up -d
+
+# Terminal 2 (Backend)
+cd gestion-jugadores-futbolBase
+mvn spring-boot:run
+
+# Terminal 3 (Frontend)
+cd gestion-jugadores-frontend
+ng serve
+
+
+DETENER TODO:
+-------------
+# Detener Frontend: Ctrl+C en su terminal
+# Detener Backend: Ctrl+C en su terminal
+# Detener Docker:
+docker compose down
+
+
+ACTUALIZAR PROYECTO:
+--------------------
+git pull origin main
+cd gestion-jugadores-futbolBase
+mvn clean package -DskipTests
+cd ../gestion-jugadores-frontend
+npm install
+
+
+RECOMPILAR SOLO BACKEND:
+------------------------
+cd gestion-jugadores-futbolBase
+mvn clean package -DskipTests
+
+
+REINSTALAR DEPENDENCIAS FRONTEND:
+----------------------------------
+cd gestion-jugadores-frontend
+rm -rf node_modules package-lock.json
+npm install
+
+
+=====================================================================
+NOTAS ADICIONALES
+=====================================================================
+
+1. PUERTOS UTILIZADOS:
+   - 3306: MySQL (Base de Datos)
+   - 8080: Backend (Spring Boot API REST)
+   - 4200: Frontend (Angular)
+
+2. CREDENCIALES POR DEFECTO:
+   - MySQL root: 1234
+   - (Los usuarios de la aplicación se crean desde el frontend)
+
+3. VARIABLES DE ENTORNO IMPORTANTES:
+   - JAVA_HOME: Ruta de instalación de Java JDK
+   - MAVEN_HOME: Ruta de instalación de Maven
+   - PATH: Debe incluir rutas a Java, Maven, Node, Angular CLI
+
+4. ARCHIVOS DE CONFIGURACIÓN CLAVE:
+   - Backend: gestion-jugadores-futbolBase/src/main/resources/application.properties
+   - Frontend: gestion-jugadores-frontend/src/environments/
+   - Docker: docker-compose.yml
+
+5. COMANDOS ÚTILES DOCKER:
+   - Ver contenedores: docker ps
+   - Ver logs: docker logs mysql_control_jugadores
+   - Entrar al contenedor: docker exec -it mysql_control_jugadores bash
+   - Conectar a MySQL: docker exec -it mysql_control_jugadores mysql -uroot -p1234
+
+6. DESARROLLO VS PRODUCCIÓN:
+   - Estas instrucciones son para desarrollo local
+   - Para producción, considerar:
+     * Cambiar credenciales de base de datos
+     * Configurar HTTPS
+     * Usar servidor web (Nginx/Apache) para Angular
+     * Desplegar en servidor/cloud
+
+
+=====================================================================
+CONTACTO Y SOPORTE
+=====================================================================
+
+Repositorio GitHub: https://github.com/OscarMartP/gestion-jugadores-futbolBase
+
+Para reportar problemas:
+1. Crear un Issue en GitHub
+2. Incluir logs de error completos
+3. Especificar sistema operativo y versiones instaladas
+
+Logs importantes:
+- Backend: Salida de consola donde ejecutas mvn spring-boot:run
+- Frontend: Consola del navegador (F12 -> Console)
+- Docker: docker logs mysql_control_jugadores
+
+
+=====================================================================
+FIN DE LAS INSTRUCCIONES
+=====================================================================
+
+Última actualización: Diciembre 2025
+Versión del documento: 1.0
