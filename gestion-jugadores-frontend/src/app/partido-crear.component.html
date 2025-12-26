@@ -14,6 +14,14 @@
     </div>
 
     <div class="form-group mb-3">
+      <label for="titulo">Título del Partido (Equipo Rival):</label>
+      <input type="text" class="form-control" id="titulo" formControlName="titulo" placeholder="Ej: vs Real Madrid">
+      <div *ngIf="partidoForm.get('titulo')?.invalid && partidoForm.get('titulo')?.touched" class="text-danger">
+        El título es obligatorio.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
       <label for="fecha">Fecha y hora:</label>
       <input type="datetime-local" class="form-control" id="fecha" formControlName="fecha">
     </div>

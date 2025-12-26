@@ -14,6 +14,7 @@ public class PartidoDTO {
     private LocalDateTime fecha;
     private Boolean partidoActivo;
     private Integer duracion;
+    private String titulo;
     private List<EventoJugadorDTO> eventos;
 
     public PartidoDTO() {}
@@ -66,6 +67,14 @@ public class PartidoDTO {
 
     public void setDuracion(Integer duracion) {
         this.duracion = duracion;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 
     public List<EventoJugadorDTO> getEventos() {

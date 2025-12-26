@@ -25,6 +25,7 @@ export class PartidoCrearComponent implements OnInit {
   ) {
     this.partidoForm = this.fb.group({
       equipoId: [null, Validators.required],
+      titulo: ['', Validators.required],
       fecha: [new Date().toISOString().slice(0, 16), Validators.required]
     });
   }
@@ -68,6 +69,7 @@ export class PartidoCrearComponent implements OnInit {
 
   const partido = {
     equipo: { id: equipoId },
+    titulo: this.partidoForm.value.titulo,
     fecha: new Date(this.partidoForm.value.fecha),
     duracion: this.equipos.find(eq => eq.id === equipoId)?.duracionPartido || 90
   };
