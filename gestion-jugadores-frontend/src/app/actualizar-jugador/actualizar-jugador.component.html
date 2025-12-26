@@ -56,7 +56,7 @@
     </div>
 
     <!-- POSICION -->
-    <div class="form-select">
+    <div class="form-group">
       <label for="posicion">Posicion : </label><br>
       <select [(ngModel)]="posicionSeleccionada" name="posicion" class="form-select" aria-label="Default select example">
         <option *ngFor="let posicion of posiciones" [value]="posicion">{{posicion}}</option>
@@ -67,11 +67,11 @@
     <div class="form-group">
       <label for="equipoId">Equipo:</label>
       <select [(ngModel)]="equipoSeleccionado" name="equipo" class="form-select" aria-label="Default select example">
-        <option *ngFor="let equipo of equipos" [value]="equipo.id">{{equipo.nombre}}</option>
+        <option *ngFor="let equipo of equipos" [ngValue]="equipo.id">{{equipo.nombre}}</option>
       </select>
     </div>
     
     <br>
-    <option *ngFor="let equipo of equipos" [value]="equipo.id">{{equipo.nombre}}</option>
+    <button type="submit" class="btn btn-primary" [disabled]="!jugadorForm.form.valid">Actualizar</button>
   </form>
 </div>

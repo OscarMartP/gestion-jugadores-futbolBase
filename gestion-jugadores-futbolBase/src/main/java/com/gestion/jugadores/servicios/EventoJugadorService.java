@@ -9,7 +9,11 @@ public interface EventoJugadorService {
 	EventoJugador registrarEvento(EventoJugador evento);
     List<EventoJugador> obtenerEventosPorJugador(Long jugadorId);
     List<EventoJugador> obtenerEventosPorPartido(Long partidoId);
- // EventoJugadorService.java
-    public List<EventoResumenDTO> resumenEventosPorJugador(Long jugadorId);
-
+    List<EventoResumenDTO> resumenEventosPorJugador(Long jugadorId);
+    
+    // Métodos CRUD adicionales para BaseController
+    EventoJugador obtenerEventoPorId(Long id);
+    List<EventoJugador> obtenerTodosLosEventos();
+    EventoJugador actualizarEvento(Long id, EventoJugador evento);
+    void eliminarEvento(Long id);
 }

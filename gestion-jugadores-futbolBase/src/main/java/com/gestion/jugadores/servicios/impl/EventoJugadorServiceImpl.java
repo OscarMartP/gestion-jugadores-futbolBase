@@ -1,5 +1,6 @@
 package com.gestion.jugadores.servicios.impl;
 
+import com.gestion.jugadores.excepciones.ResourceNotFoundException;
 import com.gestion.jugadores.modelo.EventoJugador;
 import com.gestion.jugadores.modelo.EventoResumenDTO;
 import com.gestion.jugadores.repositorio.EventoJugadorRepository;
@@ -31,7 +32,6 @@ public class EventoJugadorServiceImpl implements EventoJugadorService {
         return eventoJugadorRepository.findByPartido_Id(partidoId); // CAMBIO
     }
     
- // EventoJugadorServiceImpl.java
     @Override
     public List<EventoResumenDTO> resumenEventosPorJugador(Long jugadorId) {
         List<EventoJugador> eventos = eventoJugadorRepository.findByJugador_Id(jugadorId);
@@ -45,4 +45,31 @@ public class EventoJugadorServiceImpl implements EventoJugadorService {
         }).collect(Collectors.toList());
     }
 
+    // ========== MÉTODOS CRUD ADICIONALES ==========
+
+    @Override
+    public EventoJugador obtenerEventoPorId(Long id) {
+        return eventoJugadorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el evento con ID: " + id));
+    }
+
+    @Override
+    public List<EventoJugador> obtenerTodosLosEventos() {
+        return eventoJugadorRepository.findAll();
+    }
+
+    @Override
+    public EventoJugador actualizarEvento(Long id, EventoJugador evento) {
+        EventoJugador existente = obtenerEventoPorId(id);
+        existente.setTipoEvento(evento.getTipoEvento());
+        existente.setMinuto(evento.getMinuto());
+        // Jugador y Partido no se actualizan para mantener integridad
+        return eventoJugadorRepository.save(existente);
+    }
+
+    @Override
+    public void eliminarEvento(Long id) {
+        EventoJugador evento = obtenerEventoPorId(id);
+        eventoJugadorRepository.delete(evento);
+    }
 }

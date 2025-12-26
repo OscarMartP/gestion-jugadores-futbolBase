@@ -29,9 +29,10 @@ import com.gestion.jugadores.repositorio.JugadorRepositorio;
 import com.gestion.jugadores.servicios.EquipoService;
 import com.gestion.jugadores.servicios.JugadorService;
 // Logica Jugador
-@RestController
-@RequestMapping("/api/v1/")
-@CrossOrigin(origins = "http://localhost:4200")
+// DESACTIVADO: Usando JugadorControladorV2 con arquitectura modular
+// @RestController
+// @RequestMapping("/api/v1/")
+// @CrossOrigin(origins = "http://localhost:4200")
 public class JugadorControlador {
 
 	@Autowired

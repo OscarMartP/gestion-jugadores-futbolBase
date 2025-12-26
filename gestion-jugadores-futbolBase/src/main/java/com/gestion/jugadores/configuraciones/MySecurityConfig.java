@@ -60,6 +60,8 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 	        .cors().and()
 	        .authorizeRequests()
 			.antMatchers("/generate-token", "/usuarios/").permitAll()
+			// Permitir acceso público a Swagger UI y OpenAPI docs
+			.antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 			// allow unauthenticated GET requests to list jugadores by query param (frontend uses /api/v1/jugadores?equipoId=...)
 			.antMatchers(HttpMethod.GET, "/api/v1/jugadores").permitAll()
 			.antMatchers("/api/v1/jugadores/equipo/**").permitAll()

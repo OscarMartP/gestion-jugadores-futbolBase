@@ -1,0 +1,287 @@
+=====================================================================
+CONFIGURACIÓN Y USO DE SWAGGER UI
+=====================================================================
+
+Swagger UI ha sido configurado para documentar automáticamente todos los
+endpoints de la API REST del proyecto.
+
+=====================================================================
+ACCESO A SWAGGER UI
+=====================================================================
+
+1. SWAGGER UI (Interfaz Gráfica):
+   URL: http://localhost:8080/swagger-ui.html
+   
+   Proporciona una interfaz interactiva donde puedes:
+   - Ver todos los endpoints disponibles
+   - Probar las peticiones directamente desde el navegador
+   - Ver los modelos de datos (DTOs)
+   - Ejecutar llamadas a la API con parámetros personalizados
+
+2. DOCUMENTACIÓN OPENAPI (JSON):
+   URL: http://localhost:8080/v3/api-docs
+   
+   Devuelve la especificación OpenAPI en formato JSON
+
+
+=====================================================================
+CÓMO USAR SWAGGER UI
+=====================================================================
+
+PASO 1: INICIAR EL BACKEND
+---------------------------
+1. Asegurarse de que la base de datos esté corriendo (Docker o MySQL)
+2. Iniciar el backend:
+   cd gestion-jugadores-futbolBase
+   mvn spring-boot:run
+
+3. Esperar a que el servidor inicie completamente
+
+
+PASO 2: ACCEDER A SWAGGER UI
+-----------------------------
+1. Abrir navegador
+2. Ir a: http://localhost:8080/swagger-ui.html
+3. Verás la interfaz de Swagger con todos los endpoints organizados por controladores
+
+
+PASO 3: AUTENTICACIÓN CON JWT (PARA ENDPOINTS PROTEGIDOS)
+----------------------------------------------------------
+Muchos endpoints requieren autenticación. Para probarlos:
+
+1. Primero, obtener un token JWT:
+   a) Expandir el endpoint "POST /generate-token"
+   b) Hacer clic en "Try it out"
+   c) Introducir credenciales en el Request body:
+      {
+        "username": "tu_usuario",
+        "password": "tu_contraseña"
+      }
+   d) Hacer clic en "Execute"
+   e) Copiar el token de la respuesta (campo "token")
+
+2. Autorizar las peticiones:
+   a) Hacer clic en el botón "Authorize" (candado verde arriba a la derecha)
+   b) En el campo "Value", pegar: Bearer <tu_token>
+      Ejemplo: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+   c) Hacer clic en "Authorize"
+   d) Hacer clic en "Close"
+
+3. Ahora todos los endpoints protegidos incluirán automáticamente el token JWT
+
+
+PASO 4: PROBAR ENDPOINTS
+-------------------------
+1. Seleccionar cualquier endpoint (GET, POST, PUT, DELETE)
+2. Hacer clic en "Try it out"
+3. Rellenar los parámetros requeridos
+4. Hacer clic en "Execute"
+5. Ver la respuesta en la sección "Response"
+
+
+=====================================================================
+ENDPOINTS DISPONIBLES
+=====================================================================
+
+Los endpoints están organizados por controladores:
+
+1. AUTENTICACIÓN
+   - POST /generate-token: Generar token JWT (público)
+
+2. USUARIOS
+   - POST /usuarios/: Crear nuevo usuario (público)
+   - Otros endpoints de usuarios (requieren autenticación)
+
+3. JUGADORES (/api/v1/jugadores)
+   - GET /api/v1/jugadores: Listar jugadores (público)
+   - GET /api/v1/jugadores/{id}: Obtener jugador por ID
+   - POST /api/v1/jugadores: Crear jugador (autenticado)
+   - PUT /api/v1/jugadores/{id}: Actualizar jugador (autenticado)
+   - DELETE /api/v1/jugadores/{id}: Eliminar jugador (autenticado)
+   - GET /api/v1/jugadores/equipo/{equipoId}: Jugadores por equipo (público)
+
+4. EQUIPOS (/api/v1/equipos)
+   - GET /api/v1/equipos: Listar equipos
+   - POST /api/v1/equipos: Crear equipo
+   - PUT /api/v1/equipos/{id}: Actualizar equipo
+   - DELETE /api/v1/equipos/{id}: Eliminar equipo
+
+5. PARTIDOS (/api/v1/partidos)
+   - GET /api/v1/partidos: Listar partidos
+   - POST /api/v1/partidos: Crear partido
+   - PUT /api/v1/partidos/{id}: Actualizar partido
+   - DELETE /api/v1/partidos/{id}: Eliminar partido
+   - GET /api/v1/partidos/equipo/{equipoId}: Partidos por equipo
+
+6. EVENTOS DE JUGADOR (/api/v1/eventos-jugador)
+   - Endpoints para gestionar eventos de jugadores en partidos
+
+
+=====================================================================
+CONFIGURACIÓN
+=====================================================================
+
+ARCHIVOS MODIFICADOS:
+
+1. pom.xml
+   - Añadida dependencia: springdoc-openapi-ui v1.6.15
+
+2. src/main/resources/application.properties
+   - springdoc.api-docs.path=/v3/api-docs
+   - springdoc.swagger-ui.path=/swagger-ui.html
+   - springdoc.swagger-ui.enabled=true
+   - springdoc.packages-to-scan=com.gestion.jugadores.controlador
+   - springdoc.paths-to-match=/api/v1/**
+
+3. SwaggerConfig.java (nuevo)
+   - Configuración personalizada de OpenAPI
+   - Información de la API (título, versión, descripción)
+   - Configuración de seguridad JWT
+   - Servidores (local y producción)
+
+4. MySecurityConfig.java
+   - Permitido acceso público a /swagger-ui/** y /v3/api-docs/**
+
+
+=====================================================================
+PERSONALIZACIÓN
+=====================================================================
+
+Para personalizar la documentación de Swagger:
+
+1. AÑADIR DESCRIPCIONES A ENDPOINTS:
+   En los controladores, usar anotaciones de OpenAPI:
+
+   @Operation(summary = "Crear nuevo jugador", 
+              description = "Crea un nuevo jugador en el sistema")
+   @ApiResponses(value = {
+       @ApiResponse(responseCode = "201", description = "Jugador creado exitosamente"),
+       @ApiResponse(responseCode = "400", description = "Datos inválidos")
+   })
+   @PostMapping("/")
+   public ResponseEntity<?> crearJugador(@RequestBody JugadorDTO jugadorDTO) {
+       ...
+   }
+
+2. DOCUMENTAR PARÁMETROS:
+   @Parameter(description = "ID del jugador", required = true, example = "1")
+   @PathVariable Long id
+
+3. DOCUMENTAR MODELOS (DTOs):
+   @Schema(description = "Datos del jugador")
+   public class JugadorDTO {
+       @Schema(description = "ID único del jugador", example = "1")
+       private Long id;
+       
+       @Schema(description = "Nombre del jugador", example = "Juan", required = true)
+       private String nombre;
+   }
+
+4. CAMBIAR INFORMACIÓN DE LA API:
+   Editar SwaggerConfig.java para modificar título, versión, contacto, etc.
+
+
+=====================================================================
+EXPORTAR DOCUMENTACIÓN
+=====================================================================
+
+1. EXPORTAR COMO JSON:
+   - Visitar: http://localhost:8080/v3/api-docs
+   - Copiar el JSON completo
+   - Guardar en un archivo (ej: openapi.json)
+
+2. EXPORTAR COMO YAML:
+   - Visitar: http://localhost:8080/v3/api-docs.yaml
+   - Guardar el contenido en un archivo (ej: openapi.yaml)
+
+3. USAR EN HERRAMIENTAS EXTERNAS:
+   El archivo OpenAPI puede importarse en:
+   - Postman
+   - Insomnia
+   - ReDoc
+   - Swagger Editor (https://editor.swagger.io/)
+
+
+=====================================================================
+SOLUCIÓN DE PROBLEMAS
+=====================================================================
+
+PROBLEMA: "No se puede acceder a /swagger-ui.html"
+SOLUCIÓN:
+   1. Verificar que el backend esté corriendo
+   2. Verificar la URL: http://localhost:8080/swagger-ui.html
+   3. Revisar logs del backend para errores
+   4. Verificar que la dependencia springdoc esté en pom.xml
+
+PROBLEMA: "404 Not Found en Swagger UI"
+SOLUCIÓN:
+   1. Recompilar el proyecto: mvn clean package -DskipTests
+   2. Reiniciar el backend
+   3. Limpiar caché del navegador
+
+PROBLEMA: "Endpoints no aparecen en Swagger"
+SOLUCIÓN:
+   1. Verificar que los controladores estén en el paquete:
+      com.gestion.jugadores.controlador
+   2. Verificar que los endpoints tengan las anotaciones Spring:
+      @RestController, @RequestMapping, @GetMapping, etc.
+   3. Revisar application.properties:
+      springdoc.packages-to-scan=com.gestion.jugadores.controlador
+
+PROBLEMA: "401 Unauthorized al probar endpoints"
+SOLUCIÓN:
+   1. Algunos endpoints requieren autenticación JWT
+   2. Primero obtener token desde /generate-token
+   3. Usar el botón "Authorize" y pegar: Bearer <token>
+
+PROBLEMA: "Swagger muestra pero no funciona con JWT"
+SOLUCIÓN:
+   1. Verificar que MySecurityConfig.java permita acceso a Swagger:
+      .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+   2. Verificar que SwaggerConfig tenga configuración de seguridad JWT
+
+
+=====================================================================
+VENTAJAS DE USAR SWAGGER UI
+=====================================================================
+
+✅ Documentación automática de todos los endpoints
+✅ Interfaz interactiva para probar la API sin Postman
+✅ Visualización clara de modelos de datos (DTOs)
+✅ Sincronización automática con cambios en el código
+✅ Exportación de documentación OpenAPI estándar
+✅ Soporte para autenticación JWT
+✅ Reducción de tiempo en pruebas y documentación manual
+
+
+=====================================================================
+NOTAS ADICIONALES
+=====================================================================
+
+1. Swagger UI solo está disponible cuando el backend está corriendo
+2. Es seguro usar Swagger en desarrollo local
+3. En producción, considerar deshabilitar o proteger Swagger UI
+4. La documentación se genera automáticamente del código
+5. No es necesario mantener documentación separada
+
+
+=====================================================================
+DESACTIVAR SWAGGER EN PRODUCCIÓN (OPCIONAL)
+=====================================================================
+
+Para desactivar Swagger en producción, en application.properties:
+
+# Perfil de producción
+springdoc.swagger-ui.enabled=false
+springdoc.api-docs.enabled=false
+
+O usar perfiles de Spring Boot (application-prod.properties):
+spring.profiles.active=prod
+
+
+=====================================================================
+FIN DEL DOCUMENTO
+=====================================================================
+
+Última actualización: Diciembre 2025
+Versión: 1.0

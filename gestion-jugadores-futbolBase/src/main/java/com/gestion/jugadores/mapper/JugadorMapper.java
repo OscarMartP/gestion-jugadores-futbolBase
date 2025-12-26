@@ -2,8 +2,10 @@ package com.gestion.jugadores.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import com.gestion.jugadores.dto.JugadorDTO;
 import com.gestion.jugadores.modelo.Jugador;
+import com.gestion.jugadores.modelo.Equipo;
 
 /**
  * MapStruct mapper for Jugador entity <-> JugadorDTO
@@ -16,7 +18,17 @@ public interface JugadorMapper {
     @Mapping(target = "equipo", ignore = true)
     JugadorDTO toDto(Jugador jugador);
 
-    @Mapping(target = "equipo", ignore = true)
+    @Mapping(source = "equipoId", target = "equipo", qualifiedByName = "equipoIdToEquipo")
     Jugador toEntity(JugadorDTO jugadorDTO);
+
+    @Named("equipoIdToEquipo")
+    default Equipo equipoIdToEquipo(Long equipoId) {
+        if (equipoId == null) {
+            return null;
+        }
+        Equipo equipo = new Equipo();
+        equipo.setId(equipoId);
+        return equipo;
+    }
 
 }

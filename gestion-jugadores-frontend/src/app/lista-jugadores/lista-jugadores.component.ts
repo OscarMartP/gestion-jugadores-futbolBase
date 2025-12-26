@@ -27,6 +27,8 @@ export class ListaJugadoresComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    // Limpiar cache de jugadores al entrar al componente
+    this.jugadores = [];
     this.obtenerEquipoIdDelUsuario();
   }
 

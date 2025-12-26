@@ -21,9 +21,10 @@ import com.gestion.jugadores.servicios.EventoJugadorService;
 import com.gestion.jugadores.servicios.JugadorService;
 import com.gestion.jugadores.servicios.PartidoService;
 //Logica Evento Jugador 
-@RestController
-@RequestMapping("/api/v1/eventos")
-@CrossOrigin(origins = "http://localhost:4200")
+// DESACTIVADO: Usando EventoJugadorControladorV2 con arquitectura modular
+// @RestController
+// @RequestMapping("/api/v1/eventos")
+// @CrossOrigin(origins = "http://localhost:4200")
 public class EventoJugadorControlador {
 	@Autowired
     private EventoJugadorService eventoJugadorService;

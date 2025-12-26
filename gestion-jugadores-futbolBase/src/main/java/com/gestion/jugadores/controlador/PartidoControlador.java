@@ -21,9 +21,10 @@ import com.gestion.jugadores.modelo.Partido;
 import com.gestion.jugadores.servicios.PartidoService;
 
 //Logica Partido 
-@RestController
-@RequestMapping("/api/v1/partidos")
-@CrossOrigin(origins = "http://localhost:4200")
+// DESACTIVADO: Usando PartidoControladorV2 con arquitectura modular
+// @RestController
+// @RequestMapping("/api/v1/partidos")
+// @CrossOrigin(origins = "http://localhost:4200")
 public class PartidoControlador {
 	@Autowired
     private PartidoService partidoService;

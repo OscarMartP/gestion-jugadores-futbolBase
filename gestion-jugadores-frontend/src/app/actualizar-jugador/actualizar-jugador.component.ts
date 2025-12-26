@@ -46,6 +46,9 @@ export class ActualizarJugadorComponent implements OnInit {
     this.id = this.route.snapshot.params['id'];
     this.jugadorService.obtenerJugadorPorId(this.id).subscribe(dato => {
       this.jugador = dato;
+      // Inicializar los valores seleccionados con los datos actuales del jugador
+      this.posicionSeleccionada = dato.posicion;
+      this.equipoSeleccionado = dato.equipoId;
     }, error => console.log(error));
 
     const usuario = this.loginService.getUser();
@@ -84,7 +87,8 @@ export class ActualizarJugadorComponent implements OnInit {
 
   onSubmit(): void {
     this.jugador.posicion = this.posicionSeleccionada;
-    this.jugador.equipoId = this.equipoSeleccionado;
+    this.jugador.equipoId = Number(this.equipoSeleccionado);
+    console.log('Actualizando jugador:', this.jugador);
     this.jugadorService.actualizarJugador(this.id, this.jugador).subscribe(
       data => {
         console.log('Jugador actualizado exitosamente:', data);
