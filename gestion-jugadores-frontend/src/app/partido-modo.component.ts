@@ -30,6 +30,22 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
   jugadores: any[] = [];
   timerActivo: boolean = false;
   intervalId: any;
+  
+  // Resultado del partido
+  golesEquipo: number = 0;
+  golesRival: number = 0;
+  resultado: string = '';
+  
+  // Lista de eventos disponibles
+  eventosDisponibles = [
+    { tipo: 'gol', nombre: 'Gol', icono: '⚽', color: 'success' },
+    { tipo: 'asistencia', nombre: 'Asistencia', icono: '🎯', color: 'info' },
+    { tipo: 'tarjeta_amarilla', nombre: 'T. Amarilla', icono: '🟨', color: 'warning' },
+    { tipo: 'tarjeta_roja', nombre: 'T. Roja', icono: '🟥', color: 'danger' },
+    { tipo: 'pase_clave', nombre: 'Pase Clave', icono: '🔑', color: 'primary' },
+    { tipo: 'robo', nombre: 'Robo', icono: '🛡️', color: 'secondary' },
+    { tipo: 'tiro_a_puerta', nombre: 'Tiro a Puerta', icono: '🥅', color: 'info' }
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -185,6 +201,12 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
       next: () => {
         console.log('✅ Evento registrado');
         this.mostrarMensaje(`${tipoEvento} registrado`, 'success');
+        
+        // Actualizar marcador automáticamente si es un gol
+        if (tipoEvento.toLowerCase() === 'gol') {
+          this.incrementarGolesEquipo();
+          console.log('⚽ Marcador actualizado: ' + this.golesEquipo);
+        }
       },
       error: (err) => {
         console.error('❌ Error al registrar evento:', err);
@@ -196,26 +218,90 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
   finalizarPartido(): void {
     if (confirm('¿Deseas finalizar y guardar el partido?')) {
       this.cargando = true;
-      this.partidoService.desactivarPartido(this.partidoActivo.id).subscribe(
-        (response: any) => {
-          this.timerActivo = false;
-          clearInterval(this.intervalId);
-          this.enModoJuego = false;
-          this.cargando = false;
-          this.mostrarMensaje('Partido finalizado y guardado', 'success');
+      
+      // Calcular resultado automáticamente
+      if (this.golesEquipo > this.golesRival) {
+        this.resultado = 'Victoria';
+      } else if (this.golesEquipo < this.golesRival) {
+        this.resultado = 'Derrota';
+      } else {
+        this.resultado = 'Empate';
+      }
+      
+      // Actualizar partido con resultado
+      const partidoActualizado = {
+        ...this.partidoActivo,
+        golesEquipo: this.golesEquipo,
+        golesRival: this.golesRival,
+        resultado: this.resultado
+      };
+      
+      // Primero actualizar el partido con el resultado
+      this.partidoService.actualizarPartido(this.partidoActivo.id, partidoActualizado).subscribe(
+        () => {
+          console.log('✅ Resultado guardado:', partidoActualizado);
+          
+          // Luego desactivar el partido
+          this.partidoService.desactivarPartido(this.partidoActivo.id).subscribe(
+            (response: any) => {
+              this.timerActivo = false;
+              clearInterval(this.intervalId);
+              this.enModoJuego = false;
+              this.cargando = false;
+              this.mostrarMensaje(`Partido finalizado. Resultado: ${this.resultado} (${this.golesEquipo}-${this.golesRival})`, 'success');
 
-          // Limpiar y recargar lista
-          setTimeout(() => {
-            this.partidoSeleccionado = null;
-            this.cargarPartidosDelEquipo();
-          }, 2000);
+              // Limpiar y recargar lista
+              setTimeout(() => {
+                this.partidoSeleccionado = null;
+                this.golesEquipo = 0;
+                this.golesRival = 0;
+                this.resultado = '';
+                this.cargarPartidosDelEquipo();
+              }, 3000);
+            },
+            (error) => {
+              console.error('Error al finalizar partido:', error);
+              this.mostrarMensaje('Error al finalizar el partido', 'error');
+              this.cargando = false;
+            }
+          );
         },
         (error) => {
-          console.error('Error al finalizar partido:', error);
-          this.mostrarMensaje('Error al finalizar el partido', 'error');
+          console.error('Error al guardar resultado:', error);
+          this.mostrarMensaje('Error al guardar el resultado', 'error');
           this.cargando = false;
         }
       );
+    }
+  }
+
+  decrementarGolesEquipo(): void {
+    if (this.golesEquipo > 0) {
+      this.golesEquipo--;
+    }
+  }
+
+  incrementarGolesEquipo(): void {
+    this.golesEquipo++;
+  }
+
+  decrementarGolesRival(): void {
+    if (this.golesRival > 0) {
+      this.golesRival--;
+    }
+  }
+
+  incrementarGolesRival(): void {
+    this.golesRival++;
+  }
+
+  obtenerResultado(): string {
+    if (this.golesEquipo > this.golesRival) {
+      return 'Victoria';
+    } else if (this.golesEquipo < this.golesRival) {
+      return 'Derrota';
+    } else {
+      return 'Empate';
     }
   }
 

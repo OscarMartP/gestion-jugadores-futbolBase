@@ -34,6 +34,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatListModule } from '@angular/material/list';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 // Servicios
@@ -44,6 +46,8 @@ import { PartidoModoComponent } from './partido-modo.component';
 import { SelectorJugadoresComponent } from './graficos/selector-jugadores/selector-jugadores.component';
 import { GestionarPartidosComponent } from './components/gestionar-partidos/gestionar-partidos.component';
 import { HistorialPartidosComponent } from './historial-partidos/historial-partidos.component';
+import { EstadisticasEquipoComponent } from './components/estadisticas-equipo/estadisticas-equipo.component';
+import { EstadisticasGeneralesComponent } from './components/estadisticas-generales/estadisticas-generales.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +69,9 @@ import { HistorialPartidosComponent } from './historial-partidos/historial-parti
     PartidoModoComponent,
     SelectorJugadoresComponent,
     GestionarPartidosComponent,
-    HistorialPartidosComponent
+    HistorialPartidosComponent,
+    EstadisticasEquipoComponent,
+    EstadisticasGeneralesComponent
   ],
   imports: [
     BrowserModule,
@@ -84,7 +90,9 @@ import { HistorialPartidosComponent } from './historial-partidos/historial-parti
     MatCardModule,
     MatToolbarModule,
     MatIconModule,
-    MatListModule
+    MatListModule,
+    MatSelectModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     provideAnimationsAsync(),

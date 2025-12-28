@@ -29,4 +29,14 @@ export class EquipoService {
   obtenerEquiposMe(): Observable<Equipo[]> {
     return this.http.get<Equipo[]>(`${baserUrl}/equipos/me`);
   }
+
+  // Obtener lista de todos los equipos
+  obtenerListaDeEquipos(): Observable<Equipo[]> {
+    return this.http.get<Equipo[]>(`${baserUrl}/equipos/me`);
+  }
+
+  // Obtener equipo por ID
+  obtenerEquipoPorId(equipoId: number): Observable<Equipo> {
+    return this.http.get<Equipo>(`${baserUrl}/equipos/${equipoId}`);
+  }
 }

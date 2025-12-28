@@ -11,6 +11,8 @@ public class EventoJugadorDTO {
     private Long partidoId;
     private String tipoEvento;
     private Integer minuto;
+    private Boolean fueTitular;
+    private Integer minutosJugados;
 
     public EventoJugadorDTO() {}
 
@@ -64,6 +66,22 @@ public class EventoJugadorDTO {
         this.minuto = minuto;
     }
 
+    public Boolean getFueTitular() {
+        return fueTitular;
+    }
+
+    public void setFueTitular(Boolean fueTitular) {
+        this.fueTitular = fueTitular;
+    }
+
+    public Integer getMinutosJugados() {
+        return minutosJugados;
+    }
+
+    public void setMinutosJugados(Integer minutosJugados) {
+        this.minutosJugados = minutosJugados;
+    }
+
     @Override
     public String toString() {
         return "EventoJugadorDTO{" +
@@ -72,6 +90,8 @@ public class EventoJugadorDTO {
                 ", partidoId=" + partidoId +
                 ", tipoEvento='" + tipoEvento + '\'' +
                 ", minuto=" + minuto +
+                ", fueTitular=" + fueTitular +
+                ", minutosJugados=" + minutosJugados +
                 '}';
     }
 }

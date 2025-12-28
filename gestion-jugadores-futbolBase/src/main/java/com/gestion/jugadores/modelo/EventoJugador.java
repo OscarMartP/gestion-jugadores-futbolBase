@@ -3,7 +3,11 @@ package com.gestion.jugadores.modelo;
 import javax.persistence.*;
 //Modelo Evento Jugador
 @Entity
-@Table(name = "eventos_jugador")
+@Table(name = "eventos_jugador", indexes = {
+    @Index(name = "idx_jugador_id", columnList = "jugador_id"),
+    @Index(name = "idx_partido_id", columnList = "partido_id"),
+    @Index(name = "idx_tipo_evento", columnList = "tipo_evento")
+})
 public class EventoJugador {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +27,13 @@ public class EventoJugador {
     @Column(nullable = false)
     private Integer minuto;
 
+    // Campos adicionales para estadísticas
+    @Column(name = "fue_titular")
+    private Boolean fueTitular = false; // Si jugó como titular en este partido
+
+    @Column(name = "minutos_jugados")
+    private Integer minutosJugados; // Minutos que jugó en el partido
+
     public EventoJugador() {}
 
     public EventoJugador(Jugador jugador, Partido partido, String tipoEvento, Integer minuto) {
@@ -37,10 +48,14 @@ public class EventoJugador {
     public Partido getPartido() { return partido; }
     public String getTipoEvento() { return tipoEvento; }
     public Integer getMinuto() { return minuto; }
+    public Boolean getFueTitular() { return fueTitular; }
+    public Integer getMinutosJugados() { return minutosJugados; }
 
     public void setId(Long id) { this.id = id; }
     public void setJugador(Jugador jugador) { this.jugador = jugador; }
     public void setPartido(Partido partido) { this.partido = partido; }
     public void setTipoEvento(String tipoEvento) { this.tipoEvento = tipoEvento; }
     public void setMinuto(Integer minuto) { this.minuto = minuto; }
+    public void setFueTitular(Boolean fueTitular) { this.fueTitular = fueTitular; }
+    public void setMinutosJugados(Integer minutosJugados) { this.minutosJugados = minutosJugados; }
 }

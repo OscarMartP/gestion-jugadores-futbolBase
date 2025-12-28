@@ -7,15 +7,25 @@ import com.gestion.jugadores.excepciones.ResourceNotFoundException;
 import com.gestion.jugadores.modelo.Partido;
 import com.gestion.jugadores.repositorio.PartidoRepository;
 import com.gestion.jugadores.servicios.PartidoService;
+import com.gestion.jugadores.servicios.EstadisticasService;
 
+import java.time.LocalDate;
+import java.time.Year;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PartidoServiceImpl implements PartidoService {
 
+    private static final Logger logger = LoggerFactory.getLogger(PartidoServiceImpl.class);
+
     @Autowired
     private PartidoRepository partidoRepository;
+    
+    @Autowired
+    private EstadisticasService estadisticasService;
 
     @Override
     public Partido crearPartido(Partido partido) {
@@ -63,11 +73,33 @@ public class PartidoServiceImpl implements PartidoService {
     }
     
     @Override
+    @Transactional
     public Partido desactivarPartido(Long id) {
+        logger.info("Desactivando partido con id: {}", id);
+        
         Partido partido = partidoRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Partido no encontrado con id: " + id));
         partido.setPartidoActivo(false);
-        return partidoRepository.save(partido);
+        Partido partidoFinalizado = partidoRepository.save(partido);
+        
+        logger.info("Partido {} finalizado correctamente", id);
+        
+        // Actualizar estadísticas automáticamente
+        try {
+            String temporadaActual = obtenerTemporadaActual();
+            Long equipoId = partido.getEquipo().getId();
+            
+            logger.info("Actualizando estadísticas del equipo {} para temporada {}", equipoId, temporadaActual);
+            estadisticasService.actualizarEstadisticasEquipo(equipoId, temporadaActual);
+            
+            logger.info("Estadísticas actualizadas correctamente para equipo {}", equipoId);
+        } catch (Exception e) {
+            logger.error("Error al actualizar estadísticas después de finalizar partido {}: {}", id, e.getMessage());
+            // No lanzamos excepción para no revertir la transacción del partido
+            // Las estadísticas se pueden actualizar manualmente después
+        }
+        
+        return partidoFinalizado;
     }
 
     @Override
@@ -92,5 +124,22 @@ public class PartidoServiceImpl implements PartidoService {
         Partido partido = partidoRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Partido no encontrado con id: " + id));
         partidoRepository.delete(partido);
+    }
+    
+    /**
+     * Obtiene la temporada actual en formato YYYY-YYYY+1
+     * Por ejemplo: 2024-2025
+     * Si estamos antes de julio, la temporada empezó el año anterior
+     */
+    private String obtenerTemporadaActual() {
+        int currentYear = Year.now().getValue();
+        int currentMonth = LocalDate.now().getMonthValue();
+        
+        // Si estamos antes de julio, la temporada empezó el año anterior
+        if (currentMonth < 7) {
+            return (currentYear - 1) + "-" + currentYear;
+        } else {
+            return currentYear + "-" + (currentYear + 1);
+        }
     }
 }

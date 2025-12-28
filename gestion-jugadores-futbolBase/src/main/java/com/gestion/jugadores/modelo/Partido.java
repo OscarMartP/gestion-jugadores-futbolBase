@@ -30,6 +30,16 @@ public class Partido {
 	 @Column(name = "partido_activo", nullable = false)
     private Boolean partidoActivo = false;
 
+	 // Campos para estadísticas
+	 @Column(name = "resultado")
+	 private String resultado; // "Victoria", "Derrota", "Empate", null si no ha terminado
+
+	 @Column(name = "goles_equipo")
+	 private Integer golesEquipo;
+
+	 @Column(name = "goles_rival")
+	 private Integer golesRival;
+
 	 public Partido() {}
 
 	 public Partido(Equipo equipo, LocalDateTime fecha, Integer duracion, Boolean partidoActivo) {
@@ -44,6 +54,9 @@ public class Partido {
 	 public LocalDateTime getFecha() { return fecha; }
 	 public Integer getDuracion() { return duracion; }
 	 public String getTitulo() { return titulo; }
+	 public String getResultado() { return resultado; }
+	 public Integer getGolesEquipo() { return golesEquipo; }
+	 public Integer getGolesRival() { return golesRival; }
 	  public Boolean getPartidoActivo() {
         return partidoActivo;
     }
@@ -53,6 +66,9 @@ public class Partido {
 	 public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
 	 public void setDuracion(Integer duracion) { this.duracion = duracion; }
 	 public void setTitulo(String titulo) { this.titulo = titulo; }
+	 public void setResultado(String resultado) { this.resultado = resultado; }
+	 public void setGolesEquipo(Integer golesEquipo) { this.golesEquipo = golesEquipo; }
+	 public void setGolesRival(Integer golesRival) { this.golesRival = golesRival; }
 	  public void setPartidoActivo(Boolean partidoActivo) {
         this.partidoActivo = partidoActivo;
     }

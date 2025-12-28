@@ -15,6 +15,8 @@ import { PartidoCrearComponent } from './partido-crear.component';
 import { PartidoModoComponent } from './partido-modo.component';
 import { GestionarPartidosComponent } from './components/gestionar-partidos/gestionar-partidos.component';
 import { SelectorJugadoresComponent } from './graficos/selector-jugadores/selector-jugadores.component';
+import { EstadisticasEquipoComponent } from './components/estadisticas-equipo/estadisticas-equipo.component';
+import { EstadisticasGeneralesComponent } from './components/estadisticas-generales/estadisticas-generales.component';
 
 // RUTAS APLICACION
 const routes: Routes = [
@@ -59,6 +61,10 @@ const routes: Routes = [
   { path: 'iniciar-partido', component: PartidoModoComponent },
   { path: 'gestionar-partidos', component: GestionarPartidosComponent },
   { path: 'selector-jugadores/:equipoId', component: SelectorJugadoresComponent },
+  
+  // ===== RUTAS DE ESTADÍSTICAS =====
+  { path: 'estadisticas/:id', component: EstadisticasEquipoComponent },
+  { path: 'estadisticas-generales', component: EstadisticasGeneralesComponent },
   
   // Rutas antiguas (mantener para compatibilidad)
   { path: 'modo-partido/:equipoId', component: PartidoModoComponent }

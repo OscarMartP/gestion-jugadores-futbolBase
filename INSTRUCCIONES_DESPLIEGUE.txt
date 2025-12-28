@@ -514,19 +514,59 @@ NOTAS ADICIONALES
    - Frontend: gestion-jugadores-frontend/src/environments/
    - Docker: docker-compose.yml
 
-5. COMANDOS ÚTILES DOCKER:
+5. FUNCIONALIDADES IMPLEMENTADAS:
+   - Gestión de equipos y jugadores
+   - Creación y seguimiento de partidos en tiempo real
+   - Registro de eventos durante partidos (7 tipos):
+     * ⚽ Gol (actualiza marcador automáticamente)
+     * 🎯 Asistencia
+     * 🟨 Tarjeta Amarilla
+     * 🟥 Tarjeta Roja
+     * 🔑 Pase Clave
+     * 🛡️ Robo
+     * 🥅 Tiro a Puerta
+   - Sistema de estadísticas completo:
+     * Estadísticas individuales de jugadores (18 métricas)
+     * Estadísticas de equipos (15 métricas)
+     * Actualización automática al finalizar partidos
+     * Dashboard visual con rankings y top performers
+     * Análisis por temporada
+   - Marcador en tiempo real con resultado automático
+   - Documentación API interactiva con Swagger UI
+   - Arquitectura modular con BaseController/BaseService
+   - Tests unitarios para controladores
+
+6. COMANDOS ÚTILES DOCKER:
    - Ver contenedores: docker ps
    - Ver logs: docker logs mysql_control_jugadores
    - Entrar al contenedor: docker exec -it mysql_control_jugadores bash
    - Conectar a MySQL: docker exec -it mysql_control_jugadores mysql -uroot -p1234
 
-6. DESARROLLO VS PRODUCCIÓN:
+7. ACCESO A DOCUMENTACIÓN API:
+   - Swagger UI: http://localhost:8080/swagger-ui.html
+   - OpenAPI JSON: http://localhost:8080/v3/api-docs
+   - Requiere autenticación JWT (obtener token desde /api/v1/auth/login)
+
+8. ESTRUCTURA DE BASE DE DATOS:
+   Tablas principales:
+   - usuarios: Gestión de usuarios y autenticación
+   - equipos: Equipos registrados por usuario
+   - jugadores: Jugadores asociados a equipos
+   - partidos: Partidos con resultado y marcador
+   - eventos_jugador: Eventos registrados durante partidos
+   - estadisticas_jugadores: Métricas individuales por temporada
+   - estadisticas_equipos: Métricas de equipo por temporada
+
+9. DESARROLLO VS PRODUCCIÓN:
    - Estas instrucciones son para desarrollo local
    - Para producción, considerar:
      * Cambiar credenciales de base de datos
      * Configurar HTTPS
      * Usar servidor web (Nginx/Apache) para Angular
      * Desplegar en servidor/cloud
+     * Configurar backup automático de base de datos
+     * Implementar logs centralizados
+     * Activar Spring Boot Actuator para monitoring
 
 
 =====================================================================
@@ -550,5 +590,12 @@ Logs importantes:
 FIN DE LAS INSTRUCCIONES
 =====================================================================
 
-Última actualización: Diciembre 2025
-Versión del documento: 1.0
+Última actualización: Diciembre 28, 2025
+Versión del documento: 2.0
+
+NUEVAS FUNCIONALIDADES EN v2.0:
+- Sistema de estadísticas completo (jugadores y equipos)
+- Marcador en tiempo real con 7 tipos de eventos
+- Dashboard visual de estadísticas con rankings
+- Actualización automática de métricas al finalizar partidos
+- Análisis histórico por temporada

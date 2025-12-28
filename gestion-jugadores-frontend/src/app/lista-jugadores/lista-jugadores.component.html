@@ -4,6 +4,9 @@
   <select id="equipoSelect" class="form-select" [(ngModel)]="equipoId" (ngModelChange)="obtenerJugadores()">
     <option *ngFor="let equipo of equipos" [ngValue]="equipo.id">{{ equipo.nombre }}</option>
   </select>
+  <button *ngIf="equipoId" (click)="verEstadisticas()" class="btn btn-success" style="margin-left: 10px">
+    📊 Ver Estadísticas del Equipo
+  </button>
 </div>
 <table class="table">
   <thead>

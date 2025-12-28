@@ -128,6 +128,40 @@
         </div>
       </div>
 
+      <!-- Marcador en Tiempo Real -->
+      <div class="marcador-section card mb-4">
+        <div class="card-body">
+          <h5 class="text-center mb-3">📊 Marcador</h5>
+          <div class="marcador-container">
+            <div class="marcador-row">
+              <span class="equipo-label">{{ equipoSeleccionado.nombre }}</span>
+              <button class="btn btn-sm btn-outline-secondary" type="button" (click)="decrementarGolesEquipo()">-</button>
+              <span class="goles-display">{{ golesEquipo }}</span>
+              <button class="btn btn-sm btn-outline-secondary" type="button" (click)="incrementarGolesEquipo()">+</button>
+            </div>
+            <div class="text-center my-2">
+              <h4>-</h4>
+            </div>
+            <div class="marcador-row">
+              <span class="equipo-label">Rival</span>
+              <button class="btn btn-sm btn-outline-secondary" type="button" (click)="decrementarGolesRival()">-</button>
+              <span class="goles-display">{{ golesRival }}</span>
+              <button class="btn btn-sm btn-outline-secondary" type="button" (click)="incrementarGolesRival()">+</button>
+            </div>
+          </div>
+          <div class="text-center mt-3">
+            <span class="badge fs-6"
+                  [ngClass]="{
+                    'bg-success': obtenerResultado() === 'Victoria',
+                    'bg-warning': obtenerResultado() === 'Empate',
+                    'bg-danger': obtenerResultado() === 'Derrota'
+                  }">
+              Resultado actual: {{ obtenerResultado() }}
+            </span>
+          </div>
+        </div>
+      </div>
+
       <!-- Registro de eventos -->
       <h5 class="mb-3">Registrar Eventos</h5>
       <div class="jugadores-lista">
@@ -142,34 +176,13 @@
             </h6>
             <div class="botones-evento d-flex gap-2 flex-wrap">
               <button 
-                class="btn btn-sm btn-success" 
-                (click)="registrarEvento(jugador.id, 'gol')"
-                [disabled]="cargando">
-                ⚽ Gol
-              </button>
-              <button 
-                class="btn btn-sm btn-info" 
-                (click)="registrarEvento(jugador.id, 'asistencia')"
-                [disabled]="cargando">
-                🎯 Asistencia
-              </button>
-              <button 
-                class="btn btn-sm btn-warning" 
-                (click)="registrarEvento(jugador.id, 'robo')"
-                [disabled]="cargando">
-                🚷 Robo
-              </button>
-              <button 
-                class="btn btn-sm btn-primary" 
-                (click)="registrarEvento(jugador.id, 'pase_clave')"
-                [disabled]="cargando">
-                🔑 Pase Clave
-              </button>
-              <button 
-                class="btn btn-sm btn-danger" 
-                (click)="registrarEvento(jugador.id, 'perdida')"
-                [disabled]="cargando">
-                ❌ Pérdida
+                *ngFor="let evento of eventosDisponibles"
+                class="btn btn-sm" 
+                [ngClass]="'btn-' + evento.color"
+                (click)="registrarEvento(jugador.id, evento.tipo)"
+                [disabled]="cargando"
+                [title]="evento.nombre">
+                {{ evento.icono }} {{ evento.nombre }}
               </button>
             </div>
           </div>

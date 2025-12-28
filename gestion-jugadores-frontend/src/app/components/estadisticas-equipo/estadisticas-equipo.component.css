@@ -1,0 +1,373 @@
+.estadisticas-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 2.5em;
+}
+
+.header h2 {
+  color: #3498db;
+  font-size: 1.8em;
+  font-weight: normal;
+}
+
+/* Controles */
+.controles {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.temporada-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.temporada-selector label {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.temporada-selector select {
+  padding: 8px 15px;
+  border: 2px solid #3498db;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  background: white;
+}
+
+.btn-actualizar {
+  padding: 10px 20px;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.btn-actualizar:hover:not(:disabled) {
+  background: #229954;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-actualizar:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 15px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.tabs button:hover {
+  background: #f8f9fa;
+  border-color: #3498db;
+}
+
+.tabs button.active {
+  background: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+/* Estados */
+.loading, .error-message {
+  text-align: center;
+  padding: 40px;
+  margin: 20px 0;
+  border-radius: 8px;
+}
+
+.loading {
+  background: #e8f4f8;
+  color: #2980b9;
+}
+
+.error-message {
+  background: #fadbd8;
+  color: #c0392b;
+}
+
+/* Secciones */
+.seccion {
+  background: white;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.seccion h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  border-bottom: 3px solid #3498db;
+  padding-bottom: 10px;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.stat-card.success {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.stat-card.warning {
+  background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+}
+
+.stat-card.danger {
+  background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+}
+
+.stat-card.primary {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stat-label {
+  font-size: 0.9em;
+  opacity: 0.9;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.stat-detail {
+  font-size: 0.85em;
+  opacity: 0.8;
+}
+
+.goles-section {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Tablas */
+.tabla-estadisticas {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.tabla-estadisticas thead {
+  background: #34495e;
+  color: white;
+}
+
+.tabla-estadisticas th {
+  padding: 12px;
+  text-align: left;
+  font-weight: bold;
+  border-bottom: 2px solid #2c3e50;
+}
+
+.tabla-estadisticas tbody tr {
+  border-bottom: 1px solid #ecf0f1;
+  transition: background 0.2s;
+}
+
+.tabla-estadisticas tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.tabla-estadisticas td {
+  padding: 12px;
+}
+
+.tabla-estadisticas .no-data {
+  text-align: center;
+  padding: 30px;
+  color: #95a5a6;
+  font-style: italic;
+}
+
+.highlight-goles {
+  color: #27ae60;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.highlight-asistencias {
+  color: #3498db;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.rating {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  font-size: 0.95em;
+}
+
+.rating-big {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 25px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* Tabla completa (más columnas) */
+.tabla-completa {
+  font-size: 0.9em;
+  overflow-x: auto;
+  display: block;
+}
+
+.tabla-completa thead th {
+  white-space: nowrap;
+  font-size: 0.85em;
+}
+
+.tabla-completa tbody td {
+  padding: 10px 8px;
+}
+
+/* Cards de estadísticas destacadas */
+.stats-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.card-estadistica {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-left: 5px solid #3498db;
+}
+
+.card-estadistica h4 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-size: 1.3em;
+}
+
+.jugador-destacado {
+  text-align: center;
+}
+
+.jugador-destacado .nombre {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.jugador-destacado .valor {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #3498db;
+  margin-bottom: 8px;
+}
+
+.jugador-destacado .detalle {
+  font-size: 0.95em;
+  color: #7f8c8d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .estadisticas-container {
+    padding: 10px;
+  }
+  
+  .header h1 {
+    font-size: 1.8em;
+  }
+  
+  .header h2 {
+    font-size: 1.3em;
+  }
+  
+  .controles {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .tabs {
+    flex-direction: column;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tabla-estadisticas {
+    font-size: 0.8em;
+  }
+  
+  .tabla-completa {
+    font-size: 0.75em;
+  }
+  
+  .stat-value {
+    font-size: 2em;
+  }
+}

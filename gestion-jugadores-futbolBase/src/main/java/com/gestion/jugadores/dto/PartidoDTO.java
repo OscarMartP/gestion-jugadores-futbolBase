@@ -15,6 +15,9 @@ public class PartidoDTO {
     private Boolean partidoActivo;
     private Integer duracion;
     private String titulo;
+    private String resultado;
+    private Integer golesEquipo;
+    private Integer golesRival;
     private List<EventoJugadorDTO> eventos;
 
     public PartidoDTO() {}
@@ -85,6 +88,30 @@ public class PartidoDTO {
         this.eventos = eventos;
     }
 
+    public String getResultado() {
+        return resultado;
+    }
+
+    public void setResultado(String resultado) {
+        this.resultado = resultado;
+    }
+
+    public Integer getGolesEquipo() {
+        return golesEquipo;
+    }
+
+    public void setGolesEquipo(Integer golesEquipo) {
+        this.golesEquipo = golesEquipo;
+    }
+
+    public Integer getGolesRival() {
+        return golesRival;
+    }
+
+    public void setGolesRival(Integer golesRival) {
+        this.golesRival = golesRival;
+    }
+
     @Override
     public String toString() {
         return "PartidoDTO{" +
@@ -93,6 +120,10 @@ public class PartidoDTO {
                 ", fecha=" + fecha +
                 ", partidoActivo=" + partidoActivo +
                 ", duracion=" + duracion +
+                ", titulo='" + titulo + '\'' +
+                ", resultado='" + resultado + '\'' +
+                ", golesEquipo=" + golesEquipo +
+                ", golesRival=" + golesRival +
                 '}';
     }
 }

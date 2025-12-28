@@ -96,6 +96,49 @@
   color: white;
 }
 
+/* Marcador Section */
+.marcador-section .card-body {
+  padding: 1.5rem;
+}
+
+.marcador-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.marcador-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  gap: 1rem;
+}
+
+.equipo-label {
+  font-weight: 600;
+  color: #495057;
+  min-width: 100px;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.goles-display {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #2c3e50;
+  min-width: 50px;
+  text-align: center;
+  padding: 0.25rem 0.75rem;
+  background: white;
+  border-radius: 6px;
+  border: 2px solid #e9ecef;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .timer-section h4 {
@@ -112,5 +155,19 @@
 
   .d-grid {
     gap: 0.5rem;
+  }
+
+  .marcador-row {
+    gap: 0.5rem;
+  }
+
+  .equipo-label {
+    min-width: 70px;
+    font-size: 0.9rem;
+  }
+
+  .goles-display {
+    font-size: 1.5rem;
+    min-width: 40px;
   }
 }

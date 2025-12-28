@@ -2,7 +2,7 @@
 
 Propósito: documentación orientada a programadores que describe la arquitectura del backend (Spring Boot) y frontend (Angular), flujos clave, modelo de datos resumido, **nuevas funciones implementadas**, análisis de mejoras y recomendaciones prácticas para optimización.
 
-**Última actualización:** Diciembre 26, 2025
+**Última actualización:** Diciembre 28, 2025
 
 **Cambios recientes implementados:**
 - ✅ Bulk deactivate de partidos con @Modifying JPQL + @Transactional.
@@ -16,6 +16,11 @@ Propósito: documentación orientada a programadores que describe la arquitectur
 - ✅ **Migración a controladores V2** (JugadorControladorV2, PartidoControladorV2, EventoJugadorControladorV2).
 - ✅ **Tests unitarios** para los controladores V2 con MockMvc y Mockito.
 - ✅ **Spring Security Test** integrado para pruebas con autenticación mockeada.
+- ✅ **Sistema de Estadísticas Completo** (EstadisticasJugador, EstadisticasEquipo, 11 endpoints REST).
+- ✅ **Actualización automática de estadísticas** al finalizar partidos.
+- ✅ **Marcador en tiempo real** con golesEquipo, golesRival y resultado en partido-modo.
+- ✅ **Eventos ampliados** (Gol, Asistencia, Tarjetas, Pase Clave, Robo, Tiro a Puerta).
+- ✅ **Dashboard de Estadísticas** con selector de equipos y visualización de métricas.
 
 ---
 
@@ -87,6 +92,19 @@ Paquetes clave (resumen):
 - POST `/api/v1/eventos` — registrar nuevo evento
 - PUT `/api/v1/eventos/{id}` — actualizar evento
 - DELETE `/api/v1/eventos/{id}` — eliminar evento
+
+**Estadísticas (EstadisticasControlador):**
+- GET `/api/v1/estadisticas/jugador/{id}` — obtener estadísticas completas de un jugador
+- GET `/api/v1/estadisticas/jugador/{id}/resumen` — resumen de estadísticas del jugador
+- GET `/api/v1/estadisticas/equipo/{id}` — obtener todas las estadísticas del equipo
+- GET `/api/v1/estadisticas/equipo/{id}/resumen` — resumen estadístico del equipo
+- GET `/api/v1/estadisticas/equipo/{id}/jugadores` — estadísticas de todos los jugadores del equipo
+- GET `/api/v1/estadisticas/equipo/{id}/top-goleadores` — top 5 goleadores del equipo
+- GET `/api/v1/estadisticas/equipo/{id}/top-asistentes` — top 5 asistentes del equipo
+- GET `/api/v1/estadisticas/equipo/{id}/mejor-rating` — top 5 con mejor rating del equipo
+- PUT `/api/v1/estadisticas/jugador/{id}/actualizar` — actualizar estadísticas de un jugador
+- PUT `/api/v1/estadisticas/equipo/{id}/actualizar` — actualizar estadísticas de un equipo
+- PUT `/api/v1/estadisticas/actualizar-todas` — actualizar todas las estadísticas del sistema
 
 **Documentación API:**
 - GET `/swagger-ui.html` — Interfaz interactiva de Swagger UI
@@ -664,10 +682,14 @@ spring.cache.caffeine.spec=expireAfterWrite=5m
 
 - [✅ High] Reemplazar loop de saves por @Modifying bulk update + @Transactional.
 - [✅ High] Implementar endpoint para listar jugadores por usuario autenticado.
+- [✅ High] Sistema de estadísticas completo (jugadores y equipos).
+- [✅ High] Actualización automática de estadísticas al finalizar partidos.
+- [✅ High] Marcador en tiempo real con resultado (Victoria/Empate/Derrota).
+- [✅ Med] Añadir mappers (MapStruct) y DTO centralizados.
+- [✅ Med] Introducir Generic BaseService para CRUD repetido.
+- [✅ Med] Dashboard de estadísticas en frontend con selector de equipos.
 - [☐ High] Agregar verificación de ownership en endpoints write.
 - [☐ High] Añadir índices DB en columnas de filtro.
-- [☐ Med] Añadir mappers (MapStruct) y DTO centralizados.
-- [☐ Med] Introducir Generic BaseService para CRUD repetido.
 - [☐ Med] Añadir pruebas de integración para flujos de partido.
 - [☐ Low] Evaluar caching y métricas, preparar para escalado.
 
@@ -680,6 +702,90 @@ spring.cache.caffeine.spec=expireAfterWrite=5m
 - **Controladores V2** migrados (JugadorControladorV2, PartidoControladorV2, EventoJugadorControladorV2).
 - **Tests unitarios completos** para controladores V2 con MockMvc, Mockito y @WithMockUser.
 - **Spring Security Test** agregado para testing con autenticación.
+
+### Sistema de Estadísticas (Nueva Funcionalidad)
+
+**Estado: IMPLEMENTADO COMPLETO (3 Fases)**
+
+**Motivación:** Proporcionar análisis detallado del rendimiento de jugadores y equipos a lo largo de temporadas.
+
+**Entidades nuevas:**
+
+1. **EstadisticasJugador** (18 campos):
+   - Identificación: jugador_id, temporada
+   - Goles: totalGoles, golesEnCasa, golesFuera
+   - Asistencias: totalAsistencias
+   - Tarjetas: tarjetasAmarillas, tarjetasRojas
+   - Participación: partidosJugados, partidosTitular, minutosJugados
+   - Métricas calculadas: promedioGolesPorPartido, promedioAsistenciasPorPartido, promedioMinutosPorPartido, rating
+   - Constraint: UNIQUE(jugador_id, temporada)
+
+2. **EstadisticasEquipo** (15 campos):
+   - Identificación: equipo_id, temporada
+   - Resultados: partidosJugados, partidosGanados, partidosEmpatados, partidosPerdidos
+   - Goles: golesFavor, golesContra, diferenciaGoles
+   - Puntos: totalPuntos
+   - Métricas calculadas: efectividad, promedioGolesFavor, promedioGolesContra
+   - Constraint: UNIQUE(equipo_id, temporada)
+
+**Servicios implementados:**
+
+- `EstadisticasService` interface con 11 métodos
+- `EstadisticasServiceImpl` con @Transactional para garantizar atomicidad
+- Actualización automática: Al desactivar partido → actualiza estadísticas equipo → actualiza estadísticas jugadores
+- Método `calcularMetricas()` en cada entidad para métricas derivadas
+
+**Controlador REST:**
+
+- `EstadisticasControlador` con 11 endpoints documentados en Swagger
+- Endpoints para obtener, actualizar y listar top rankings
+- Soporta filtrado por temporada y equipo
+
+**Frontend implementado:**
+
+- Componente `EstadisticasGeneralesComponent` con Material Design
+- Selector de equipos con dropdown
+- Cards con métricas clave (partidos, victorias, goles, tarjetas, efectividad)
+- Tablas con top 5 goleadores, asistentes y mejor rating
+- Tabla completa de todos los jugadores con 10 columnas de estadísticas
+- Servicio `EstadisticasService` para comunicación HTTP
+
+**Flujo de actualización:**
+
+```
+Usuario finaliza partido → PartidoServiceImpl.desactivarPartido()
+  → Actualiza partido.partidoActivo = false
+  → EstadisticasService.actualizarEstadisticasEquipo()
+    → Cuenta partidos finalizados (partidoActivo=false)
+    → Calcula goles, victorias, empates, derrotas
+    → EstadisticasService.actualizarEstadisticasJugador() para cada jugador
+      → Cuenta eventos por tipo (gol, asistencia, tarjetas)
+      → Suma minutos jugados
+      → Calcula rating y promedios
+```
+
+**Eventos soportados:**
+- ⚽ Gol (actualiza marcador automáticamente)
+- 🎯 Asistencia
+- 🟨 Tarjeta Amarilla
+- 🟥 Tarjeta Roja
+- 🔑 Pase Clave (preparado para futuras estadísticas)
+- 🛡️ Robo (preparado para futuras estadísticas)
+- 🥅 Tiro a Puerta (preparado para futuras estadísticas)
+
+**Características del Modo Partido:**
+- Marcador en tiempo real con botones +/- para ajuste manual
+- Registro de eventos con auto-incremento de goles
+- Cálculo automático de resultado (Victoria/Empate/Derrota)
+- Guardado de resultado, golesEquipo, golesRival al finalizar
+- Timer con pausa/reanudación
+- Eventos organizados por jugador con botones de colores
+
+**Beneficios:**
+- Análisis histórico por temporada
+- Identificación de mejores jugadores
+- Toma de decisiones basada en datos
+- Preparado para expansión de métricas (pases clave, robos, tiros)
 
 🚀 **Próximas prioridades (próximas iteraciones):**
 1. Verificación de ownership en endpoints (crítico para seguridad).
