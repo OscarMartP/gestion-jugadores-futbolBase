@@ -2,7 +2,7 @@
 
 Propósito: documentación orientada a programadores que describe la arquitectura del backend (Spring Boot) y frontend (Angular), flujos clave, modelo de datos resumido, **nuevas funciones implementadas**, análisis de mejoras y recomendaciones prácticas para optimización.
 
-**Última actualización:** Diciembre 28, 2025
+**Última actualización:** Enero 7, 2026
 
 **Cambios recientes implementados:**
 - ✅ Bulk deactivate de partidos con @Modifying JPQL + @Transactional.
@@ -21,6 +21,8 @@ Propósito: documentación orientada a programadores que describe la arquitectur
 - ✅ **Marcador en tiempo real** con golesEquipo, golesRival y resultado en partido-modo.
 - ✅ **Eventos ampliados** (Gol, Asistencia, Tarjetas, Pase Clave, Robo, Tiro a Puerta).
 - ✅ **Dashboard de Estadísticas** con selector de equipos y visualización de métricas.
+- ✅ **Estadísticas de paradas para porteros** con campo exclusivo y botón en modo partido.
+- ✅ **Eliminación en cascada** con @OnDelete en relaciones EventoJugador y EstadisticasJugador.
 
 ---
 
@@ -711,11 +713,12 @@ spring.cache.caffeine.spec=expireAfterWrite=5m
 
 **Entidades nuevas:**
 
-1. **EstadisticasJugador** (18 campos):
+1. **EstadisticasJugador** (19 campos):
    - Identificación: jugador_id, temporada
    - Goles: totalGoles, golesEnCasa, golesFuera
    - Asistencias: totalAsistencias
    - Tarjetas: tarjetasAmarillas, tarjetasRojas
+   - Porteros: paradas (exclusivo para porteros)
    - Participación: partidosJugados, partidosTitular, minutosJugados
    - Métricas calculadas: promedioGolesPorPartido, promedioAsistenciasPorPartido, promedioMinutosPorPartido, rating
    - Constraint: UNIQUE(jugador_id, temporada)
@@ -747,7 +750,8 @@ spring.cache.caffeine.spec=expireAfterWrite=5m
 - Selector de equipos con dropdown
 - Cards con métricas clave (partidos, victorias, goles, tarjetas, efectividad)
 - Tablas con top 5 goleadores, asistentes y mejor rating
-- Tabla completa de todos los jugadores con 10 columnas de estadísticas
+- Tabla completa de todos los jugadores con 11 columnas de estadísticas
+- Columna de paradas visible solo para porteros (detecta posiciones: POR, PORTERO, ARQUERO)
 - Servicio `EstadisticasService` para comunicación HTTP
 
 **Flujo de actualización:**
@@ -772,6 +776,7 @@ Usuario finaliza partido → PartidoServiceImpl.desactivarPartido()
 - 🔑 Pase Clave (preparado para futuras estadísticas)
 - 🛡️ Robo (preparado para futuras estadísticas)
 - 🥅 Tiro a Puerta (preparado para futuras estadísticas)
+- 🧤 Parada (exclusivo para porteros)
 
 **Características del Modo Partido:**
 - Marcador en tiempo real con botones +/- para ajuste manual
@@ -780,12 +785,89 @@ Usuario finaliza partido → PartidoServiceImpl.desactivarPartido()
 - Guardado de resultado, golesEquipo, golesRival al finalizar
 - Timer con pausa/reanudación
 - Eventos organizados por jugador con botones de colores
+- Botón de parada visible solo para porteros (posiciones: POR, PORTERO, ARQUERO, GK, GOALKEEPER)
 
 **Beneficios:**
 - Análisis histórico por temporada
 - Identificación de mejores jugadores
 - Toma de decisiones basada en datos
 - Preparado para expansión de métricas (pases clave, robos, tiros)
+- Estadísticas específicas para porteros con contador de paradas
+
+---
+
+### Eliminación en Cascada (Implementado)
+
+**Estado: IMPLEMENTADO COMPLETO**
+
+**Motivación:** Resolver errores de integridad referencial al eliminar jugadores con eventos y estadísticas asociadas.
+
+**Implementación:**
+
+Se agregó `@OnDelete(action = OnDeleteAction.CASCADE)` en las relaciones ManyToOne:
+
+```java
+@Entity
+public class EventoJugador {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "jugador_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Jugador jugador;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partido_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Partido partido;
+}
+
+@Entity
+public class EstadisticasJugador {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "jugador_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Jugador jugador;
+}
+```
+
+**Restricciones actualizadas en MySQL:**
+
+```sql
+-- eventos_jugador
+ALTER TABLE eventos_jugador 
+  DROP FOREIGN KEY FK2d8a8116rwof6qy90y7e1redj;
+ALTER TABLE eventos_jugador 
+  ADD CONSTRAINT FK2d8a8116rwof6qy90y7e1redj 
+  FOREIGN KEY (jugador_id) REFERENCES jugadores(id) ON DELETE CASCADE;
+
+ALTER TABLE eventos_jugador 
+  DROP FOREIGN KEY FK6wqpnsbb9gichyj94sc19nvbv;
+ALTER TABLE eventos_jugador 
+  ADD CONSTRAINT FK6wqpnsbb9gichyj94sc19nvbv 
+  FOREIGN KEY (partido_id) REFERENCES partidos(id) ON DELETE CASCADE;
+
+-- estadisticas_jugadores
+ALTER TABLE estadisticas_jugadores 
+  DROP FOREIGN KEY FKs52gob5e1iawrr9jrctued6a5;
+ALTER TABLE estadisticas_jugadores 
+  ADD CONSTRAINT FKs52gob5e1iawrr9jrctued6a5 
+  FOREIGN KEY (jugador_id) REFERENCES jugadores(id) ON DELETE CASCADE;
+```
+
+**Comportamiento:**
+
+Cuando se elimina un jugador:
+1. Se eliminan automáticamente todos sus eventos en `eventos_jugador`
+2. Se eliminan automáticamente sus estadísticas en `estadisticas_jugadores`
+3. No se genera `SQLIntegrityConstraintViolationException`
+
+Cuando se elimina un partido:
+1. Se eliminan automáticamente todos sus eventos en `eventos_jugador`
+
+**Beneficios:**
+- Eliminación segura de jugadores sin errores de integridad
+- Mantenimiento automático de consistencia de datos
+- Simplificación de lógica de eliminación en servicios
+- Prevención de registros huérfanos
 
 🚀 **Próximas prioridades (próximas iteraciones):**
 1. Verificación de ownership en endpoints (crítico para seguridad).
