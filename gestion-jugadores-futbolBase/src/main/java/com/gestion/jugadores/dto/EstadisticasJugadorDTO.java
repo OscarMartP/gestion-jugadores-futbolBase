@@ -18,6 +18,7 @@ public class EstadisticasJugadorDTO {
     private Integer totalAsistencias;
     private Integer tarjetasAmarillas;
     private Integer tarjetasRojas;
+    private Integer paradas; // Específico para porteros
     private Integer partidosJugados;
     private Integer partidosTitular;
     private Integer minutosJugados;
@@ -124,6 +125,14 @@ public class EstadisticasJugadorDTO {
 
     public void setTarjetasRojas(Integer tarjetasRojas) {
         this.tarjetasRojas = tarjetasRojas;
+    }
+
+    public Integer getParadas() {
+        return paradas;
+    }
+
+    public void setParadas(Integer paradas) {
+        this.paradas = paradas;
     }
 
     public Integer getPartidosJugados() {

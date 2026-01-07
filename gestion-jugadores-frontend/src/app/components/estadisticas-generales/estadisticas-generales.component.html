@@ -227,6 +227,7 @@
                 <th>Min</th>
                 <th>⚽ Goles</th>
                 <th>🎯 Asist.</th>
+                <th>🧤 Paradas</th>
                 <th>🟨 TA</th>
                 <th>🟥 TR</th>
                 <th>⭐ Rating</th>
@@ -241,12 +242,15 @@
                 <td>{{ jugador.minutosJugados }}'</td>
                 <td><strong>{{ jugador.totalGoles }}</strong></td>
                 <td><strong>{{ jugador.totalAsistencias }}</strong></td>
+                <td><strong *ngIf="jugador.posicion?.toUpperCase() === 'PORTERO' || jugador.posicion?.toUpperCase() === 'ARQUERO'" class="text-info">{{ jugador.paradas || 0 }}</strong>
+                    <span *ngIf="jugador.posicion?.toUpperCase() !== 'PORTERO' && jugador.posicion?.toUpperCase() !== 'ARQUERO'" class="text-muted">-</span>
+                </td>
                 <td class="text-warning">{{ jugador.tarjetasAmarillas }}</td>
                 <td class="text-danger">{{ jugador.tarjetasRojas }}</td>
                 <td><strong>{{ jugador.rating | number:'1.2-2' }}</strong></td>
               </tr>
               <tr *ngIf="jugadores.length === 0">
-                <td colspan="10" class="text-center text-muted">No hay estadísticas de jugadores disponibles</td>
+                <td colspan="11" class="text-center text-muted">No hay estadísticas de jugadores disponibles</td>
               </tr>
             </tbody>
           </table>

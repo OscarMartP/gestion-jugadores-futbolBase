@@ -47,6 +47,9 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
     { tipo: 'tiro_a_puerta', nombre: 'Tiro a Puerta', icono: '🥅', color: 'info' }
   ];
 
+  // Evento exclusivo para porteros
+  eventoPortero = { tipo: 'parada', nombre: 'Parada', icono: '🧤', color: 'primary' };
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -155,6 +158,10 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
       next: (jugadores) => {
         this.jugadores = jugadores;
         console.log('✅ Jugadores cargados:', jugadores);
+        // Debug: mostrar posiciones
+        jugadores.forEach(j => {
+          console.log(`Jugador: ${j.nombre} ${j.apellido}, Posición: "${j.posicion}", Es portero: ${this.esPortero(j)}`);
+        });
       },
       error: (err) => {
         console.error('❌ Error cargando jugadores:', err);
@@ -303,6 +310,17 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
     } else {
       return 'Empate';
     }
+  }
+
+  esPortero(jugador: any): boolean {
+    if (!jugador || !jugador.posicion) {
+      console.log('⚠️ Jugador sin posición:', jugador);
+      return false;
+    }
+    const posicion = jugador.posicion.toUpperCase().trim();
+    const esPortero = posicion === 'PORTERO' || posicion === 'ARQUERO' || posicion === 'GK' || posicion === 'GOALKEEPER' || posicion === 'POR';
+    console.log(`🔍 Verificando: ${jugador.nombre} - Posición: "${jugador.posicion}" -> ${esPortero}`);
+    return esPortero;
   }
 
   cancelarPartido(): void {

@@ -184,6 +184,16 @@
                 [title]="evento.nombre">
                 {{ evento.icono }} {{ evento.nombre }}
               </button>
+              <!-- Botón exclusivo para porteros -->
+              <button 
+                *ngIf="esPortero(jugador)"
+                class="btn btn-sm" 
+                [ngClass]="'btn-' + eventoPortero.color"
+                (click)="registrarEvento(jugador.id, eventoPortero.tipo)"
+                [disabled]="cargando"
+                [title]="eventoPortero.nombre">
+                {{ eventoPortero.icono }} {{ eventoPortero.nombre }}
+              </button>
             </div>
           </div>
         </div>

@@ -159,6 +159,7 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         stats.setTotalAsistencias(0);
         stats.setTarjetasAmarillas(0);
         stats.setTarjetasRojas(0);
+        stats.setParadas(0);
         stats.setPartidosJugados(0);
         stats.setPartidosTitular(0);
         stats.setMinutosJugados(0);
@@ -187,6 +188,10 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                 case "TARJETA_ROJA":
                 case "ROJA":
                     stats.setTarjetasRojas(stats.getTarjetasRojas() + 1);
+                    break;
+                case "PARADA":
+                case "PARADAS":
+                    stats.setParadas(stats.getParadas() + 1);
                     break;
             }
             

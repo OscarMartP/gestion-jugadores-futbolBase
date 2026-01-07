@@ -13,6 +13,7 @@ export interface EstadisticasJugadorDTO {
   totalAsistencias: number;
   tarjetasAmarillas: number;
   tarjetasRojas: number;
+  paradas: number; // Específico para porteros
   partidosJugados: number;
   partidosTitular: number;
   minutosJugados: number;

@@ -1,6 +1,8 @@
 package com.gestion.jugadores.modelo;
 
 import javax.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDateTime;
 
 /**
@@ -21,6 +23,7 @@ public class EstadisticasJugador {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jugador_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Jugador jugador;
     
     @Column(name = "temporada", nullable = false, length = 20)
@@ -46,6 +49,10 @@ public class EstadisticasJugador {
     
     @Column(name = "tarjetas_rojas")
     private Integer tarjetasRojas = 0;
+    
+    // Estadísticas específicas de porteros
+    @Column(name = "paradas")
+    private Integer paradas = 0;
     
     // Partidos
     @Column(name = "partidos_jugados")
@@ -152,6 +159,14 @@ public class EstadisticasJugador {
 
     public void setTarjetasRojas(Integer tarjetasRojas) {
         this.tarjetasRojas = tarjetasRojas;
+    }
+
+    public Integer getParadas() {
+        return paradas;
+    }
+
+    public void setParadas(Integer paradas) {
+        this.paradas = paradas;
     }
 
     public Integer getPartidosJugados() {

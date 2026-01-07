@@ -1,6 +1,9 @@
 package com.gestion.jugadores.modelo;
 
 import javax.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 //Modelo Evento Jugador
 @Entity
 @Table(name = "eventos_jugador", indexes = {
@@ -15,10 +18,12 @@ public class EventoJugador {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jugador_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Jugador jugador;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partido_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Partido partido;
 
     @Column(name = "tipo_evento", nullable = false, length = 50)
