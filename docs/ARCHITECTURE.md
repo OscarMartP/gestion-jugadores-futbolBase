@@ -32,6 +32,18 @@ Propósito: documentación orientada a programadores que describe la arquitectur
 - ✅ **CORS explícito** con CorsConfigurationSource para localhost:4200.
 - ✅ **Endpoint GET /equipos/{id}** para obtener equipo individual.
 - ✅ **Endpoint PUT /partidos/{id}/alineacion** para actualizar titulares y suplentes.
+- ✅ **Sistema completo de Pases Clave** con análisis temporal, estado del marcador y perfiles de jugadores.
+- ✅ **11 campos de pases clave** en EstadisticasJugador (distribución temporal + estado + métrica P90).
+- ✅ **12 campos de pases clave** en EstadisticasEquipo (11 analíticos + mayorPasador).
+- ✅ **Evento gol_rival** registrable desde frontend para seguimiento correcto del marcador.
+- ✅ **EventoJugador.jugador_id nullable** para permitir goles del rival sin asociar a jugador del equipo.
+- ✅ **determinarEstadoMarcadorEnMinuto()** con reconstrucción cronológica usando Event ID.
+- ✅ **Distribución temporal de pases clave** en 6 intervalos de 15 minutos (0-15, 16-30, 31-45, 46-60, 61-75, 76-90).
+- ✅ **Análisis por estado del marcador** (GANANDO, EMPATANDO, PERDIENDO) en momento del pase clave.
+- ✅ **Mayor Pasador** automático: jugador con más pases clave + contador.
+- ✅ **Perfiles de Jugadores** (Remontada, Inconsistente, Líder, Equilibrado, Regular) basados en distribución de pases.
+- ✅ **UI mejorada** con cajas coloreadas por estado y cards de perfiles en estadisticas-generales.
+- ✅ **Repository method** findByJugador_Equipo_IdAndTemporada() en EstadisticasJugadorRepository.
 
 ---
 
@@ -1028,13 +1040,15 @@ Usuario finaliza partido → PartidoServiceImpl.desactivarPartido()
 - 🎯 Asistencia
 - 🟨 Tarjeta Amarilla
 - 🟥 Tarjeta Roja
-- 🔑 Pase Clave (preparado para futuras estadísticas)
+- 🔑 Pase Clave (con estadísticas completas implementadas - ver sección siguiente)
 - 🛡️ Robo (preparado para futuras estadísticas)
 - 🥅 Tiro a Puerta (preparado para futuras estadísticas)
 - 🧤 Parada (exclusivo para porteros)
+- 👥 Gol Rival (evento especial sin jugador asociado)
 
 **Características del Modo Partido:**
 - Marcador en tiempo real con botones +/- para ajuste manual
+- **Registro automático de goles del rival** (evento gol_rival) al presionar "+" en golesRival
 - Registro de eventos con auto-incremento de goles
 - Cálculo automático de resultado (Victoria/Empate/Derrota)
 - Guardado de resultado, golesEquipo, golesRival al finalizar
@@ -1046,8 +1060,380 @@ Usuario finaliza partido → PartidoServiceImpl.desactivarPartido()
 - Análisis histórico por temporada
 - Identificación de mejores jugadores
 - Toma de decisiones basada en datos
-- Preparado para expansión de métricas (pases clave, robos, tiros)
+- Estadísticas avanzadas de pases clave con contexto temporal y táctico
+- Perfiles de jugadores para identificar patrones de rendimiento
 - Estadísticas específicas para porteros con contador de paradas
+
+---
+
+### Sistema de Pases Clave (Estadísticas Avanzadas)
+
+**Estado: IMPLEMENTADO COMPLETO**  
+**Fecha: Enero 8, 2026**
+
+**Motivación:** 
+Proporcionar análisis detallado de la creación de juego de cada jugador y equipo, permitiendo identificar patrones temporales y el impacto del estado del marcador en el rendimiento ofensivo.
+
+#### Modelo de Datos Extendido
+
+**EstadisticasJugador** - 11 nuevos campos:
+
+```java
+// Total y normalizado
+@Column(name = "total_pases_clave")
+private Integer totalPasesClave = 0;
+
+@Column(name = "pases_clave_por_90")
+private Double pasesClaveP90 = 0.0;
+
+// Distribución temporal (6 intervalos de 15 minutos)
+@Column(name = "pases_clave_0_15")
+private Integer pasesClave0_15 = 0;
+
+@Column(name = "pases_clave_16_30")
+private Integer pasesClave16_30 = 0;
+
+@Column(name = "pases_clave_31_45")
+private Integer pasesClave31_45 = 0;
+
+@Column(name = "pases_clave_46_60")
+private Integer pasesClave46_60 = 0;
+
+@Column(name = "pases_clave_61_75")
+private Integer pasesClave61_75 = 0;
+
+@Column(name = "pases_clave_76_90")
+private Integer pasesClave76_90 = 0;
+
+// Por estado del marcador
+@Column(name = "pases_clave_ganando")
+private Integer pasesClaveGanando = 0;
+
+@Column(name = "pases_clave_empatando")
+private Integer pasesClaveEmpatando = 0;
+
+@Column(name = "pases_clave_perdiendo")
+private Integer pasesClavePerdiendo = 0;
+```
+
+**EstadisticasEquipo** - 12 nuevos campos:
+
+```java
+// Los 11 campos anteriores + Mayor Pasador
+@Column(name = "mayor_pasador", length = 100)
+private String mayorPasador; // "Nombre Apellido (count)"
+```
+
+#### Eventos de Gol del Rival
+
+**EventoJugador** actualizado:
+
+```java
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "jugador_id", nullable = true)  // ✅ Ahora nullable
+private Jugador jugador;
+```
+
+**Frontend** (partido-modo.component.ts):
+
+```typescript
+incrementarGolesRival(): void {
+    this.golesRival++;
+    const eventoGolRival = {
+        jugadorId: null,  // ✅ Gol del rival sin jugador
+        partidoId: this.partidoActivo.id,
+        tipoEvento: 'gol_rival',
+        minuto: this.duracionPartido - this.tiempoRestante
+    };
+    this.eventoService.registrarEvento(eventoGolRival).subscribe(...);
+}
+```
+
+**Backend** (EventoJugadorControladorV2.java):
+
+```java
+if (dto.jugadorId != null) {
+    evento.setJugador(jugador);
+} else {
+    // Usar primer jugador del equipo como placeholder
+    // (el tipo "gol_rival" indica que es del rival)
+    List<Jugador> jugadoresEquipo = jugadorService.obtenerPorEquipo(
+        partido.getEquipo().getId()
+    );
+    evento.setJugador(jugadoresEquipo.get(0));
+}
+```
+
+#### Reconstrucción del Estado del Marcador
+
+**Algoritmo** (EstadisticasServiceImpl.determinarEstadoMarcadorEnMinuto()):
+
+```java
+/**
+ * Determina si el equipo estaba GANANDO, EMPATANDO o PERDIENDO
+ * cuando ocurrió un pase clave, reconstruyendo el marcador
+ * cronológicamente desde los eventos de gol.
+ * 
+ * Usa Event ID (auto-incremental) para orden exacto.
+ */
+private String determinarEstadoMarcadorEnMinuto(
+    Partido partido, 
+    Long eventoId, 
+    Equipo equipoJugador
+) {
+    // 1. Obtener todos los goles ANTES de este evento
+    List<EventoJugador> golesAnteriores = eventoJugadorRepository.findAll()
+        .stream()
+        .filter(e -> e.getPartido().getId().equals(partido.getId()))
+        .filter(e -> e.getTipoEvento().matches("(?i)(gol|goles|gol_rival)"))
+        .filter(e -> e.getId() < eventoId)  // ✅ Orden cronológico por ID
+        .sorted(Comparator.comparing(EventoJugador::getId))
+        .collect(Collectors.toList());
+    
+    // 2. Reconstruir marcador
+    int golesEquipo = 0, golesRival = 0;
+    for (EventoJugador gol : golesAnteriores) {
+        if (gol.getTipoEvento().equalsIgnoreCase("GOL_RIVAL")) {
+            golesRival++;
+        } else if (gol.getJugador() == null) {
+            golesRival++;  // Gol sin jugador = rival
+        } else if (gol.getJugador().getEquipo().getId()
+                      .equals(equipoJugador.getId())) {
+            golesEquipo++;
+        } else {
+            golesRival++;
+        }
+    }
+    
+    // 3. Determinar estado
+    if (golesEquipo > golesRival) return "GANANDO";
+    if (golesEquipo < golesRival) return "PERDIENDO";
+    return "EMPATANDO";
+}
+```
+
+**Ventajas del enfoque con Event ID:**
+- ✅ Orden cronológico exacto (ID auto-incremental garantiza secuencia)
+- ✅ No depende de `minuto` (que puede repetirse)
+- ✅ Funciona con eventos simultáneos en el mismo minuto
+- ✅ No requiere timestamps adicionales
+
+#### Mayor Pasador del Equipo
+
+**Cálculo dinámico** (EstadisticasServiceImpl.calcularMayorPasador()):
+
+```java
+private String calcularMayorPasador(Long equipoId, String temporada) {
+    List<EstadisticasJugador> estadisticasJugadores = 
+        estadisticasJugadorRepository
+            .findByJugador_Equipo_IdAndTemporada(equipoId, temporada);
+    
+    EstadisticasJugador mejorPasador = estadisticasJugadores.stream()
+        .filter(s -> s.getTotalPasesClave() != null && 
+                     s.getTotalPasesClave() > 0)
+        .max(Comparator.comparing(EstadisticasJugador::getTotalPasesClave))
+        .orElse(null);
+    
+    if (mejorPasador == null) return "N/A";
+    
+    Jugador jugador = mejorPasador.getJugador();
+    return jugador.getNombre() + " " + jugador.getApellido() + 
+           " (" + mejorPasador.getTotalPasesClave() + ")";
+}
+```
+
+**Actualización automática:**
+- Se calcula en cada consulta de `obtenerEstadisticasEquipo()`
+- Se guarda en BD solo si cambió (optimización)
+- Se recalcula al actualizar estadísticas de equipo
+
+#### Perfiles de Jugadores
+
+**Clasificación automática** (estadisticas-generales.component.ts):
+
+```typescript
+clasificarPerfilesJugadores(jugadores: EstadisticasJugadorDTO[]): void {
+    const jugadoresConPases = jugadores.filter(j => j.totalPasesClave >= 3);
+    
+    jugadoresConPases.forEach(jugador => {
+        const pctGanando = (jugador.pasesClaveGanando / jugador.totalPasesClave) * 100;
+        const pctEmpatando = (jugador.pasesClaveEmpatando / jugador.totalPasesClave) * 100;
+        const pctPerdiendo = (jugador.pasesClavePerdiendo / jugador.totalPasesClave) * 100;
+        
+        let perfil: string;
+        if (pctPerdiendo >= 50) {
+            perfil = 'Jugador de Remontada 🔥';
+            // Crea jugadas cuando el equipo necesita remontar
+        } else if (pctGanando >= 50) {
+            perfil = 'Jugador Inconsistente ⚠️';
+            // Solo aparece ganando, desaparece en dificultades
+        } else if (equilibrado(pctGanando, pctEmpatando, pctPerdiendo)) {
+            perfil = 'Jugador Líder ⭐';
+            // Genera en todas las situaciones
+        } else if (pctEmpatando >= 40) {
+            perfil = 'Jugador Equilibrado ⚖️';
+            // Rinde mejor en partidos igualados
+        } else {
+            perfil = 'Jugador Regular 📊';
+        }
+    });
+}
+```
+
+**5 Tipos de Perfiles:**
+
+1. **🔥 Jugador de Remontada**: >=50% pases clave perdiendo
+   - Motivación: Aparece cuando el equipo más lo necesita
+   - Color: Rojo (#e53935)
+
+2. **⚠️ Jugador Inconsistente**: >=50% pases clave ganando
+   - Motivación: Solo se activa con ventaja, desaparece en dificultades
+   - Color: Naranja (#ff9800)
+
+3. **⭐ Jugador Líder**: Distribución equilibrada (±15% entre estados)
+   - Motivación: Constante en todas las situaciones
+   - Color: Verde (#4caf50)
+
+4. **⚖️ Jugador Equilibrado**: >=40% pases clave empatando
+   - Motivación: Rinde mejor en partidos igualados
+   - Color: Azul (#2196f3)
+
+5. **📊 Jugador Regular**: Otros casos
+   - Motivación: Perfil mixto sin patrón claro
+   - Color: Gris (#9e9e9e)
+
+#### UI Implementada
+
+**Estadísticas del Equipo** (3 secciones):
+
+1. **Resumen General**:
+   ```html
+   <div class="stat-box">
+     <h4>{{ estadisticasEquipo.totalPasesClave }}</h4>
+     <p>Total Pases Clave</p>
+   </div>
+   <div class="stat-box">
+     <h4>{{ estadisticasEquipo.pasesClaveP90 | number:'1.2-2' }}</h4>
+     <p>Pases Clave por 90'</p>
+   </div>
+   <div class="stat-box">
+     <h4>{{ estadisticasEquipo.mayorPasador || 'N/A' }}</h4>
+     <p>👑 Mayor Pasador</p>
+   </div>
+   ```
+
+2. **Distribución Temporal** (6 stat-box-small):
+   ```html
+   <div class="stat-box-small">
+     <h5>{{ estadisticasEquipo.pasesClave0_15 }}</h5>
+     <p>0-15'</p>
+   </div>
+   <!-- Repetir para 16-30, 31-45, 46-60, 61-75, 76-90 -->
+   ```
+
+3. **Por Estado del Marcador** (3 cajas coloreadas):
+   ```html
+   <div class="stat-box-estado ganando">
+     <h5>{{ estadisticasEquipo.pasesClaveGanando }}</h5>
+     <p>✅ Ganando</p>
+     <p>{{ porcentaje }}%</p>
+   </div>
+   ```
+
+**Tarjeta de Perfiles** (reemplaza "Mejor Rating"):
+
+```html
+<mat-card-title>🎭 Perfiles de Jugadores</mat-card-title>
+<mat-card-content>
+  <div *ngFor="let perfil of perfilesJugadores" 
+       class="perfil-card" 
+       [ngClass]="perfil.colorClass">
+    <div class="perfil-header">
+      <span class="perfil-icono">{{ perfil.icono }}</span>
+      <span class="perfil-nombre">{{ perfil.nombre }}</span>
+    </div>
+    <div class="perfil-tipo">{{ perfil.perfil }}</div>
+    <div class="perfil-descripcion">{{ perfil.descripcion }}</div>
+    <div class="perfil-stats">
+      <span class="badge badge-success">G: {{ perfil.pctGanando }}%</span>
+      <span class="badge badge-warning">E: {{ perfil.pctEmpatando }}%</span>
+      <span class="badge badge-danger">P: {{ perfil.pctPerdiendo }}%</span>
+    </div>
+  </div>
+</mat-card-content>
+```
+
+#### Flujo Completo
+
+```
+Usuario registra pase clave (minuto 35, equipo perdiendo 0-1)
+  ↓
+Frontend: POST /api/v1/eventos {jugadorId, partidoId, "pase_clave", 35}
+  ↓
+Backend: EventoJugadorControladorV2.create()
+  → Crea EventoJugador con ID=147
+  → Guarda en BD
+  ↓
+Usuario finaliza partido
+  ↓
+Backend: PartidoServiceImpl.desactivarPartido()
+  → ActualizarEstadisticasJugador(jugadorId, "2025-2026")
+    → Procesa todos los eventos del jugador en la temporada
+    → Encuentra pase_clave ID=147, minuto 35
+    → determinarEstadoMarcadorEnMinuto(partido, 147, equipo)
+      - Reconstruye marcador hasta evento 147:
+        * Evento 103: GOL (jugador equipo rival) → 0-1
+        * Estado en minuto 35: PERDIENDO
+    → Incrementa pasesClave31_45 (intervalo 31-45)
+    → Incrementa pasesClavePerdiendo
+    → Incrementa totalPasesClave
+    → Calcula pasesClaveP90 = (total / minutosJugados) * 90
+  → ActualizarEstadisticasEquipo(equipoId, "2025-2026")
+    → Suma pases clave de todos los jugadores
+    → CalcularMayorPasador()
+      - Consulta EstadisticasJugador del equipo
+      - Ordena por totalPasesClave DESC
+      - Retorna "Cristian Helios (10)"
+    → Guarda mayorPasador en BD
+  ↓
+Frontend: GET /api/v1/estadisticas/equipo/{id}?temporada=2025-2026
+  ↓
+Backend: EstadisticasServiceImpl.obtenerEstadisticasEquipo()
+  → Calcula mayorPasador dinámicamente
+  → Compara con BD, actualiza si cambió
+  → Retorna EstadisticasEquipoDTO completo
+  ↓
+Frontend: estadisticas-generales.component.ts
+  → ClasificarPerfilesJugadores()
+    - Filtra jugadores con >=3 pases clave
+    - Calcula % por estado
+    - Asigna perfil según reglas
+    - Ordena por totalPasesClave DESC
+    - Top 5 perfiles
+  → Renderiza UI con datos actualizados
+```
+
+#### Beneficios del Sistema
+
+**Para Entrenadores:**
+- Identificar jugadores que rinden bajo presión (Remontada)
+- Detectar inconsistencias (solo aparecen ganando)
+- Encontrar líderes confiables (constantes en todas situaciones)
+- Analizar patrones temporales (inicio vs final de partido)
+
+**Para Analistas:**
+- Métricas normalizadas (P90) para comparar jugadores con diferentes minutos
+- Distribución temporal para planificar sustituciones
+- Impacto del marcador en creatividad ofensiva
+- Rankings objetivos con datos cuantitativos
+
+**Métricas Clave:**
+- `totalPasesClave`: Contador absoluto
+- `pasesClaveP90`: Normalizado por 90 minutos (comparable entre jugadores)
+- `pasesClave[0-15/16-30/.../76-90]`: Detecta momentos de mayor/menor creatividad
+- `pasesClaveGanando/Empatando/Perdiendo`: Impacto del contexto emocional
+- `mayorPasador`: Reconocimiento al mejor creador del equipo
+- **Perfiles**: Clasificación cualitativa basada en patrones cuantitativos
 
 ---
 
