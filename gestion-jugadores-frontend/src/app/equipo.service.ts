@@ -39,4 +39,9 @@ export class EquipoService {
   obtenerEquipoPorId(equipoId: number): Observable<Equipo> {
     return this.http.get<Equipo>(`${baserUrl}/equipos/${equipoId}`);
   }
+
+  // Alias para obtener equipo (usado en seleccion-alineacion)
+  obtenerEquipo(equipoId: number): Observable<Equipo> {
+    return this.obtenerEquipoPorId(equipoId);
+  }
 }

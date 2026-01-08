@@ -17,6 +17,7 @@ import { GestionarPartidosComponent } from './components/gestionar-partidos/gest
 import { SelectorJugadoresComponent } from './graficos/selector-jugadores/selector-jugadores.component';
 import { EstadisticasEquipoComponent } from './components/estadisticas-equipo/estadisticas-equipo.component';
 import { EstadisticasGeneralesComponent } from './components/estadisticas-generales/estadisticas-generales.component';
+import { SeleccionAlineacionComponent } from './components/seleccion-alineacion/seleccion-alineacion.component';
 
 // RUTAS APLICACION
 const routes: Routes = [
@@ -58,6 +59,7 @@ const routes: Routes = [
   // ===== RUTAS DE PARTIDOS =====
   { path: 'crear-equipo', component: CrearEquipoComponent },
   { path: 'crear-partido', component: PartidoCrearComponent },
+  { path: 'seleccion-alineacion/:partidoId/:equipoId', component: SeleccionAlineacionComponent },
   { path: 'iniciar-partido', component: PartidoModoComponent },
   { path: 'gestionar-partidos', component: GestionarPartidosComponent },
   { path: 'selector-jugadores/:equipoId', component: SelectorJugadoresComponent },

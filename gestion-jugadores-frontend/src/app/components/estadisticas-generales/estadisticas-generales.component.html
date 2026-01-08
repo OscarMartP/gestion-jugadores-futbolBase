@@ -147,14 +147,14 @@
       <div class="col-md-4">
         <mat-card>
           <mat-card-header>
-            <mat-card-title>⚽ Top Goleadores</mat-card-title>
+            <mat-card-title>⚽ Top Goleadores </mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <mat-list *ngIf="topGoleadores && topGoleadores.length > 0; else noGoleadores">
               <mat-list-item *ngFor="let jugador of topGoleadores; let i = index">
                 <span class="position-badge">{{ i + 1 }}</span>
                 <span>{{ jugador.jugadorNombre }} {{ jugador.jugadorApellido }}</span>
-                <span class="ml-auto font-weight-bold">{{ jugador.totalGoles }} goles</span>
+                <span class="ml-auto font-weight-bold"> {{ jugador.totalGoles }} goles</span>
               </mat-list-item>
             </mat-list>
             <ng-template #noGoleadores>
@@ -167,14 +167,14 @@
       <div class="col-md-4">
         <mat-card>
           <mat-card-header>
-            <mat-card-title>🎯 Top Asistentes</mat-card-title>
+            <mat-card-title>🎯 Top Asistentes </mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <mat-list *ngIf="topAsistentes && topAsistentes.length > 0; else noAsistentes">
               <mat-list-item *ngFor="let jugador of topAsistentes; let i = index">
                 <span class="position-badge">{{ i + 1 }}</span>
                 <span>{{ jugador.jugadorNombre }} {{ jugador.jugadorApellido }}</span>
-                <span class="ml-auto font-weight-bold">{{ jugador.totalAsistencias }} asist.</span>
+                <span class="ml-auto font-weight-bold"> {{ jugador.totalAsistencias }} asist.</span>
               </mat-list-item>
             </mat-list>
             <ng-template #noAsistentes>
@@ -187,14 +187,14 @@
       <div class="col-md-4">
         <mat-card>
           <mat-card-header>
-            <mat-card-title>⭐ Mejor Rating</mat-card-title>
+            <mat-card-title>⭐ Mejor Rating </mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <mat-list *ngIf="mejorRating && mejorRating.length > 0; else noRating">
               <mat-list-item *ngFor="let jugador of mejorRating; let i = index">
                 <span class="position-badge">{{ i + 1 }}</span>
                 <span>{{ jugador.jugadorNombre }} {{ jugador.jugadorApellido }}</span>
-                <span class="ml-auto font-weight-bold">{{ jugador.rating | number:'1.2-2' }}</span>
+                <span class="ml-auto font-weight-bold"> {{ jugador.rating | number:'1.2-2' }}</span>
               </mat-list-item>
             </mat-list>
             <ng-template #noRating>
@@ -242,8 +242,8 @@
                 <td>{{ jugador.minutosJugados }}'</td>
                 <td><strong>{{ jugador.totalGoles }}</strong></td>
                 <td><strong>{{ jugador.totalAsistencias }}</strong></td>
-                <td><strong *ngIf="jugador.posicion?.toUpperCase() === 'PORTERO' || jugador.posicion?.toUpperCase() === 'ARQUERO'" class="text-info">{{ jugador.paradas || 0 }}</strong>
-                    <span *ngIf="jugador.posicion?.toUpperCase() !== 'PORTERO' && jugador.posicion?.toUpperCase() !== 'ARQUERO'" class="text-muted">-</span>
+                <td><strong *ngIf="jugador.posicion?.toUpperCase() === 'PORTERO' || jugador.posicion?.toUpperCase() === 'ARQUERO' || jugador.posicion?.toUpperCase() === 'POR'" class="text-info">{{ jugador.paradas || 0 }}</strong>
+                    <span *ngIf="jugador.posicion?.toUpperCase() !== 'PORTERO' && jugador.posicion?.toUpperCase() !== 'ARQUERO' && jugador.posicion?.toUpperCase() !== 'POR'" class="text-muted">-</span>
                 </td>
                 <td class="text-warning">{{ jugador.tarjetasAmarillas }}</td>
                 <td class="text-danger">{{ jugador.tarjetasRojas }}</td>

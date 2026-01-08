@@ -31,6 +31,17 @@
           </mat-error>
         </mat-form-field>
 
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Tipo de Fútbol</mat-label>
+          <mat-select formControlName="tipoFutbol" required>
+            <mat-option value="FUTBOL_7">Fútbol 7 (7 titulares)</mat-option>
+            <mat-option value="FUTBOL_11">Fútbol 11 (11 titulares)</mat-option>
+          </mat-select>
+          <mat-error *ngIf="equipoForm.get('tipoFutbol')?.hasError('required')">
+            Debes seleccionar un tipo de fútbol
+          </mat-error>
+        </mat-form-field>
+
         <div class="button-row">
           <button mat-raised-button color="primary" type="submit" [disabled]="!equipoForm.valid">
             Crear Equipo

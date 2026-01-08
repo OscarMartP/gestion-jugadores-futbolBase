@@ -25,7 +25,8 @@ export class CrearEquipoComponent implements OnInit {
   ) {
     this.equipoForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
-      duracionPartido: ['', [Validators.required, Validators.min(1), Validators.max(120)]]
+      duracionPartido: ['', [Validators.required, Validators.min(1), Validators.max(120)]],
+      tipoFutbol: ['FUTBOL_11', [Validators.required]] // Default FUTBOL_11
     });
   }
 

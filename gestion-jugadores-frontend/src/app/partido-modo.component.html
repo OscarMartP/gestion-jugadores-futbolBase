@@ -194,6 +194,44 @@
                 [title]="eventoPortero.nombre">
                 {{ eventoPortero.icono }} {{ eventoPortero.nombre }}
               </button>
+              <!-- Botón de Cambio/Sustitución -->
+              <button 
+                *ngIf="suplentes.length > 0 || partidoActivo?.suplentes?.length > 0"
+                class="btn btn-sm btn-warning ms-auto" 
+                (click)="abrirDialogoSustitucion(jugador)"
+                [disabled]="cargando"
+                title="Realizar cambio">
+                🔄 Cambio
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diálogo de Sustitución -->
+      <div *ngIf="mostrarDialogoSustitucion" class="modal-overlay" (click)="cerrarDialogoSustitucion()">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Realizar Cambio</h5>
+              <button type="button" class="btn-close" (click)="cerrarDialogoSustitucion()"></button>
+            </div>
+            <div class="modal-body">
+              <p><strong>Sale:</strong> {{ jugadorASalir?.nombre }} {{ jugadorASalir?.apellido }}</p>
+              <p><strong>Selecciona quién entra:</strong></p>
+              <div class="list-group">
+                <button 
+                  *ngFor="let suplente of suplentes"
+                  type="button" 
+                  class="list-group-item list-group-item-action"
+                  (click)="realizarSustitucion(suplente)">
+                  {{ suplente.nombre }} {{ suplente.apellido }}
+                  <span class="badge bg-secondary ms-2">{{ suplente.posicion }}</span>
+                </button>
+                <div *ngIf="suplentes.length === 0" class="alert alert-info mt-2">
+                  No hay suplentes disponibles
+                </div>
+              </div>
             </div>
           </div>
         </div>

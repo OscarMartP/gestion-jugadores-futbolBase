@@ -36,6 +36,11 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
   golesRival: number = 0;
   resultado: string = '';
   
+  // Sustituciones
+  suplentes: any[] = [];
+  mostrarDialogoSustitucion: boolean = false;
+  jugadorASalir: any = null;
+  
   // Lista de eventos disponibles
   eventosDisponibles = [
     { tipo: 'gol', nombre: 'Gol', icono: '⚽', color: 'success' },
@@ -135,8 +140,9 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
         this.duracionPartido = this.equipoSeleccionado.duracionPartido || 90;
         this.tiempoRestante = 0;
         
-        // Cargar jugadores del equipo
+        // Cargar jugadores del equipo (titulares y suplentes)
         this.cargarJugadores();
+        this.cargarSuplentes();
         
         this.enModoJuego = true;
         this.mostrarMensaje('¡Partido iniciado! Listo para registrar eventos', 'success');
@@ -156,10 +162,17 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
   cargarJugadores(): void {
     this.jugadorService.obtenerJugadoresPorEquipoId(this.equipoSeleccionado.id).subscribe({
       next: (jugadores) => {
-        this.jugadores = jugadores;
-        console.log('✅ Jugadores cargados:', jugadores);
+        // Filtrar solo los jugadores que están en la lista de titulares
+        if (this.partidoActivo?.titulares && this.partidoActivo.titulares.length > 0) {
+          this.jugadores = jugadores.filter((j: any) => this.partidoActivo.titulares.includes(j.id));
+          console.log('✅ Titulares cargados:', this.jugadores);
+        } else {
+          // Si no hay titulares definidos, cargar todos (compatibilidad con partidos antiguos)
+          this.jugadores = jugadores;
+          console.log('⚠️ No hay titulares definidos, mostrando todos los jugadores');
+        }
         // Debug: mostrar posiciones
-        jugadores.forEach(j => {
+        this.jugadores.forEach(j => {
           console.log(`Jugador: ${j.nombre} ${j.apellido}, Posición: "${j.posicion}", Es portero: ${this.esPortero(j)}`);
         });
       },
@@ -319,8 +332,92 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
     }
     const posicion = jugador.posicion.toUpperCase().trim();
     const esPortero = posicion === 'PORTERO' || posicion === 'ARQUERO' || posicion === 'GK' || posicion === 'GOALKEEPER' || posicion === 'POR';
-    console.log(`🔍 Verificando: ${jugador.nombre} - Posición: "${jugador.posicion}" -> ${esPortero}`);
     return esPortero;
+  }
+
+  cargarSuplentes(): void {
+    this.jugadorService.obtenerJugadoresPorEquipoId(this.equipoSeleccionado.id).subscribe({
+      next: (jugadores) => {
+        // Filtrar solo los jugadores que están en la lista de suplentes
+        if (this.partidoActivo?.suplentes && this.partidoActivo.suplentes.length > 0) {
+          this.suplentes = jugadores.filter((j: any) => this.partidoActivo.suplentes.includes(j.id));
+          console.log('✅ Suplentes cargados:', this.suplentes);
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error cargando suplentes:', err);
+      }
+    });
+  }
+
+  abrirDialogoSustitucion(jugador: any): void {
+    this.jugadorASalir = jugador;
+    // No recargar suplentes - usar la lista local actualizada con las sustituciones
+    this.mostrarDialogoSustitucion = true;
+  }
+
+  cerrarDialogoSustitucion(): void {
+    this.mostrarDialogoSustitucion = false;
+    this.jugadorASalir = null;
+  }
+
+  realizarSustitucion(jugadorEntra: any): void {
+    const minuto = Math.floor(this.tiempoRestante / 60);
+    
+    console.log('🔄 ANTES de la sustitución:');
+    console.log('  Jugadores en campo:', this.jugadores.map(j => `${j.nombre} (ID: ${j.id})`));
+    console.log('  Suplentes:', this.suplentes.map(j => `${j.nombre} (ID: ${j.id})`));
+    console.log(`  Sale: ${this.jugadorASalir.nombre} (ID: ${this.jugadorASalir.id})`);
+    console.log(`  Entra: ${jugadorEntra.nombre} (ID: ${jugadorEntra.id})`);
+    
+    // Crear evento de sustitución
+    const evento = {
+      jugadorId: jugadorEntra.id,
+      partidoId: this.partidoActivo.id,
+      tipoEvento: 'sustitucion',
+      minuto: minuto,
+      jugadorSaleId: this.jugadorASalir.id,
+      jugadorEntraId: jugadorEntra.id
+    };
+
+    this.eventoService.registrarEvento(evento).subscribe({
+      next: () => {
+        // Actualizar listas: quitar el que sale de titulares y agregarlo a suplentes
+        const indiceTitular = this.jugadores.findIndex(j => j.id === this.jugadorASalir.id);
+        console.log(`  🔍 Buscando ${this.jugadorASalir.nombre} en jugadores: índice = ${indiceTitular}`);
+        
+        if (indiceTitular > -1) {
+          this.jugadores.splice(indiceTitular, 1);
+          this.suplentes.push(this.jugadorASalir);
+          console.log(`  ✅ ${this.jugadorASalir.nombre} movido a suplentes`);
+        } else {
+          console.log(`  ❌ NO encontrado ${this.jugadorASalir.nombre} en jugadores`);
+        }
+
+        // Quitar el que entra de suplentes y agregarlo a titulares
+        const indiceSuplente = this.suplentes.findIndex(j => j.id === jugadorEntra.id);
+        console.log(`  🔍 Buscando ${jugadorEntra.nombre} en suplentes: índice = ${indiceSuplente}`);
+        
+        if (indiceSuplente > -1) {
+          this.suplentes.splice(indiceSuplente, 1);
+          this.jugadores.push(jugadorEntra);
+          console.log(`  ✅ ${jugadorEntra.nombre} movido a jugadores`);
+        } else {
+          console.log(`  ❌ NO encontrado ${jugadorEntra.nombre} en suplentes`);
+        }
+
+        console.log('✅ DESPUÉS de la sustitución:');
+        console.log('  Jugadores en campo:', this.jugadores.map(j => `${j.nombre} (ID: ${j.id})`));
+        console.log('  Suplentes:', this.suplentes.map(j => `${j.nombre} (ID: ${j.id})`));
+
+        this.mostrarMensaje(`Cambio realizado: Sale ${this.jugadorASalir.nombre}, Entra ${jugadorEntra.nombre}`, 'success');
+        this.cerrarDialogoSustitucion();
+      },
+      error: (err) => {
+        console.error('Error al registrar sustitución:', err);
+        this.mostrarMensaje('Error al registrar el cambio', 'error');
+      }
+    });
   }
 
   cancelarPartido(): void {

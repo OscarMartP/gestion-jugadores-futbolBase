@@ -2,7 +2,7 @@
 
 Propósito: documentación orientada a programadores que describe la arquitectura del backend (Spring Boot) y frontend (Angular), flujos clave, modelo de datos resumido, **nuevas funciones implementadas**, análisis de mejoras y recomendaciones prácticas para optimización.
 
-**Última actualización:** Enero 7, 2026
+**Última actualización:** Enero 8, 2026
 
 **Cambios recientes implementados:**
 - ✅ Bulk deactivate de partidos con @Modifying JPQL + @Transactional.
@@ -23,6 +23,15 @@ Propósito: documentación orientada a programadores que describe la arquitectur
 - ✅ **Dashboard de Estadísticas** con selector de equipos y visualización de métricas.
 - ✅ **Estadísticas de paradas para porteros** con campo exclusivo y botón en modo partido.
 - ✅ **Eliminación en cascada** con @OnDelete en relaciones EventoJugador y EstadisticasJugador.
+- ✅ **Sistema Titular/Suplente** con selección de alineación, sustituciones ilimitadas (fútbol base).
+- ✅ **Fútbol 7 y Fútbol 11** con campo `tipoFutbol` en Equipo (7 u 11 titulares).
+- ✅ **Cálculo automático de minutos jugados** basado en sustituciones (jugadorSaleId/jugadorEntraId).
+- ✅ **Resultado automático** (VICTORIA/DERROTA/EMPATE) al finalizar partido según goles.
+- ✅ **Componente seleccion-alineacion** con UI de 3 columnas (Disponibles/Titulares/Suplentes).
+- ✅ **Sistema de sustituciones en vivo** con modal y actualización dinámica de listas.
+- ✅ **CORS explícito** con CorsConfigurationSource para localhost:4200.
+- ✅ **Endpoint GET /equipos/{id}** para obtener equipo individual.
+- ✅ **Endpoint PUT /partidos/{id}/alineacion** para actualizar titulares y suplentes.
 
 ---
 
@@ -216,6 +225,252 @@ flowchart TD
 **Binding y coerción:**
 - Los selects ahora usan `[(ngModel)]="selectedObject"` + `[ngValue]="objeto"` en options para evitar conversiones string accidentales.
 - Ejemplo: `lista-jugadores.component.ts` convierte `this.equipoId` a Number con `Number(this.equipoId)` antes de comparaciones.
+
+---
+
+**Sistema Titular/Suplente y Sustituciones**
+
+**Implementado:** Enero 8, 2026
+
+### Descripción General
+
+Sistema completo para gestionar titulares y suplentes en partidos de fútbol base, con soporte para Fútbol 7 (7 titulares) y Fútbol 11 (11 titulares). Incluye selección de alineación previa al partido, sustituciones ilimitadas durante el partido, y cálculo automático de minutos jugados.
+
+### Backend
+
+**Modelo de Datos:**
+
+**Equipo:**
+```java
+@Column(name = "tipo_futbol", length = 20, nullable = false, columnDefinition = "varchar(20) default 'FUTBOL_11'")
+private String tipoFutbol = "FUTBOL_11"; // FUTBOL_7 o FUTBOL_11
+```
+
+**Partido:**
+```java
+@ElementCollection(fetch = FetchType.LAZY)
+@CollectionTable(name = "partido_titulares", joinColumns = @JoinColumn(name = "partido_id"))
+@Column(name = "jugador_id")
+private List<Long> titulares;
+
+@ElementCollection(fetch = FetchType.LAZY)
+@CollectionTable(name = "partido_suplentes", joinColumns = @JoinColumn(name = "partido_id"))
+@Column(name = "jugador_id")
+private List<Long> suplentes;
+```
+
+**EventoJugador (para sustituciones):**
+```java
+@Column(name = "jugador_sale_id")
+private Long jugadorSaleId; // ID del jugador que sale
+
+@Column(name = "jugador_entra_id")
+private Long jugadorEntraId; // ID del jugador que entra
+```
+
+**Endpoints:**
+
+1. **GET `/equipos/{id}`** - Obtener equipo por ID (incluye tipoFutbol)
+2. **PUT `/partidos/{id}/alineacion`** - Actualizar titulares y suplentes
+   ```json
+   {
+     "titulares": [1, 2, 3, ...],
+     "suplentes": [10, 11, ...]
+   }
+   ```
+
+**Cálculo de Minutos Jugados:**
+
+Implementado en `PartidoServiceImpl.calcularMinutosJugados()`, llamado automáticamente en `desactivarPartido()`:
+
+```java
+// Titulares empiezan con duracionPartido minutos
+for (Long jugadorId : titularesIds) {
+    minutosMap.put(jugadorId, duracionPartido);
+    fueTitularMap.put(jugadorId, true);
+}
+
+// Procesar sustituciones
+for (EventoJugador sustitucion : sustituciones) {
+    Long jugadorSale = sustitucion.getJugadorSaleId();
+    Long jugadorEntra = sustitucion.getJugadorEntraId();
+    Integer minuto = sustitucion.getMinuto();
+    
+    if (jugadorSale != null) {
+        minutosMap.put(jugadorSale, minuto); // Solo jugó hasta el cambio
+    }
+    if (jugadorEntra != null) {
+        minutosMap.put(jugadorEntra, duracionPartido - minuto); // Desde cambio hasta final
+    }
+}
+```
+
+**Cálculo Automático de Resultado:**
+
+Al desactivar o actualizar partido con `golesEquipo` y `golesRival` definidos:
+
+```java
+if (golesEquipo > golesRival) {
+    partido.setResultado("VICTORIA");
+} else if (golesEquipo < golesRival) {
+    partido.setResultado("DERROTA");
+} else {
+    partido.setResultado("EMPATE");
+}
+```
+
+### Frontend
+
+**Flujo Completo:**
+
+1. **Crear Partido** → Redirige a selección de alineación
+2. **Selección de Alineación** (componente `seleccion-alineacion`) → Guarda titulares/suplentes
+3. **Iniciar Partido** → Carga titulares y suplentes desde partido guardado
+4. **Durante Partido** → Sustituciones actualizan listas localmente sin recargar del servidor
+
+**Componente: seleccion-alineacion**
+
+UI de 3 columnas (Disponibles/Titulares/Suplentes) con drag-and-drop visual:
+
+```typescript
+agregarTitular(jugador: Jugador): void {
+  if (this.titulares.length >= this.numeroTitulares) {
+    this.snackBar.open(`Solo puedes seleccionar ${this.numeroTitulares} titulares`);
+    return;
+  }
+  this.jugadoresDisponibles.splice(index, 1);
+  this.titulares.push(jugador);
+}
+
+confirmarAlineacion(): void {
+  const titularesIds = this.titulares.map(j => j.id);
+  const suplentesIds = this.suplentes.map(j => j.id);
+  
+  this.partidoService.actualizarAlineacion(this.partidoId, titularesIds, suplentesIds)
+    .subscribe(() => {
+      this.router.navigate(['/modo-partido', this.equipoId]);
+    });
+}
+```
+
+**Componente: partido-modo (sustituciones)**
+
+```typescript
+// Al iniciar partido
+iniciarPartido(): void {
+  this.partidoService.activarPartido(this.partidoSeleccionado.id).subscribe(
+    (response) => {
+      this.partidoActivo = response;
+      this.cargarJugadores(); // Carga titulares
+      this.cargarSuplentes(); // Carga suplentes (solo una vez)
+    }
+  );
+}
+
+// Cargar titulares
+cargarJugadores(): void {
+  this.jugadorService.obtenerJugadoresPorEquipoId(this.equipoSeleccionado.id)
+    .subscribe((jugadores) => {
+      if (this.partidoActivo?.titulares) {
+        this.jugadores = jugadores.filter(j => 
+          this.partidoActivo.titulares.includes(j.id)
+        );
+      }
+    });
+}
+
+// Cargar suplentes (solo al inicio)
+cargarSuplentes(): void {
+  this.jugadorService.obtenerJugadoresPorEquipoId(this.equipoSeleccionado.id)
+    .subscribe((jugadores) => {
+      if (this.partidoActivo?.suplentes) {
+        this.suplentes = jugadores.filter(j => 
+          this.partidoActivo.suplentes.includes(j.id)
+        );
+      }
+    });
+}
+
+// Sustitución (NO recarga desde servidor)
+realizarSustitucion(jugadorEntra: any): void {
+  const evento = {
+    jugadorId: jugadorEntra.id,
+    partidoId: this.partidoActivo.id,
+    tipoEvento: 'sustitucion',
+    minuto: Math.floor(this.tiempoRestante / 60),
+    jugadorSaleId: this.jugadorASalir.id,
+    jugadorEntraId: jugadorEntra.id
+  };
+
+  this.eventoService.registrarEvento(evento).subscribe(() => {
+    // Actualizar listas localmente
+    const indiceTitular = this.jugadores.findIndex(j => j.id === this.jugadorASalir.id);
+    if (indiceTitular > -1) {
+      this.jugadores.splice(indiceTitular, 1);
+      this.suplentes.push(this.jugadorASalir);
+    }
+
+    const indiceSuplente = this.suplentes.findIndex(j => j.id === jugadorEntra.id);
+    if (indiceSuplente > -1) {
+      this.suplentes.splice(indiceSuplente, 1);
+      this.jugadores.push(jugadorEntra);
+    }
+
+    this.mostrarMensaje(`Cambio realizado: Sale ${this.jugadorASalir.nombre}, Entra ${jugadorEntra.nombre}`);
+    this.cerrarDialogoSustitucion();
+  });
+}
+```
+
+**Importante:**
+- `cargarSuplentes()` se llama **solo en `iniciarPartido()`**, NO en `abrirDialogoSustitucion()`
+- Esto evita sobrescribir la lista local de suplentes que se actualiza con cada sustitución
+- Sustituciones ilimitadas (estándar de fútbol base)
+
+**Modal de Sustitución:**
+
+```html
+<div *ngIf="mostrarDialogoSustitucion" class="modal-overlay">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h5>Realizar Cambio</h5>
+      <button (click)="cerrarDialogoSustitucion()">×</button>
+    </div>
+    <div class="modal-body">
+      <p><strong>Sale:</strong> {{ jugadorASalir?.nombre }} {{ jugadorASalir?.apellido }}</p>
+      <p><strong>Selecciona quién entra:</strong></p>
+      <button *ngFor="let suplente of suplentes"
+              (click)="realizarSustitucion(suplente)">
+        {{ suplente.nombre }} {{ suplente.apellido }}
+        <span class="badge">{{ suplente.posicion }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+```
+
+### Flujo Completo de Usuario
+
+1. **Crear Equipo** → Seleccionar tipo (Fútbol 7 o Fútbol 11)
+2. **Crear Partido** → Automáticamente redirige a selección de alineación
+3. **Seleccionar Alineación** → Mover jugadores entre columnas hasta tener 7/11 titulares
+4. **Confirmar Alineación** → Guarda en BD y va a modo partido
+5. **Iniciar Partido** → Carga titulares en campo y suplentes en lista
+6. **Durante Partido** → Click en "Cambio" → Seleccionar suplente → Actualización instantánea
+7. **Finalizar Partido** → Sistema calcula minutos jugados automáticamente
+
+### Base de Datos
+
+**Tablas nuevas creadas automáticamente por JPA:**
+
+- `partido_titulares` (partido_id, jugador_id)
+- `partido_suplentes` (partido_id, jugador_id)
+
+**Columnas nuevas:**
+
+- `equipo.tipo_futbol` VARCHAR(20) DEFAULT 'FUTBOL_11'
+- `eventos_jugador.jugador_sale_id` BIGINT
+- `eventos_jugador.jugador_entra_id` BIGINT
 
 ---
 

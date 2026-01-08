@@ -75,9 +75,11 @@ export class PartidoCrearComponent implements OnInit {
   };
 
   this.partidoService.crearPartido(partido).subscribe({
-    next: () => {
-      console.log("✅ Redirigiendo a /modo-partido con ID:", equipoId);
-      this.router.navigate(['/modo-partido', equipoId]);
+    next: (partidoCreado) => {
+      console.log("✅ Partido creado:", partidoCreado);
+      console.log("📋 Redirigiendo a selección de alineación");
+      // Redirigir a pantalla de selección de alineación
+      this.router.navigate(['/seleccion-alineacion', partidoCreado.id, equipoId]);
     },
     error: () => alert('Error creando el partido')
   });

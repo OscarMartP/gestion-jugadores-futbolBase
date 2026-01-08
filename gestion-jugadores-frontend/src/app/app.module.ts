@@ -48,6 +48,7 @@ import { GestionarPartidosComponent } from './components/gestionar-partidos/gest
 import { HistorialPartidosComponent } from './historial-partidos/historial-partidos.component';
 import { EstadisticasEquipoComponent } from './components/estadisticas-equipo/estadisticas-equipo.component';
 import { EstadisticasGeneralesComponent } from './components/estadisticas-generales/estadisticas-generales.component';
+import { SeleccionAlineacionComponent } from './components/seleccion-alineacion/seleccion-alineacion.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +72,8 @@ import { EstadisticasGeneralesComponent } from './components/estadisticas-genera
     GestionarPartidosComponent,
     HistorialPartidosComponent,
     EstadisticasEquipoComponent,
-    EstadisticasGeneralesComponent
+    EstadisticasGeneralesComponent,
+    SeleccionAlineacionComponent
   ],
   imports: [
     BrowserModule,

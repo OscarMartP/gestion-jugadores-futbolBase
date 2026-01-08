@@ -59,4 +59,9 @@ export class PartidoService {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
 
+  // Actualizar alineación (titulares y suplentes)
+  actualizarAlineacion(partidoId: number, titulares: number[], suplentes: number[]): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${partidoId}/alineacion`, { titulares, suplentes });
+  }
+
 }
