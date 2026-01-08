@@ -19,6 +19,12 @@ public interface EstadisticasJugadorRepository extends JpaRepository<Estadistica
     
     /**
      * Obtener estadísticas de todos los jugadores de un equipo en una temporada
+     * Usando el camino de navegación jugador.equipo.id
+     */
+    List<EstadisticasJugador> findByJugador_Equipo_IdAndTemporada(Long equipoId, String temporada);
+    
+    /**
+     * Obtener estadísticas de todos los jugadores de un equipo en una temporada
      */
     @Query("SELECT e FROM EstadisticasJugador e WHERE e.jugador.equipo.id = :equipoId AND e.temporada = :temporada ORDER BY e.totalGoles DESC")
     List<EstadisticasJugador> findByEquipoAndTemporada(@Param("equipoId") Long equipoId, @Param("temporada") String temporada);

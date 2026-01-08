@@ -12,6 +12,7 @@ import com.gestion.jugadores.repositorio.EventoJugadorRepository;
 import com.gestion.jugadores.repositorio.JugadorRepositorio;
 import com.gestion.jugadores.servicios.PartidoService;
 import com.gestion.jugadores.servicios.EstadisticasService;
+import com.gestion.jugadores.servicios.JugadorService;
 
 import java.time.LocalDate;
 import java.time.Year;
@@ -32,6 +33,9 @@ public class PartidoServiceImpl implements PartidoService {
     
     @Autowired
     private EstadisticasService estadisticasService;
+    
+    @Autowired
+    private JugadorService jugadorService;
     
     @Autowired
     private EventoJugadorRepository eventoJugadorRepository;
@@ -125,6 +129,20 @@ public class PartidoServiceImpl implements PartidoService {
             Long equipoId = partido.getEquipo().getId();
             
             logger.info("Actualizando estadísticas del equipo {} para temporada {}", equipoId, temporadaActual);
+            
+            // Actualizar estadísticas de cada jugador que participó en el partido
+            List<com.gestion.jugadores.modelo.Jugador> jugadores = jugadorService.obtenerPorEquipo(equipoId);
+            for (com.gestion.jugadores.modelo.Jugador jugador : jugadores) {
+                try {
+                    logger.info("Actualizando estadísticas del jugador {} {} para temporada {}", 
+                        jugador.getNombre(), jugador.getApellido(), temporadaActual);
+                    estadisticasService.actualizarEstadisticasJugador(jugador.getId(), temporadaActual);
+                } catch (Exception e) {
+                    logger.error("Error al actualizar estadísticas del jugador {}: {}", jugador.getId(), e.getMessage());
+                }
+            }
+            
+            // Luego actualizar estadísticas del equipo (agregadas)
             estadisticasService.actualizarEstadisticasEquipo(equipoId, temporadaActual);
             
             logger.info("Estadísticas actualizadas correctamente para equipo {}", equipoId);

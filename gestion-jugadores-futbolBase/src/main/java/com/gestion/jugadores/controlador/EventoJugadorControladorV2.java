@@ -109,11 +109,26 @@ public class EventoJugadorControladorV2 extends BaseController<EventoJugador, Ev
     @PostMapping
     @Override
     public ResponseEntity<EventoJugadorDTO> create(@RequestBody EventoJugadorDTO dto) {
-        Jugador jugador = jugadorService.obtenerJugadorPorId(dto.jugadorId);
         Partido partido = partidoService.obtenerPartidoPorId(dto.partidoId);
 
         EventoJugador evento = new EventoJugador();
-        evento.setJugador(jugador);
+        
+        // Para eventos de gol_rival, usamos cualquier jugador como placeholder
+        // (el tipo de evento "gol_rival" indica que es del rival)
+        if (dto.jugadorId != null) {
+            Jugador jugador = jugadorService.obtenerJugadorPorId(dto.jugadorId);
+            evento.setJugador(jugador);
+        } else {
+            // Para gol_rival sin jugador, usar el primer jugador del equipo como placeholder
+            // El tipoEvento "gol_rival" indica que realmente es del rival
+            List<Jugador> jugadoresEquipo = jugadorService.obtenerPorEquipo(partido.getEquipo().getId());
+            if (!jugadoresEquipo.isEmpty()) {
+                evento.setJugador(jugadoresEquipo.get(0));
+            } else {
+                throw new RuntimeException("No hay jugadores en el equipo para crear evento");
+            }
+        }
+        
         evento.setPartido(partido);
         evento.setTipoEvento(dto.tipoEvento);
         evento.setMinuto(dto.minuto);

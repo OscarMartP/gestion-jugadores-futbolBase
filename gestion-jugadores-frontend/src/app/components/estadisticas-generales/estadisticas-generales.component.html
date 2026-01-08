@@ -79,63 +79,130 @@
         </div>
 
         <div class="row text-center mt-3">
-          <div class="col-md-2 col-sm-4 mb-3">
-            <div class="stat-box">
-              <h4 class="stat-number text-primary">{{ estadisticasEquipo.puntos }}</h4>
-              <p class="stat-label">Puntos</p>
-            </div>
-          </div>
-          <div class="col-md-2 col-sm-4 mb-3">
-            <div class="stat-box">
-              <h4 class="stat-number">{{ estadisticasEquipo.golesFavor }}</h4>
-              <p class="stat-label">Goles A Favor</p>
-            </div>
-          </div>
-          <div class="col-md-2 col-sm-4 mb-3">
-            <div class="stat-box">
-              <h4 class="stat-number">{{ estadisticasEquipo.golesContra }}</h4>
-              <p class="stat-label">Goles En Contra</p>
-            </div>
-          </div>
-          <div class="col-md-2 col-sm-4 mb-3">
+          <div class="col-md-3 col-sm-4 mb-3">
             <div class="stat-box">
               <h4 class="stat-number" [ngClass]="{'text-success': estadisticasEquipo.diferenciaGoles > 0, 'text-danger': estadisticasEquipo.diferenciaGoles < 0}">
                 {{ estadisticasEquipo.diferenciaGoles > 0 ? '+' : '' }}{{ estadisticasEquipo.diferenciaGoles }}
               </h4>
-              <p class="stat-label">Diferencia</p>
+              <p class="stat-label">Diferencia de Goles</p>
             </div>
           </div>
-          <div class="col-md-2 col-sm-4 mb-3">
+          <div class="col-md-3 col-sm-4 mb-3">
             <div class="stat-box">
               <h4 class="stat-number text-warning">{{ estadisticasEquipo.tarjetasAmarillas }}</h4>
               <p class="stat-label">Tarjetas Amarillas</p>
             </div>
           </div>
-          <div class="col-md-2 col-sm-4 mb-3">
+          <div class="col-md-3 col-sm-4 mb-3">
             <div class="stat-box">
               <h4 class="stat-number text-danger">{{ estadisticasEquipo.tarjetasRojas }}</h4>
               <p class="stat-label">Tarjetas Rojas</p>
             </div>
           </div>
-        </div>
-
-        <div class="row text-center mt-3">
-          <div class="col-md-4 col-sm-6 mb-3">
-            <div class="stat-box">
-              <h4 class="stat-number">{{ estadisticasEquipo.promedioGolesFavor | number:'1.2-2' }}</h4>
-              <p class="stat-label">Promedio Goles/Partido</p>
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-6 mb-3">
-            <div class="stat-box">
-              <h4 class="stat-number">{{ estadisticasEquipo.promedioGolesContra | number:'1.2-2' }}</h4>
-              <p class="stat-label">Promedio Goles Recibidos</p>
-            </div>
-          </div>
-          <div class="col-md-4 col-sm-6 mb-3">
+          <div class="col-md-3 col-sm-4 mb-3">
             <div class="stat-box">
               <h4 class="stat-number text-primary">{{ estadisticasEquipo.efectividad | number:'1.2-2' }}%</h4>
               <p class="stat-label">Efectividad</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas de Pases Clave -->
+        <div class="row mt-4" *ngIf="estadisticasEquipo.totalPasesClave > 0">
+          <div class="col-12">
+            <h5 class="mb-3">🔑 Estadísticas de Pases Clave</h5>
+          </div>
+          
+          <!-- Resumen General -->
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-box">
+              <h4 class="stat-number text-info">{{ estadisticasEquipo.totalPasesClave }}</h4>
+              <p class="stat-label">Total Pases Clave</p>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-box">
+              <h4 class="stat-number text-info">{{ estadisticasEquipo.pasesClaveP90 | number:'1.2-2' }}</h4>
+              <p class="stat-label">Pases Clave por 90'</p>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-box">
+              <h4 class="stat-number text-success">{{ estadisticasEquipo.mayorPasador || 'N/A' }}</h4>
+              <p class="stat-label">👑 Mayor Pasador</p>
+            </div>
+          </div>
+          
+          <!-- Distribución Temporal -->
+          <div class="col-12 mt-3">
+            <h6>📊 Distribución Temporal (minutos)</h6>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.pasesClave0_15 }}</h5>
+              <p class="stat-label-small">0-15'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.pasesClave16_30 }}</h5>
+              <p class="stat-label-small">16-30'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.pasesClave31_45 }}</h5>
+              <p class="stat-label-small">31-45'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.pasesClave46_60 }}</h5>
+              <p class="stat-label-small">46-60'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.pasesClave61_75 }}</h5>
+              <p class="stat-label-small">61-75'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.pasesClave76_90 }}</h5>
+              <p class="stat-label-small">76-90'</p>
+            </div>
+          </div>
+          
+          <!-- Estado del Marcador -->
+          <div class="col-12 mt-4" *ngIf="estadisticasEquipo.pasesClaveGanando > 0 || estadisticasEquipo.pasesClaveEmpatando > 0 || estadisticasEquipo.pasesClavePerdiendo > 0">
+            <h6>🎯 Por Estado del Marcador</h6>
+          </div>
+          <div class="col-md-4 col-sm-4 mb-3" *ngIf="estadisticasEquipo.pasesClaveGanando > 0 || estadisticasEquipo.pasesClaveEmpatando > 0 || estadisticasEquipo.pasesClavePerdiendo > 0">
+            <div class="stat-box-estado ganando">
+              <h5 class="stat-number-estado">{{ estadisticasEquipo.pasesClaveGanando }}</h5>
+              <p class="stat-label-estado">✅ Ganando</p>
+              <p class="stat-percentage" *ngIf="estadisticasEquipo.totalPasesClave > 0">
+                {{ (estadisticasEquipo.pasesClaveGanando / estadisticasEquipo.totalPasesClave * 100) | number:'1.0-0' }}%
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4 mb-3" *ngIf="estadisticasEquipo.pasesClaveGanando > 0 || estadisticasEquipo.pasesClaveEmpatando > 0 || estadisticasEquipo.pasesClavePerdiendo > 0">
+            <div class="stat-box-estado empatando">
+              <h5 class="stat-number-estado">{{ estadisticasEquipo.pasesClaveEmpatando }}</h5>
+              <p class="stat-label-estado">⚖️ Empatando</p>
+              <p class="stat-percentage" *ngIf="estadisticasEquipo.totalPasesClave > 0">
+                {{ (estadisticasEquipo.pasesClaveEmpatando / estadisticasEquipo.totalPasesClave * 100) | number:'1.0-0' }}%
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4 mb-3" *ngIf="estadisticasEquipo.pasesClaveGanando > 0 || estadisticasEquipo.pasesClaveEmpatando > 0 || estadisticasEquipo.pasesClavePerdiendo > 0">
+            <div class="stat-box-estado perdiendo">
+              <h5 class="stat-number-estado">{{ estadisticasEquipo.pasesClavePerdiendo }}</h5>
+              <p class="stat-label-estado">⚠️ Perdiendo</p>
+              <p class="stat-percentage" *ngIf="estadisticasEquipo.totalPasesClave > 0">
+                {{ (estadisticasEquipo.pasesClavePerdiendo / estadisticasEquipo.totalPasesClave * 100) | number:'1.0-0' }}%
+              </p>
             </div>
           </div>
         </div>
@@ -187,18 +254,26 @@
       <div class="col-md-4">
         <mat-card>
           <mat-card-header>
-            <mat-card-title>⭐ Mejor Rating </mat-card-title>
+            <mat-card-title>🎭 Perfiles de Jugadores</mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <mat-list *ngIf="mejorRating && mejorRating.length > 0; else noRating">
-              <mat-list-item *ngFor="let jugador of mejorRating; let i = index">
-                <span class="position-badge">{{ i + 1 }}</span>
-                <span>{{ jugador.jugadorNombre }} {{ jugador.jugadorApellido }}</span>
-                <span class="ml-auto font-weight-bold"> {{ jugador.rating | number:'1.2-2' }}</span>
-              </mat-list-item>
-            </mat-list>
-            <ng-template #noRating>
-              <p class="text-muted">No hay datos de rating</p>
+            <div *ngIf="perfilesJugadores && perfilesJugadores.length > 0; else noPerfiles">
+              <div *ngFor="let perfil of perfilesJugadores" class="perfil-card" [ngClass]="perfil.colorClass">
+                <div class="perfil-header">
+                  <span class="perfil-icono">{{ perfil.icono }}</span>
+                  <span class="perfil-nombre">{{ perfil.nombre }}</span>
+                </div>
+                <div class="perfil-tipo">{{ perfil.perfil }}</div>
+                <div class="perfil-descripcion">{{ perfil.descripcion }}</div>
+                <div class="perfil-stats">
+                  <span class="badge badge-success">G: {{ perfil.pctGanando | number:'1.0-0' }}%</span>
+                  <span class="badge badge-warning">E: {{ perfil.pctEmpatando | number:'1.0-0' }}%</span>
+                  <span class="badge badge-danger">P: {{ perfil.pctPerdiendo | number:'1.0-0' }}%</span>
+                </div>
+              </div>
+            </div>
+            <ng-template #noPerfiles>
+              <p class="text-muted">Necesitas al menos 3 pases clave por jugador para ver perfiles</p>
             </ng-template>
           </mat-card-content>
         </mat-card>

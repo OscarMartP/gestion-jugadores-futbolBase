@@ -100,6 +100,7 @@ public class EstadisticasServiceImpl implements EstadisticasService {
     
     @Override
     public EstadisticasEquipoDTO obtenerEstadisticasEquipo(Long equipoId, String temporada) {
+        System.out.println("🔍 OBTENIENDO ESTADÍSTICAS DEL EQUIPO - ID: " + equipoId + ", Temporada: " + temporada);
         EstadisticasEquipo stats = estadisticasEquipoRepository
             .findByEquipo_IdAndTemporada(equipoId, temporada)
             .orElseGet(() -> {
@@ -109,6 +110,25 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                     .findByEquipo_IdAndTemporada(equipoId, temporada)
                     .orElse(null);
             });
+        
+        System.out.println("📋 Stats encontradas: " + (stats != null ? "SÍ" : "NO"));
+        
+        // Calcular mayor pasador si no está calculado o está desactualizado
+        if (stats != null) {
+            System.out.println("🎯 Calculando mayor pasador para equipo " + equipoId);
+            String mayorPasadorActual = calcularMayorPasador(equipoId, temporada);
+            System.out.println("👑 Mayor pasador calculado: " + mayorPasadorActual);
+            System.out.println("💾 Mayor pasador en BD: " + stats.getMayorPasador());
+            
+            if (!mayorPasadorActual.equals(stats.getMayorPasador())) {
+                System.out.println("🔄 Actualizando mayor pasador en BD...");
+                stats.setMayorPasador(mayorPasadorActual);
+                estadisticasEquipoRepository.save(stats);
+                System.out.println("✅ Mayor pasador actualizado en BD");
+            } else {
+                System.out.println("✓ Mayor pasador ya está actualizado");
+            }
+        }
         
         return convertirAEquipoDTO(stats);
     }
@@ -164,6 +184,19 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         stats.setPartidosTitular(0);
         stats.setMinutosJugados(0);
         
+        // Inicializar campos de pases clave a 0
+        stats.setTotalPasesClave(0);
+        stats.setPasesClave0_15(0);
+        stats.setPasesClave16_30(0);
+        stats.setPasesClave31_45(0);
+        stats.setPasesClave46_60(0);
+        stats.setPasesClave61_75(0);
+        stats.setPasesClave76_90(0);
+        stats.setPasesClaveGanando(0);
+        stats.setPasesClaveEmpatando(0);
+        stats.setPasesClavePerdiendo(0);
+        stats.setPasesClaveP90(0.0);
+        
         // Obtener todos los eventos del jugador en la temporada
         List<EventoJugador> eventos = eventoJugadorRepository.findByJugador_Id(jugadorId);
         
@@ -193,6 +226,40 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                 case "PARADAS":
                     stats.setParadas(stats.getParadas() + 1);
                     break;
+                case "PASE_CLAVE":
+                case "PASE CLAVE":
+                    System.out.println("🔑 Procesando pase clave - Evento ID: " + evento.getId() + ", Jugador: " + jugador.getNombre());
+                    // Incrementar total de pases clave
+                    stats.setTotalPasesClave(stats.getTotalPasesClave() + 1);
+                    
+                    // Determinar el intervalo temporal del pase clave
+                    Integer minuto = evento.getMinuto();
+                    if (minuto != null) {
+                        if (minuto >= 0 && minuto <= 15) {
+                            stats.setPasesClave0_15(stats.getPasesClave0_15() + 1);
+                        } else if (minuto >= 16 && minuto <= 30) {
+                            stats.setPasesClave16_30(stats.getPasesClave16_30() + 1);
+                        } else if (minuto >= 31 && minuto <= 45) {
+                            stats.setPasesClave31_45(stats.getPasesClave31_45() + 1);
+                        } else if (minuto >= 46 && minuto <= 60) {
+                            stats.setPasesClave46_60(stats.getPasesClave46_60() + 1);
+                        } else if (minuto >= 61 && minuto <= 75) {
+                            stats.setPasesClave61_75(stats.getPasesClave61_75() + 1);
+                        } else if (minuto >= 76 && minuto <= 90) {
+                            stats.setPasesClave76_90(stats.getPasesClave76_90() + 1);
+                        }
+                        
+                        // Determinar el estado del partido en ese momento usando el ID del evento
+                        String estadoMarcador = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo());
+                        if ("GANANDO".equals(estadoMarcador)) {
+                            stats.setPasesClaveGanando(stats.getPasesClaveGanando() + 1);
+                        } else if ("EMPATANDO".equals(estadoMarcador)) {
+                            stats.setPasesClaveEmpatando(stats.getPasesClaveEmpatando() + 1);
+                        } else if ("PERDIENDO".equals(estadoMarcador)) {
+                            stats.setPasesClavePerdiendo(stats.getPasesClavePerdiendo() + 1);
+                        }
+                    }
+                    break;
             }
             
             // Contar partidos y minutos
@@ -214,6 +281,12 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         
         // Calcular métricas
         stats.calcularMetricas();
+        
+        System.out.println("📊 RESUMEN - Jugador: " + jugador.getNombre() + " " + jugador.getApellido());
+        System.out.println("   Total pases clave: " + stats.getTotalPasesClave());
+        System.out.println("   Ganando: " + stats.getPasesClaveGanando());
+        System.out.println("   Empatando: " + stats.getPasesClaveEmpatando());
+        System.out.println("   Perdiendo: " + stats.getPasesClavePerdiendo());
         
         // Guardar
         estadisticasJugadorRepository.save(stats);
@@ -244,6 +317,16 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         stats.setGolesContra(0);
         stats.setTarjetasAmarillas(0);
         stats.setTarjetasRojas(0);
+        stats.setTotalPasesClave(0);
+        stats.setPasesClave0_15(0);
+        stats.setPasesClave16_30(0);
+        stats.setPasesClave31_45(0);
+        stats.setPasesClave46_60(0);
+        stats.setPasesClave61_75(0);
+        stats.setPasesClave76_90(0);
+        stats.setPasesClaveGanando(0);
+        stats.setPasesClaveEmpatando(0);
+        stats.setPasesClavePerdiendo(0);
         
         // Obtener todos los partidos del equipo (finalizados y activos)
         List<Partido> partidos = partidoRepository.findByEquipo_Id(equipoId);
@@ -296,6 +379,37 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                     stats.setTarjetasAmarillas(stats.getTarjetasAmarillas() + 1);
                 } else if (tipo.contains("ROJA")) {
                     stats.setTarjetasRojas(stats.getTarjetasRojas() + 1);
+                } else if (tipo.equals("PASE_CLAVE") || tipo.equals("PASE CLAVE")) {
+                    // Contar pase clave para el equipo
+                    stats.setTotalPasesClave(stats.getTotalPasesClave() + 1);
+                    
+                    // Agregar distribución temporal
+                    Integer minuto = evento.getMinuto();
+                    if (minuto != null) {
+                        if (minuto >= 0 && minuto <= 15) {
+                            stats.setPasesClave0_15(stats.getPasesClave0_15() + 1);
+                        } else if (minuto >= 16 && minuto <= 30) {
+                            stats.setPasesClave16_30(stats.getPasesClave16_30() + 1);
+                        } else if (minuto >= 31 && minuto <= 45) {
+                            stats.setPasesClave31_45(stats.getPasesClave31_45() + 1);
+                        } else if (minuto >= 46 && minuto <= 60) {
+                            stats.setPasesClave46_60(stats.getPasesClave46_60() + 1);
+                        } else if (minuto >= 61 && minuto <= 75) {
+                            stats.setPasesClave61_75(stats.getPasesClave61_75() + 1);
+                        } else if (minuto >= 76 && minuto <= 90) {
+                            stats.setPasesClave76_90(stats.getPasesClave76_90() + 1);
+                        }
+                        
+                        // Determinar estado del marcador en ese minuto
+                        String estadoMarcador = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo);
+                        if ("GANANDO".equals(estadoMarcador)) {
+                            stats.setPasesClaveGanando(stats.getPasesClaveGanando() + 1);
+                        } else if ("EMPATANDO".equals(estadoMarcador)) {
+                            stats.setPasesClaveEmpatando(stats.getPasesClaveEmpatando() + 1);
+                        } else if ("PERDIENDO".equals(estadoMarcador)) {
+                            stats.setPasesClavePerdiendo(stats.getPasesClavePerdiendo() + 1);
+                        }
+                    }
                 }
             }
         }
@@ -303,10 +417,15 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         // Calcular métricas
         stats.calcularMetricas();
         
+        // Calcular mayor pasador del equipo
+        String mayorPasador = calcularMayorPasador(equipoId, temporada);
+        stats.setMayorPasador(mayorPasador);
+        
         // Guardar estadísticas del equipo
         EstadisticasEquipo savedStats = estadisticasEquipoRepository.save(stats);
         System.out.println("Estadísticas del equipo guardadas: " + savedStats.getId());
         System.out.println("Partidos jugados: " + savedStats.getPartidosJugados());
+        System.out.println("Mayor pasador: " + savedStats.getMayorPasador());
         
         // Actualizar estadísticas de todos los jugadores del equipo
         System.out.println("=== ACTUALIZANDO ESTADÍSTICAS DE JUGADORES ===");
@@ -320,6 +439,113 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         }
         
         System.out.println("=== ACTUALIZACIÓN COMPLETADA ===");
+    }
+    
+    /**
+     * Calcula el jugador con más pases clave del equipo
+     */
+    private String calcularMayorPasador(Long equipoId, String temporada) {
+        System.out.println("🔢 Buscando estadísticas de jugadores - Equipo: " + equipoId + ", Temporada: " + temporada);
+        List<EstadisticasJugador> estadisticasJugadores = estadisticasJugadorRepository
+            .findByJugador_Equipo_IdAndTemporada(equipoId, temporada);
+        
+        System.out.println("📊 Jugadores encontrados: " + estadisticasJugadores.size());
+        
+        if (estadisticasJugadores.isEmpty()) {
+            System.out.println("⚠️ No hay jugadores con estadísticas");
+            return "N/A";
+        }
+        
+        // Mostrar pases clave de cada jugador
+        for (EstadisticasJugador stats : estadisticasJugadores) {
+            System.out.println("  - " + stats.getJugador().getNombre() + " " + stats.getJugador().getApellido() + ": " + stats.getTotalPasesClave() + " pases clave");
+        }
+        
+        // Encontrar el jugador con más pases clave
+        EstadisticasJugador mejorPasador = estadisticasJugadores.stream()
+            .filter(stats -> stats.getTotalPasesClave() != null && stats.getTotalPasesClave() > 0)
+            .max((s1, s2) -> {
+                int pases1 = s1.getTotalPasesClave() != null ? s1.getTotalPasesClave() : 0;
+                int pases2 = s2.getTotalPasesClave() != null ? s2.getTotalPasesClave() : 0;
+                return Integer.compare(pases1, pases2);
+            })
+            .orElse(null);
+        
+        if (mejorPasador == null || mejorPasador.getTotalPasesClave() == 0) {
+            return "N/A";
+        }
+        
+        // Retornar nombre completo del jugador
+        Jugador jugador = mejorPasador.getJugador();
+        return jugador.getNombre() + " " + jugador.getApellido() + " (" + mejorPasador.getTotalPasesClave() + ")";
+    }
+    
+    /**
+     * Determina el estado del marcador en un minuto específico del partido
+     * reconstruyendo el marcador cronológicamente desde los eventos de gol
+     * Usa el ID del evento para determinar el orden exacto dentro del mismo minuto
+     */
+    private String determinarEstadoMarcadorEnMinuto(Partido partido, Long eventoId, Equipo equipoJugador) {
+        if (partido == null || eventoId == null) {
+            return "EMPATANDO"; // Por defecto si no hay datos
+        }
+        
+        // Obtener todos los eventos de gol del partido que ocurrieron ANTES de este evento
+        // Usando el ID del evento (auto-incremental) para determinar el orden cronológico exacto
+        List<EventoJugador> eventosPartido = eventoJugadorRepository.findAll().stream()
+            .filter(e -> e.getPartido().getId().equals(partido.getId()))
+            .filter(e -> {
+                String tipo = e.getTipoEvento().toUpperCase();
+                return tipo.equals("GOL") || tipo.equals("GOLES") || tipo.equals("GOL_RIVAL");
+            })
+            .filter(e -> e.getId() < eventoId) // Solo goles registrados ANTES de este evento
+            .sorted((e1, e2) -> e1.getId().compareTo(e2.getId()))
+            .collect(java.util.stream.Collectors.toList());
+        
+        // Reconstruir el marcador hasta el minuto objetivo
+        int golesEquipo = 0;
+        int golesRival = 0;
+        
+        System.out.println("DEBUG - Analizando evento ID: " + eventoId + " del equipo: " + equipoJugador.getNombre());
+        
+        for (EventoJugador gol : eventosPartido) {
+            String tipoEvento = gol.getTipoEvento().toUpperCase();
+            
+            // Si es un gol_rival, siempre es del rival
+            if (tipoEvento.equals("GOL_RIVAL")) {
+                golesRival++;
+                System.out.println("  -> Gol ID " + gol.getId() + " del RIVAL (marcado manualmente)");
+            } else if (gol.getJugador() == null) {
+                // Si no hay jugador asociado, asumir que es del rival
+                golesRival++;
+                System.out.println("  -> Gol ID " + gol.getId() + " sin jugador (asumido como RIVAL)");
+            } else {
+                // Verificar si el gol fue del equipo del jugador o del rival
+                boolean esDelEquipo = gol.getJugador().getEquipo().getId().equals(equipoJugador.getId());
+                if (esDelEquipo) {
+                    golesEquipo++;
+                    System.out.println("  -> Gol ID " + gol.getId() + " del equipo " + gol.getJugador().getEquipo().getNombre() + " (nuestro)");
+                } else {
+                    golesRival++;
+                    System.out.println("  -> Gol ID " + gol.getId() + " del rival " + gol.getJugador().getEquipo().getNombre());
+                }
+            }
+        }
+        
+        System.out.println("  Marcador reconstruido: " + golesEquipo + "-" + golesRival);
+        
+        // Determinar el estado
+        String estado;
+        if (golesEquipo > golesRival) {
+            estado = "GANANDO";
+        } else if (golesEquipo < golesRival) {
+            estado = "PERDIENDO";
+        } else {
+            estado = "EMPATANDO";
+        }
+        
+        System.out.println("  Estado: " + estado);
+        return estado;
     }
     
     @Override
@@ -374,6 +600,17 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         dto.setPartidosJugados(stats.getPartidosJugados());
         dto.setPartidosTitular(stats.getPartidosTitular());
         dto.setMinutosJugados(stats.getMinutosJugados());
+        dto.setTotalPasesClave(stats.getTotalPasesClave());
+        dto.setPasesClave0_15(stats.getPasesClave0_15());
+        dto.setPasesClave16_30(stats.getPasesClave16_30());
+        dto.setPasesClave31_45(stats.getPasesClave31_45());
+        dto.setPasesClave46_60(stats.getPasesClave46_60());
+        dto.setPasesClave61_75(stats.getPasesClave61_75());
+        dto.setPasesClave76_90(stats.getPasesClave76_90());
+        dto.setPasesClaveGanando(stats.getPasesClaveGanando());
+        dto.setPasesClaveEmpatando(stats.getPasesClaveEmpatando());
+        dto.setPasesClavePerdiendo(stats.getPasesClavePerdiendo());
+        dto.setPasesClaveP90(stats.getPasesClaveP90());
         dto.setPromedioGoles(stats.getPromedioGoles());
         dto.setPromedioAsistencias(stats.getPromedioAsistencias());
         dto.setRating(stats.getRating());
@@ -399,6 +636,18 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         dto.setDiferenciaGoles(stats.getDiferenciaGoles());
         dto.setTarjetasAmarillas(stats.getTarjetasAmarillas());
         dto.setTarjetasRojas(stats.getTarjetasRojas());
+        dto.setTotalPasesClave(stats.getTotalPasesClave());
+        dto.setPasesClave0_15(stats.getPasesClave0_15());
+        dto.setPasesClave16_30(stats.getPasesClave16_30());
+        dto.setPasesClave31_45(stats.getPasesClave31_45());
+        dto.setPasesClave46_60(stats.getPasesClave46_60());
+        dto.setPasesClave61_75(stats.getPasesClave61_75());
+        dto.setPasesClave76_90(stats.getPasesClave76_90());
+        dto.setPasesClaveGanando(stats.getPasesClaveGanando());
+        dto.setPasesClaveEmpatando(stats.getPasesClaveEmpatando());
+        dto.setPasesClavePerdiendo(stats.getPasesClavePerdiendo());
+        dto.setPasesClaveP90(stats.getPasesClaveP90());
+        dto.setMayorPasador(stats.getMayorPasador());
         dto.setPromedioGolesFavor(stats.getPromedioGolesFavor());
         dto.setPromedioGolesContra(stats.getPromedioGolesContra());
         dto.setEfectividad(stats.getEfectividad());

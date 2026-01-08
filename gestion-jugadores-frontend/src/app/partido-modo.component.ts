@@ -308,11 +308,30 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
   decrementarGolesRival(): void {
     if (this.golesRival > 0) {
       this.golesRival--;
+      // TODO: Eliminar el último evento de gol_rival si existe
+      console.log('⚽ Gol rival decrementado:', this.golesRival);
     }
   }
 
   incrementarGolesRival(): void {
     this.golesRival++;
+    // Crear evento de gol rival para que sea rastreable en estadísticas
+    const eventoGolRival = {
+      jugadorId: null, // Gol del rival, no tiene jugador de nuestro equipo
+      partidoId: this.partidoActivo.id,
+      tipoEvento: 'gol_rival',
+      minuto: this.duracionPartido - this.tiempoRestante
+    };
+    
+    console.log('📤 Enviando evento de gol rival:', eventoGolRival);
+    this.eventoService.registrarEvento(eventoGolRival).subscribe(
+      (response) => {
+        console.log('✅ Evento de gol rival registrado');
+      },
+      (error) => {
+        console.error('❌ Error al registrar gol rival:', error);
+      }
+    );
   }
 
   obtenerResultado(): string {

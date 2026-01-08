@@ -17,7 +17,7 @@ public class EventoJugador {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "jugador_id", nullable = false)
+    @JoinColumn(name = "jugador_id", nullable = true)  // Cambiado a true para permitir goles del rival
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Jugador jugador;
 

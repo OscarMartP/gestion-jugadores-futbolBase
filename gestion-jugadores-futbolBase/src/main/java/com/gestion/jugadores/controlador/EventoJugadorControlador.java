@@ -37,11 +37,18 @@ public class EventoJugadorControlador {
 
 	@PostMapping
 	public ResponseEntity<EventoJugador> registrarEvento(@RequestBody EventoJugadorDTO dto) {
-	    Jugador jugador = jugadorService.obtenerJugadorPorId(dto.jugadorId);
 	    Partido partido = partidoService.obtenerPartidoPorId(dto.partidoId);
 
 	    EventoJugador evento = new EventoJugador();
-	    evento.setJugador(jugador);
+	    
+	    // Para eventos de gol_rival, el jugador puede ser null
+	    if (dto.jugadorId != null) {
+	        Jugador jugador = jugadorService.obtenerJugadorPorId(dto.jugadorId);
+	        evento.setJugador(jugador);
+	    } else {
+	        evento.setJugador(null); // Gol del rival, no tiene jugador de nuestro equipo
+	    }
+	    
 	    evento.setPartido(partido);
 	    evento.setTipoEvento(dto.tipoEvento);
 	    evento.setMinuto(dto.minuto);
