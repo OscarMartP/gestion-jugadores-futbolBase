@@ -364,12 +364,6 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
   realizarSustitucion(jugadorEntra: any): void {
     const minuto = Math.floor(this.tiempoRestante / 60);
     
-    console.log('🔄 ANTES de la sustitución:');
-    console.log('  Jugadores en campo:', this.jugadores.map(j => `${j.nombre} (ID: ${j.id})`));
-    console.log('  Suplentes:', this.suplentes.map(j => `${j.nombre} (ID: ${j.id})`));
-    console.log(`  Sale: ${this.jugadorASalir.nombre} (ID: ${this.jugadorASalir.id})`);
-    console.log(`  Entra: ${jugadorEntra.nombre} (ID: ${jugadorEntra.id})`);
-    
     // Crear evento de sustitución
     const evento = {
       jugadorId: jugadorEntra.id,
@@ -384,31 +378,17 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
       next: () => {
         // Actualizar listas: quitar el que sale de titulares y agregarlo a suplentes
         const indiceTitular = this.jugadores.findIndex(j => j.id === this.jugadorASalir.id);
-        console.log(`  🔍 Buscando ${this.jugadorASalir.nombre} en jugadores: índice = ${indiceTitular}`);
-        
         if (indiceTitular > -1) {
           this.jugadores.splice(indiceTitular, 1);
           this.suplentes.push(this.jugadorASalir);
-          console.log(`  ✅ ${this.jugadorASalir.nombre} movido a suplentes`);
-        } else {
-          console.log(`  ❌ NO encontrado ${this.jugadorASalir.nombre} en jugadores`);
         }
 
         // Quitar el que entra de suplentes y agregarlo a titulares
         const indiceSuplente = this.suplentes.findIndex(j => j.id === jugadorEntra.id);
-        console.log(`  🔍 Buscando ${jugadorEntra.nombre} en suplentes: índice = ${indiceSuplente}`);
-        
         if (indiceSuplente > -1) {
           this.suplentes.splice(indiceSuplente, 1);
           this.jugadores.push(jugadorEntra);
-          console.log(`  ✅ ${jugadorEntra.nombre} movido a jugadores`);
-        } else {
-          console.log(`  ❌ NO encontrado ${jugadorEntra.nombre} en suplentes`);
         }
-
-        console.log('✅ DESPUÉS de la sustitución:');
-        console.log('  Jugadores en campo:', this.jugadores.map(j => `${j.nombre} (ID: ${j.id})`));
-        console.log('  Suplentes:', this.suplentes.map(j => `${j.nombre} (ID: ${j.id})`));
 
         this.mostrarMensaje(`Cambio realizado: Sale ${this.jugadorASalir.nombre}, Entra ${jugadorEntra.nombre}`, 'success');
         this.cerrarDialogoSustitucion();

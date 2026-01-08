@@ -378,12 +378,6 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         dto.setPromedioAsistencias(stats.getPromedioAsistencias());
         dto.setRating(stats.getRating());
         
-        // Log para depuración
-        System.out.println("Convirtiendo estadísticas de " + stats.getJugador().getNombre() + 
-            " - Posición: " + stats.getJugador().getPosicion() + 
-            " - Paradas en entidad: " + stats.getParadas() + 
-            " - Paradas en DTO: " + dto.getParadas());
-        
         return dto;
     }
     

@@ -88,13 +88,6 @@ export class EstadisticasGeneralesComponent implements OnInit {
     this.estadisticasService.obtenerEstadisticasJugadoresEquipo(this.equipoSeleccionado, this.temporada).subscribe(
       data => {
         this.jugadores = data;
-        console.log('📊 Jugadores recibidos del backend:', data);
-        // Log específico para porteros
-        const porteros = data.filter(j => j.posicion?.toUpperCase() === 'PORTERO' || j.posicion?.toUpperCase() === 'ARQUERO' || j.posicion?.toUpperCase() === 'POR');
-        console.log('🧤 Porteros encontrados:', porteros.length);
-        porteros.forEach(p => {
-          console.log(`  - ${p.jugadorNombre} ${p.jugadorApellido}: paradas = ${p.paradas}, posicion = "${p.posicion}"`);
-        });
       },
       error => console.log(error)
     );
