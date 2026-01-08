@@ -13,6 +13,8 @@ public class EventoJugadorDTO {
     private Integer minuto;
     private Boolean fueTitular;
     private Integer minutosJugados;
+    private Long jugadorSaleId;
+    private Long jugadorEntraId;
 
     public EventoJugadorDTO() {}
 
@@ -80,6 +82,22 @@ public class EventoJugadorDTO {
 
     public void setMinutosJugados(Integer minutosJugados) {
         this.minutosJugados = minutosJugados;
+    }
+
+    public Long getJugadorSaleId() {
+        return jugadorSaleId;
+    }
+
+    public void setJugadorSaleId(Long jugadorSaleId) {
+        this.jugadorSaleId = jugadorSaleId;
+    }
+
+    public Long getJugadorEntraId() {
+        return jugadorEntraId;
+    }
+
+    public void setJugadorEntraId(Long jugadorEntraId) {
+        this.jugadorEntraId = jugadorEntraId;
     }
 
     @Override

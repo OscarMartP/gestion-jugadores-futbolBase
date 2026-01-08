@@ -4,6 +4,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDateTime;
+import java.util.List;
 //Modelo Partido
 @Entity
 @Table(name = "partidos")
@@ -40,6 +41,16 @@ public class Partido {
 	 @Column(name = "goles_rival")
 	 private Integer golesRival;
 
+	 @ElementCollection(fetch = FetchType.LAZY)
+	 @CollectionTable(name = "partido_titulares", joinColumns = @JoinColumn(name = "partido_id"))
+	 @Column(name = "jugador_id")
+	 private List<Long> titulares;
+
+	 @ElementCollection(fetch = FetchType.LAZY)
+	 @CollectionTable(name = "partido_suplentes", joinColumns = @JoinColumn(name = "partido_id"))
+	 @Column(name = "jugador_id")
+	 private List<Long> suplentes;
+
 	 public Partido() {}
 
 	 public Partido(Equipo equipo, LocalDateTime fecha, Integer duracion, Boolean partidoActivo) {
@@ -47,6 +58,8 @@ public class Partido {
 	        this.fecha = fecha;
 	        this.duracion = duracion;
 			this.partidoActivo = partidoActivo;
+			this.titulares = new java.util.ArrayList<>();
+			this.suplentes = new java.util.ArrayList<>();
 	 }
 
 	 public Long getId() { return id; }
@@ -69,9 +82,15 @@ public class Partido {
 	 public void setResultado(String resultado) { this.resultado = resultado; }
 	 public void setGolesEquipo(Integer golesEquipo) { this.golesEquipo = golesEquipo; }
 	 public void setGolesRival(Integer golesRival) { this.golesRival = golesRival; }
-	  public void setPartidoActivo(Boolean partidoActivo) {
+	 public void setPartidoActivo(Boolean partidoActivo) {
         this.partidoActivo = partidoActivo;
     }
+
+	 public List<Long> getTitulares() { return titulares; }
+	 public void setTitulares(List<Long> titulares) { this.titulares = titulares; }
+
+	 public List<Long> getSuplentes() { return suplentes; }
+	 public void setSuplentes(List<Long> suplentes) { this.suplentes = suplentes; }
 	}
 
 

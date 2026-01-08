@@ -12,15 +12,17 @@ public class EquipoDTO {
     private String nombre;
     private UsuarioDTO usuario;
     private Integer duracionPartido;
+    private String tipoFutbol;
     private List<JugadorDTO> jugadores;
 
     public EquipoDTO() {}
 
-    public EquipoDTO(Long id, String nombre, UsuarioDTO usuario, Integer duracionPartido) {
+    public EquipoDTO(Long id, String nombre, UsuarioDTO usuario, Integer duracionPartido, String tipoFutbol) {
         this.id = id;
         this.nombre = nombre;
         this.usuario = usuario;
         this.duracionPartido = duracionPartido;
+        this.tipoFutbol = tipoFutbol;
     }
 
     // Getters and Setters
@@ -55,6 +57,14 @@ public class EquipoDTO {
 
     public void setDuracionPartido(Integer duracionPartido) {
         this.duracionPartido = duracionPartido;
+    }
+
+    public String getTipoFutbol() {
+        return tipoFutbol;
+    }
+
+    public void setTipoFutbol(String tipoFutbol) {
+        this.tipoFutbol = tipoFutbol;
     }
 
     public List<JugadorDTO> getJugadores() {

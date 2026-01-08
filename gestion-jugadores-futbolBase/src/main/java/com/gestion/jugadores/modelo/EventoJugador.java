@@ -39,6 +39,13 @@ public class EventoJugador {
     @Column(name = "minutos_jugados")
     private Integer minutosJugados; // Minutos que jugó en el partido
 
+    // Campos específicos para sustituciones
+    @Column(name = "jugador_sale_id")
+    private Long jugadorSaleId; // ID del jugador que sale (para tipo_evento = 'sustitucion')
+
+    @Column(name = "jugador_entra_id")
+    private Long jugadorEntraId; // ID del jugador que entra (para tipo_evento = 'sustitucion')
+
     public EventoJugador() {}
 
     public EventoJugador(Jugador jugador, Partido partido, String tipoEvento, Integer minuto) {
@@ -63,4 +70,10 @@ public class EventoJugador {
     public void setMinuto(Integer minuto) { this.minuto = minuto; }
     public void setFueTitular(Boolean fueTitular) { this.fueTitular = fueTitular; }
     public void setMinutosJugados(Integer minutosJugados) { this.minutosJugados = minutosJugados; }
+    
+    public Long getJugadorSaleId() { return jugadorSaleId; }
+    public void setJugadorSaleId(Long jugadorSaleId) { this.jugadorSaleId = jugadorSaleId; }
+    
+    public Long getJugadorEntraId() { return jugadorEntraId; }
+    public void setJugadorEntraId(Long jugadorEntraId) { this.jugadorEntraId = jugadorEntraId; }
 }

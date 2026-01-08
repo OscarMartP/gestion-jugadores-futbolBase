@@ -370,12 +370,19 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         dto.setTotalAsistencias(stats.getTotalAsistencias());
         dto.setTarjetasAmarillas(stats.getTarjetasAmarillas());
         dto.setTarjetasRojas(stats.getTarjetasRojas());
+        dto.setParadas(stats.getParadas());
         dto.setPartidosJugados(stats.getPartidosJugados());
         dto.setPartidosTitular(stats.getPartidosTitular());
         dto.setMinutosJugados(stats.getMinutosJugados());
         dto.setPromedioGoles(stats.getPromedioGoles());
         dto.setPromedioAsistencias(stats.getPromedioAsistencias());
         dto.setRating(stats.getRating());
+        
+        // Log para depuración
+        System.out.println("Convirtiendo estadísticas de " + stats.getJugador().getNombre() + 
+            " - Posición: " + stats.getJugador().getPosicion() + 
+            " - Paradas en entidad: " + stats.getParadas() + 
+            " - Paradas en DTO: " + dto.getParadas());
         
         return dto;
     }

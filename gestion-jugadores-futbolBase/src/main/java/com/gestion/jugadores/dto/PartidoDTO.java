@@ -18,6 +18,8 @@ public class PartidoDTO {
     private String resultado;
     private Integer golesEquipo;
     private Integer golesRival;
+    private List<Long> titulares;
+    private List<Long> suplentes;
     private List<EventoJugadorDTO> eventos;
 
     public PartidoDTO() {}
@@ -110,6 +112,22 @@ public class PartidoDTO {
 
     public void setGolesRival(Integer golesRival) {
         this.golesRival = golesRival;
+    }
+
+    public List<Long> getTitulares() {
+        return titulares;
+    }
+
+    public void setTitulares(List<Long> titulares) {
+        this.titulares = titulares;
+    }
+
+    public List<Long> getSuplentes() {
+        return suplentes;
+    }
+
+    public void setSuplentes(List<Long> suplentes) {
+        this.suplentes = suplentes;
     }
 
     @Override

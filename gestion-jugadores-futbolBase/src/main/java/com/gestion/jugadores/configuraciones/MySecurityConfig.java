@@ -1,5 +1,7 @@
 package com.gestion.jugadores.configuraciones;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.gestion.jugadores.servicios.impl.UserDetailsServiceImpl;
 
@@ -48,6 +53,17 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 	    return new BCryptPasswordEncoder();
 	}
 
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+		configuration.setAllowedHeaders(Arrays.asList("*"));
+		configuration.setAllowCredentials(true);
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -57,7 +73,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 	    http.csrf().disable()
-	        .cors().and()
+	        .cors().configurationSource(corsConfigurationSource()).and()
 	        .authorizeRequests()
 			.antMatchers("/generate-token", "/usuarios/").permitAll()
 			// Permitir acceso público a Swagger UI y OpenAPI docs
@@ -65,6 +81,8 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 			// allow unauthenticated GET requests to list jugadores by query param (frontend uses /api/v1/jugadores?equipoId=...)
 			.antMatchers(HttpMethod.GET, "/api/v1/jugadores").permitAll()
 			.antMatchers("/api/v1/jugadores/equipo/**").permitAll()
+			// Permitir acceso a equipos y partidos
+			.antMatchers("/equipos/**", "/partidos/**", "/api/v2/**").permitAll()
 	        .antMatchers(HttpMethod.OPTIONS).permitAll()
 	        .anyRequest().authenticated()
 	        .and()

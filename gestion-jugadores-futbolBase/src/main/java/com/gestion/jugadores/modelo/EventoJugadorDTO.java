@@ -6,4 +6,6 @@ public class EventoJugadorDTO {
 	 public Long partidoId;
 	 public String tipoEvento;
 	 public Integer minuto;
+	 public Long jugadorSaleId;
+	 public Long jugadorEntraId;
 }

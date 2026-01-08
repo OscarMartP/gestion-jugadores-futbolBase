@@ -146,4 +146,33 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
         Boolean tieneActivo = partidoService.tienePartidoActivo(equipoId);
         return ResponseEntity.ok(tieneActivo);
     }
+
+    /**
+     * PUT /api/v1/partidos/{id}/alineacion
+     * Actualizar alineación (titulares y suplentes) de un partido
+     */
+    @PutMapping("/{id}/alineacion")
+    public ResponseEntity<PartidoDTO> actualizarAlineacion(
+            @PathVariable Long id, 
+            @RequestBody AlineacionRequest alineacion) {
+        Partido partido = partidoService.obtenerPartidoPorId(id);
+        partido.setTitulares(alineacion.getTitulares());
+        partido.setSuplentes(alineacion.getSuplentes());
+        Partido actualizado = partidoService.actualizarPartido(id, partido);
+        return ResponseEntity.ok(partidoMapper.toDto(actualizado));
+    }
+
+    /**
+     * DTO interno para recibir alineación
+     */
+    public static class AlineacionRequest {
+        private List<Long> titulares;
+        private List<Long> suplentes;
+
+        public List<Long> getTitulares() { return titulares; }
+        public void setTitulares(List<Long> titulares) { this.titulares = titulares; }
+        
+        public List<Long> getSuplentes() { return suplentes; }
+        public void setSuplentes(List<Long> suplentes) { this.suplentes = suplentes; }
+    }
 }

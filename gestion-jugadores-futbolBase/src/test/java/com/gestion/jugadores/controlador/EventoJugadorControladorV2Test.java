@@ -1,8 +1,8 @@
 package com.gestion.jugadores.controlador;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gestion.jugadores.dto.EventoJugadorDTO;
 import com.gestion.jugadores.modelo.EventoJugador;
-import com.gestion.jugadores.modelo.EventoJugadorDTO;
 import com.gestion.jugadores.modelo.Jugador;
 import com.gestion.jugadores.modelo.Partido;
 import com.gestion.jugadores.servicios.EventoJugadorService;
@@ -78,10 +78,10 @@ class EventoJugadorControladorV2Test {
         evento2.setPartido(partido);
 
         eventoDTO = new EventoJugadorDTO();
-        eventoDTO.tipoEvento = "GOL";
-        eventoDTO.minuto = 15;
-        eventoDTO.jugadorId = 1L;
-        eventoDTO.partidoId = 1L;
+        eventoDTO.setTipoEvento("GOL");
+        eventoDTO.setMinuto(15);
+        eventoDTO.setJugadorId(1L);
+        eventoDTO.setPartidoId(1L);
     }
 
     @Test

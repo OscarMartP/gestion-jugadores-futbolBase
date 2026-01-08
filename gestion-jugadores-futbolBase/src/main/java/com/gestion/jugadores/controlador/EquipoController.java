@@ -53,6 +53,16 @@ public class EquipoController {
 		return equipoService.obtenerEquiposPorUsuario(userId);
 	}
 
+	// Obtener equipo por ID
+	@GetMapping("/{id}")
+	public ResponseEntity<Equipo> obtenerEquipoPorId(@PathVariable Long id) {
+		Equipo equipo = equipoService.obtenerEquipoPorId(id);
+		if (equipo == null) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(equipo);
+	}
+
 	// Obtener equipos del usuario autenticado
 	@GetMapping("/me")
 	public ResponseEntity<List<Equipo>> obtenerEquiposDelUsuarioAutenticado(Authentication authentication) {

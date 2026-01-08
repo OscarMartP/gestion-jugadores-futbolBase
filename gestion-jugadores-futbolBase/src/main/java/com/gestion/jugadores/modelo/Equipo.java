@@ -23,6 +23,9 @@ public class Equipo {
     @Column(name = "duracion_partido", nullable = false, columnDefinition = "integer default 90")
     private Integer duracionPartido = 90;
 
+    @Column(name = "tipo_futbol", length = 20, nullable = false, columnDefinition = "varchar(20) default 'FUTBOL_11'")
+    private String tipoFutbol = "FUTBOL_11"; // FUTBOL_7 o FUTBOL_11
+
     @OneToMany(mappedBy = "equipo", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Jugador> jugadores = new ArrayList<>();
@@ -35,10 +38,11 @@ public class Equipo {
 
     public Equipo() {}
 
-    public Equipo(Long id, String nombre, Integer duracionPartido, List<Jugador> jugadores, Usuario usuario) {
+    public Equipo(Long id, String nombre, Integer duracionPartido, String tipoFutbol, List<Jugador> jugadores, Usuario usuario) {
         this.id = id;
         this.nombre = nombre;
         this.duracionPartido = duracionPartido;
+        this.tipoFutbol = tipoFutbol;
         this.jugadores = jugadores;
         this.usuario = usuario;
     }
@@ -65,6 +69,14 @@ public class Equipo {
 
     public void setDuracionPartido(Integer duracionPartido) {
         this.duracionPartido = duracionPartido;
+    }
+
+    public String getTipoFutbol() {
+        return tipoFutbol;
+    }
+
+    public void setTipoFutbol(String tipoFutbol) {
+        this.tipoFutbol = tipoFutbol;
     }
 
     public List<Jugador> getJugadores() {

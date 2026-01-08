@@ -78,6 +78,8 @@ public class EventoJugadorControladorV2 extends BaseController<EventoJugador, Ev
         dto.partidoId = entity.getPartido().getId();
         dto.tipoEvento = entity.getTipoEvento();
         dto.minuto = entity.getMinuto();
+        dto.jugadorSaleId = entity.getJugadorSaleId();
+        dto.jugadorEntraId = entity.getJugadorEntraId();
         return dto;
     }
 
@@ -92,6 +94,8 @@ public class EventoJugadorControladorV2 extends BaseController<EventoJugador, Ev
         evento.setPartido(partido);
         evento.setTipoEvento(dto.tipoEvento);
         evento.setMinuto(dto.minuto);
+        evento.setJugadorSaleId(dto.jugadorSaleId);
+        evento.setJugadorEntraId(dto.jugadorEntraId);
         return evento;
     }
 
@@ -113,6 +117,8 @@ public class EventoJugadorControladorV2 extends BaseController<EventoJugador, Ev
         evento.setPartido(partido);
         evento.setTipoEvento(dto.tipoEvento);
         evento.setMinuto(dto.minuto);
+        evento.setJugadorSaleId(dto.jugadorSaleId);
+        evento.setJugadorEntraId(dto.jugadorEntraId);
 
         EventoJugador registrado = eventoJugadorService.registrarEvento(evento);
         return ResponseEntity.status(HttpStatus.CREATED).body(toDto(registrado));
