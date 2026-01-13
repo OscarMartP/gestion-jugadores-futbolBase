@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -197,6 +198,19 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         stats.setPasesClavePerdiendo(0);
         stats.setPasesClaveP90(0.0);
         
+        // Inicializar campos de tiros a puerta a 0
+        stats.setTotalTirosAPuerta(0);
+        stats.setTirosAPuerta0_15(0);
+        stats.setTirosAPuerta16_30(0);
+        stats.setTirosAPuerta31_45(0);
+        stats.setTirosAPuerta46_60(0);
+        stats.setTirosAPuerta61_75(0);
+        stats.setTirosAPuerta76_90(0);
+        stats.setTirosAPuertaGanando(0);
+        stats.setTirosAPuertaEmpatando(0);
+        stats.setTirosAPuertaPerdiendo(0);
+        stats.setTirosAPuertaP90(0.0);
+        
         // Obtener todos los eventos del jugador en la temporada
         List<EventoJugador> eventos = eventoJugadorRepository.findByJugador_Id(jugadorId);
         
@@ -208,7 +222,35 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                 case "GOL":
                 case "GOLES":
                     stats.setTotalGoles(stats.getTotalGoles() + 1);
-                    // TODO: Determinar si fue en casa o fuera según el partido
+                    // Los goles también son tiros a puerta, procesarlos igual que TIRO_A_PUERTA
+                    System.out.println("⚽ Procesando gol como tiro a puerta - Evento ID: " + evento.getId() + ", Jugador: " + jugador.getNombre());
+                    stats.setTotalTirosAPuerta(stats.getTotalTirosAPuerta() + 1);
+                    
+                    Integer minutoGol = evento.getMinuto();
+                    if (minutoGol != null) {
+                        if (minutoGol >= 0 && minutoGol <= 15) {
+                            stats.setTirosAPuerta0_15(stats.getTirosAPuerta0_15() + 1);
+                        } else if (minutoGol >= 16 && minutoGol <= 30) {
+                            stats.setTirosAPuerta16_30(stats.getTirosAPuerta16_30() + 1);
+                        } else if (minutoGol >= 31 && minutoGol <= 45) {
+                            stats.setTirosAPuerta31_45(stats.getTirosAPuerta31_45() + 1);
+                        } else if (minutoGol >= 46 && minutoGol <= 60) {
+                            stats.setTirosAPuerta46_60(stats.getTirosAPuerta46_60() + 1);
+                        } else if (minutoGol >= 61 && minutoGol <= 75) {
+                            stats.setTirosAPuerta61_75(stats.getTirosAPuerta61_75() + 1);
+                        } else if (minutoGol >= 76 && minutoGol <= 90) {
+                            stats.setTirosAPuerta76_90(stats.getTirosAPuerta76_90() + 1);
+                        }
+                        
+                        String estadoMarcadorGol = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo());
+                        if ("GANANDO".equals(estadoMarcadorGol)) {
+                            stats.setTirosAPuertaGanando(stats.getTirosAPuertaGanando() + 1);
+                        } else if ("EMPATANDO".equals(estadoMarcadorGol)) {
+                            stats.setTirosAPuertaEmpatando(stats.getTirosAPuertaEmpatando() + 1);
+                        } else if ("PERDIENDO".equals(estadoMarcadorGol)) {
+                            stats.setTirosAPuertaPerdiendo(stats.getTirosAPuertaPerdiendo() + 1);
+                        }
+                    }
                     break;
                 case "ASISTENCIA":
                 case "ASISTENCIAS":
@@ -257,6 +299,75 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setPasesClaveEmpatando(stats.getPasesClaveEmpatando() + 1);
                         } else if ("PERDIENDO".equals(estadoMarcador)) {
                             stats.setPasesClavePerdiendo(stats.getPasesClavePerdiendo() + 1);
+                        }
+                    }
+                    break;
+                case "TIRO_A_PUERTA":
+                case "TIRO A PUERTA":
+                    System.out.println("🎯 Procesando tiro a puerta - Evento ID: " + evento.getId() + ", Jugador: " + jugador.getNombre());
+                    // Incrementar total de tiros a puerta
+                    stats.setTotalTirosAPuerta(stats.getTotalTirosAPuerta() + 1);
+                    
+                    // Determinar el intervalo temporal del tiro a puerta
+                    Integer minutoTiro = evento.getMinuto();
+                    if (minutoTiro != null) {
+                        if (minutoTiro >= 0 && minutoTiro <= 15) {
+                            stats.setTirosAPuerta0_15(stats.getTirosAPuerta0_15() + 1);
+                        } else if (minutoTiro >= 16 && minutoTiro <= 30) {
+                            stats.setTirosAPuerta16_30(stats.getTirosAPuerta16_30() + 1);
+                        } else if (minutoTiro >= 31 && minutoTiro <= 45) {
+                            stats.setTirosAPuerta31_45(stats.getTirosAPuerta31_45() + 1);
+                        } else if (minutoTiro >= 46 && minutoTiro <= 60) {
+                            stats.setTirosAPuerta46_60(stats.getTirosAPuerta46_60() + 1);
+                        } else if (minutoTiro >= 61 && minutoTiro <= 75) {
+                            stats.setTirosAPuerta61_75(stats.getTirosAPuerta61_75() + 1);
+                        } else if (minutoTiro >= 76 && minutoTiro <= 90) {
+                            stats.setTirosAPuerta76_90(stats.getTirosAPuerta76_90() + 1);
+                        }
+                        
+                        // Determinar el estado del partido en ese momento
+                        String estadoMarcadorTiro = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo());
+                        if ("GANANDO".equals(estadoMarcadorTiro)) {
+                            stats.setTirosAPuertaGanando(stats.getTirosAPuertaGanando() + 1);
+                        } else if ("EMPATANDO".equals(estadoMarcadorTiro)) {
+                            stats.setTirosAPuertaEmpatando(stats.getTirosAPuertaEmpatando() + 1);
+                        } else if ("PERDIENDO".equals(estadoMarcadorTiro)) {
+                            stats.setTirosAPuertaPerdiendo(stats.getTirosAPuertaPerdiendo() + 1);
+                        }
+                    }
+                    break;
+                    
+                case "ROBO":
+                case "ROBOS":
+                    System.out.println("🛡️ Procesando robo - Evento ID: " + evento.getId() + ", Jugador: " + jugador.getNombre());
+                    // Incrementar total de robos (null-safe)
+                    stats.setTotalRobos((stats.getTotalRobos() != null ? stats.getTotalRobos() : 0) + 1);
+                    
+                    // Determinar el intervalo temporal del robo
+                    Integer minutoRobo = evento.getMinuto();
+                    if (minutoRobo != null) {
+                        if (minutoRobo >= 0 && minutoRobo <= 15) {
+                            stats.setRobos0_15((stats.getRobos0_15() != null ? stats.getRobos0_15() : 0) + 1);
+                        } else if (minutoRobo >= 16 && minutoRobo <= 30) {
+                            stats.setRobos16_30((stats.getRobos16_30() != null ? stats.getRobos16_30() : 0) + 1);
+                        } else if (minutoRobo >= 31 && minutoRobo <= 45) {
+                            stats.setRobos31_45((stats.getRobos31_45() != null ? stats.getRobos31_45() : 0) + 1);
+                        } else if (minutoRobo >= 46 && minutoRobo <= 60) {
+                            stats.setRobos46_60((stats.getRobos46_60() != null ? stats.getRobos46_60() : 0) + 1);
+                        } else if (minutoRobo >= 61 && minutoRobo <= 75) {
+                            stats.setRobos61_75((stats.getRobos61_75() != null ? stats.getRobos61_75() : 0) + 1);
+                        } else if (minutoRobo >= 76 && minutoRobo <= 90) {
+                            stats.setRobos76_90((stats.getRobos76_90() != null ? stats.getRobos76_90() : 0) + 1);
+                        }
+                        
+                        // Determinar el estado del partido en ese momento
+                        String estadoMarcadorRobo = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo());
+                        if ("GANANDO".equals(estadoMarcadorRobo)) {
+                            stats.setRobosGanando((stats.getRobosGanando() != null ? stats.getRobosGanando() : 0) + 1);
+                        } else if ("EMPATANDO".equals(estadoMarcadorRobo)) {
+                            stats.setRobosEmpatando((stats.getRobosEmpatando() != null ? stats.getRobosEmpatando() : 0) + 1);
+                        } else if ("PERDIENDO".equals(estadoMarcadorRobo)) {
+                            stats.setRobosPerdiendo((stats.getRobosPerdiendo() != null ? stats.getRobosPerdiendo() : 0) + 1);
                         }
                     }
                     break;
@@ -327,6 +438,18 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         stats.setPasesClaveGanando(0);
         stats.setPasesClaveEmpatando(0);
         stats.setPasesClavePerdiendo(0);
+        
+        // Inicializar campos de tiros a puerta a 0
+        stats.setTotalTirosAPuerta(0);
+        stats.setTirosAPuerta0_15(0);
+        stats.setTirosAPuerta16_30(0);
+        stats.setTirosAPuerta31_45(0);
+        stats.setTirosAPuerta46_60(0);
+        stats.setTirosAPuerta61_75(0);
+        stats.setTirosAPuerta76_90(0);
+        stats.setTirosAPuertaGanando(0);
+        stats.setTirosAPuertaEmpatando(0);
+        stats.setTirosAPuertaPerdiendo(0);
         
         // Obtener todos los partidos del equipo (finalizados y activos)
         List<Partido> partidos = partidoRepository.findByEquipo_Id(equipoId);
@@ -410,9 +533,173 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setPasesClavePerdiendo(stats.getPasesClavePerdiendo() + 1);
                         }
                     }
+                } else if (tipo.equals("TIRO_A_PUERTA") || tipo.equals("TIRO A PUERTA") || tipo.equals("GOL")) {
+                    // Contar tiro a puerta para el equipo (incluye goles ya que un gol es un tiro a puerta que entró)
+                    stats.setTotalTirosAPuerta(stats.getTotalTirosAPuerta() + 1);
+                    
+                    // Agregar distribución temporal
+                    Integer minutoTiro = evento.getMinuto();
+                    if (minutoTiro != null) {
+                        if (minutoTiro >= 0 && minutoTiro <= 15) {
+                            stats.setTirosAPuerta0_15(stats.getTirosAPuerta0_15() + 1);
+                        } else if (minutoTiro >= 16 && minutoTiro <= 30) {
+                            stats.setTirosAPuerta16_30(stats.getTirosAPuerta16_30() + 1);
+                        } else if (minutoTiro >= 31 && minutoTiro <= 45) {
+                            stats.setTirosAPuerta31_45(stats.getTirosAPuerta31_45() + 1);
+                        } else if (minutoTiro >= 46 && minutoTiro <= 60) {
+                            stats.setTirosAPuerta46_60(stats.getTirosAPuerta46_60() + 1);
+                        } else if (minutoTiro >= 61 && minutoTiro <= 75) {
+                            stats.setTirosAPuerta61_75(stats.getTirosAPuerta61_75() + 1);
+                        } else if (minutoTiro >= 76 && minutoTiro <= 90) {
+                            stats.setTirosAPuerta76_90(stats.getTirosAPuerta76_90() + 1);
+                        }
+                        
+                        // Determinar estado del marcador en ese minuto
+                        String estadoMarcadorTiro = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo);
+                        if ("GANANDO".equals(estadoMarcadorTiro)) {
+                            stats.setTirosAPuertaGanando(stats.getTirosAPuertaGanando() + 1);
+                        } else if ("EMPATANDO".equals(estadoMarcadorTiro)) {
+                            stats.setTirosAPuertaEmpatando(stats.getTirosAPuertaEmpatando() + 1);
+                        } else if ("PERDIENDO".equals(estadoMarcadorTiro)) {
+                            stats.setTirosAPuertaPerdiendo(stats.getTirosAPuertaPerdiendo() + 1);
+                        }
+                    }
+                } else if (tipo.equals("ROBO") || tipo.equals("ROBOS")) {
+                    // Contar robo para el equipo (null-safe)
+                    stats.setTotalRobos((stats.getTotalRobos() != null ? stats.getTotalRobos() : 0) + 1);
+                    
+                    // Agregar distribución temporal
+                    Integer minutoRobo = evento.getMinuto();
+                    if (minutoRobo != null) {
+                        if (minutoRobo >= 0 && minutoRobo <= 15) {
+                            stats.setRobos0_15((stats.getRobos0_15() != null ? stats.getRobos0_15() : 0) + 1);
+                        } else if (minutoRobo >= 16 && minutoRobo <= 30) {
+                            stats.setRobos16_30((stats.getRobos16_30() != null ? stats.getRobos16_30() : 0) + 1);
+                        } else if (minutoRobo >= 31 && minutoRobo <= 45) {
+                            stats.setRobos31_45((stats.getRobos31_45() != null ? stats.getRobos31_45() : 0) + 1);
+                        } else if (minutoRobo >= 46 && minutoRobo <= 60) {
+                            stats.setRobos46_60((stats.getRobos46_60() != null ? stats.getRobos46_60() : 0) + 1);
+                        } else if (minutoRobo >= 61 && minutoRobo <= 75) {
+                            stats.setRobos61_75((stats.getRobos61_75() != null ? stats.getRobos61_75() : 0) + 1);
+                        } else if (minutoRobo >= 76 && minutoRobo <= 90) {
+                            stats.setRobos76_90((stats.getRobos76_90() != null ? stats.getRobos76_90() : 0) + 1);
+                        }
+                        
+                        // Determinar estado del marcador en ese minuto
+                        String estadoMarcadorRobo = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo);
+                        if ("GANANDO".equals(estadoMarcadorRobo)) {
+                            stats.setRobosGanando((stats.getRobosGanando() != null ? stats.getRobosGanando() : 0) + 1);
+                        } else if ("EMPATANDO".equals(estadoMarcadorRobo)) {
+                            stats.setRobosEmpatando((stats.getRobosEmpatando() != null ? stats.getRobosEmpatando() : 0) + 1);
+                        } else if ("PERDIENDO".equals(estadoMarcadorRobo)) {
+                            stats.setRobosPerdiendo((stats.getRobosPerdiendo() != null ? stats.getRobosPerdiendo() : 0) + 1);
+                        }
+                    }
                 }
             }
         }
+        
+        // Calcular tiros recibidos del rival (PARADAS + GOLES_RIVAL)
+        // Inicializar contadores de tiros recibidos
+        stats.setTirosRecibidos0_15(0);
+        stats.setTirosRecibidos16_30(0);
+        stats.setTirosRecibidos31_45(0);
+        stats.setTirosRecibidos46_60(0);
+        stats.setTirosRecibidos61_75(0);
+        stats.setTirosRecibidos76_90(0);
+        
+        // Para cada partido del equipo, procesar paradas y goles del rival
+        for (Partido partido : partidos) {
+            // Obtener todos los eventos del partido
+            List<EventoJugador> eventosPartido = eventoJugadorRepository.findByPartido_Id(partido.getId());
+            
+            // Contar paradas del portero de nuestro equipo (tiros que fueron parados)
+            for (EventoJugador evento : eventosPartido) {
+                String tipo = evento.getTipoEvento().toUpperCase();
+                Integer minuto = evento.getMinuto();
+                
+                // Solo contar paradas de jugadores de nuestro equipo
+                if (tipo.equals("PARADA") && minuto != null && 
+                    evento.getJugador().getEquipo().getId().equals(equipoId)) {
+                    
+                    if (minuto >= 0 && minuto <= 15) {
+                        stats.setTirosRecibidos0_15(stats.getTirosRecibidos0_15() + 1);
+                    } else if (minuto >= 16 && minuto <= 30) {
+                        stats.setTirosRecibidos16_30(stats.getTirosRecibidos16_30() + 1);
+                    } else if (minuto >= 31 && minuto <= 45) {
+                        stats.setTirosRecibidos31_45(stats.getTirosRecibidos31_45() + 1);
+                    } else if (minuto >= 46 && minuto <= 60) {
+                        stats.setTirosRecibidos46_60(stats.getTirosRecibidos46_60() + 1);
+                    } else if (minuto >= 61 && minuto <= 75) {
+                        stats.setTirosRecibidos61_75(stats.getTirosRecibidos61_75() + 1);
+                    } else if (minuto >= 76 && minuto <= 90) {
+                        stats.setTirosRecibidos76_90(stats.getTirosRecibidos76_90() + 1);
+                    }
+                }
+            }
+            
+            // Contar goles del rival (son tiros recibidos que no fueron parados)
+            // Los goles del rival se distribuyen uniformemente en los intervalos
+            // basándonos en el total de minutos jugados
+            if (partido.getGolesRival() != null && partido.getGolesRival() > 0) {
+                // Buscar eventos de gol del rival para saber en qué minutos ocurrieron
+                List<EventoJugador> golesEventos = new ArrayList<>();
+                for (EventoJugador evento : eventosPartido) {
+                    String tipo = evento.getTipoEvento().toUpperCase();
+                    // Buscar eventos GOL de jugadores que NO son de nuestro equipo
+                    if ((tipo.equals("GOL") || tipo.equals("GOL_RIVAL")) && 
+                        !evento.getJugador().getEquipo().getId().equals(equipoId)) {
+                        golesEventos.add(evento);
+                    }
+                }
+                
+                // Si encontramos eventos de gol con minuto, usarlos
+                if (!golesEventos.isEmpty()) {
+                    for (EventoJugador golEvento : golesEventos) {
+                        Integer minuto = golEvento.getMinuto();
+                        if (minuto != null) {
+                            if (minuto >= 0 && minuto <= 15) {
+                                stats.setTirosRecibidos0_15(stats.getTirosRecibidos0_15() + 1);
+                            } else if (minuto >= 16 && minuto <= 30) {
+                                stats.setTirosRecibidos16_30(stats.getTirosRecibidos16_30() + 1);
+                            } else if (minuto >= 31 && minuto <= 45) {
+                                stats.setTirosRecibidos31_45(stats.getTirosRecibidos31_45() + 1);
+                            } else if (minuto >= 46 && minuto <= 60) {
+                                stats.setTirosRecibidos46_60(stats.getTirosRecibidos46_60() + 1);
+                            } else if (minuto >= 61 && minuto <= 75) {
+                                stats.setTirosRecibidos61_75(stats.getTirosRecibidos61_75() + 1);
+                            } else if (minuto >= 76 && minuto <= 90) {
+                                stats.setTirosRecibidos76_90(stats.getTirosRecibidos76_90() + 1);
+                            }
+                        }
+                    }
+                } else {
+                    // Si no hay eventos de gol con minuto, distribuir proporcionalmente
+                    // basándonos en que el partido duró 90 minutos
+                    int golesRival = partido.getGolesRival();
+                    // Distribuir uniformemente (cada intervalo tiene la misma probabilidad)
+                    int golesPorIntervalo = golesRival / 6;
+                    int golesRestantes = golesRival % 6;
+                    
+                    stats.setTirosRecibidos0_15(stats.getTirosRecibidos0_15() + golesPorIntervalo);
+                    stats.setTirosRecibidos16_30(stats.getTirosRecibidos16_30() + golesPorIntervalo);
+                    stats.setTirosRecibidos31_45(stats.getTirosRecibidos31_45() + golesPorIntervalo);
+                    stats.setTirosRecibidos46_60(stats.getTirosRecibidos46_60() + golesPorIntervalo);
+                    stats.setTirosRecibidos61_75(stats.getTirosRecibidos61_75() + golesPorIntervalo);
+                    stats.setTirosRecibidos76_90(stats.getTirosRecibidos76_90() + golesPorIntervalo + golesRestantes);
+                }
+            }
+        }
+        
+        // Calcular total de tiros recibidos (suma de todos los intervalos)
+        stats.setTotalTirosRecibidos(
+            stats.getTirosRecibidos0_15() +
+            stats.getTirosRecibidos16_30() +
+            stats.getTirosRecibidos31_45() +
+            stats.getTirosRecibidos46_60() +
+            stats.getTirosRecibidos61_75() +
+            stats.getTirosRecibidos76_90()
+        );
         
         // Calcular métricas
         stats.calcularMetricas();
@@ -420,6 +707,14 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         // Calcular mayor pasador del equipo
         String mayorPasador = calcularMayorPasador(equipoId, temporada);
         stats.setMayorPasador(mayorPasador);
+        
+        // Calcular mayor tirador del equipo
+        String mayorTirador = calcularMayorTirador(equipoId, temporada);
+        stats.setMayorTirador(mayorTirador);
+        
+        // Calcular mayor recuperador del equipo
+        String mayorRecuperador = calcularMayorRecuperador(equipoId, temporada);
+        stats.setMayorRecuperador(mayorRecuperador);
         
         // Guardar estadísticas del equipo
         EstadisticasEquipo savedStats = estadisticasEquipoRepository.save(stats);
@@ -478,6 +773,82 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         // Retornar nombre completo del jugador
         Jugador jugador = mejorPasador.getJugador();
         return jugador.getNombre() + " " + jugador.getApellido() + " (" + mejorPasador.getTotalPasesClave() + ")";
+    }
+    
+    /**
+     * Calcula el jugador con más tiros a puerta del equipo
+     */
+    private String calcularMayorTirador(Long equipoId, String temporada) {
+        System.out.println("🎯 Buscando estadísticas de tiradores - Equipo: " + equipoId + ", Temporada: " + temporada);
+        List<EstadisticasJugador> estadisticasJugadores = estadisticasJugadorRepository
+            .findByJugador_Equipo_IdAndTemporada(equipoId, temporada);
+        
+        System.out.println("📊 Jugadores encontrados: " + estadisticasJugadores.size());
+        
+        if (estadisticasJugadores.isEmpty()) {
+            System.out.println("⚠️ No hay jugadores con estadísticas");
+            return "N/A";
+        }
+        
+        // Mostrar tiros a puerta de cada jugador
+        for (EstadisticasJugador stats : estadisticasJugadores) {
+            System.out.println("  - " + stats.getJugador().getNombre() + " " + stats.getJugador().getApellido() + ": " + stats.getTotalTirosAPuerta() + " tiros a puerta");
+        }
+        
+        // Encontrar el jugador con más tiros a puerta
+        EstadisticasJugador mejorTirador = estadisticasJugadores.stream()
+            .filter(stats -> stats.getTotalTirosAPuerta() != null && stats.getTotalTirosAPuerta() > 0)
+            .max((s1, s2) -> {
+                int tiros1 = s1.getTotalTirosAPuerta() != null ? s1.getTotalTirosAPuerta() : 0;
+                int tiros2 = s2.getTotalTirosAPuerta() != null ? s2.getTotalTirosAPuerta() : 0;
+                return Integer.compare(tiros1, tiros2);
+            })
+            .orElse(null);
+        
+        if (mejorTirador == null || mejorTirador.getTotalTirosAPuerta() == 0) {
+            return "N/A";
+        }
+        
+        // Retornar nombre completo del jugador
+        Jugador jugador = mejorTirador.getJugador();
+        return jugador.getNombre() + " " + jugador.getApellido() + " (" + mejorTirador.getTotalTirosAPuerta() + ")";
+    }
+    
+    /**
+     * Calcula el jugador con más robos del equipo
+     */
+    private String calcularMayorRecuperador(Long equipoId, String temporada) {
+        System.out.println("🛡️ Buscando estadísticas de jugadores para robos - Equipo: " + equipoId + ", Temporada: " + temporada);
+        List<EstadisticasJugador> estadisticasJugadores = estadisticasJugadorRepository
+            .findByJugador_Equipo_IdAndTemporada(equipoId, temporada);
+        
+        System.out.println("📊 Jugadores encontrados: " + estadisticasJugadores.size());
+        
+        if (estadisticasJugadores.isEmpty()) {
+            System.out.println("⚠️ No hay jugadores con estadísticas");
+            return "N/A";
+        }
+        
+        // Buscar el jugador con más robos
+        EstadisticasJugador mejorRecuperador = estadisticasJugadores.stream()
+            .filter(e -> e.getTotalRobos() != null && e.getTotalRobos() > 0)
+            .max((e1, e2) -> {
+                int robos1 = e1.getTotalRobos() != null ? e1.getTotalRobos() : 0;
+                int robos2 = e2.getTotalRobos() != null ? e2.getTotalRobos() : 0;
+                return Integer.compare(robos1, robos2);
+            })
+            .orElse(null);
+        
+        if (mejorRecuperador == null || mejorRecuperador.getTotalRobos() == null || mejorRecuperador.getTotalRobos() == 0) {
+            System.out.println("⚠️ No hay jugadores con robos registrados");
+            return "N/A";
+        }
+        
+        // Retornar nombre completo del jugador con cantidad de robos
+        Jugador jugador = mejorRecuperador.getJugador();
+        String resultado = jugador.getNombre() + " " + jugador.getApellido() + " (" + mejorRecuperador.getTotalRobos() + " robos)";
+        System.out.println("🏆 Mayor recuperador: " + resultado);
+        return resultado;
     }
     
     /**
@@ -611,6 +982,28 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         dto.setPasesClaveEmpatando(stats.getPasesClaveEmpatando());
         dto.setPasesClavePerdiendo(stats.getPasesClavePerdiendo());
         dto.setPasesClaveP90(stats.getPasesClaveP90());
+        dto.setTotalTirosAPuerta(stats.getTotalTirosAPuerta());
+        dto.setTirosAPuerta0_15(stats.getTirosAPuerta0_15());
+        dto.setTirosAPuerta16_30(stats.getTirosAPuerta16_30());
+        dto.setTirosAPuerta31_45(stats.getTirosAPuerta31_45());
+        dto.setTirosAPuerta46_60(stats.getTirosAPuerta46_60());
+        dto.setTirosAPuerta61_75(stats.getTirosAPuerta61_75());
+        dto.setTirosAPuerta76_90(stats.getTirosAPuerta76_90());
+        dto.setTirosAPuertaGanando(stats.getTirosAPuertaGanando());
+        dto.setTirosAPuertaEmpatando(stats.getTirosAPuertaEmpatando());
+        dto.setTirosAPuertaPerdiendo(stats.getTirosAPuertaPerdiendo());
+        dto.setTirosAPuertaP90(stats.getTirosAPuertaP90());
+        dto.setTotalRobos(stats.getTotalRobos());
+        dto.setRobos0_15(stats.getRobos0_15());
+        dto.setRobos16_30(stats.getRobos16_30());
+        dto.setRobos31_45(stats.getRobos31_45());
+        dto.setRobos46_60(stats.getRobos46_60());
+        dto.setRobos61_75(stats.getRobos61_75());
+        dto.setRobos76_90(stats.getRobos76_90());
+        dto.setRobosGanando(stats.getRobosGanando());
+        dto.setRobosEmpatando(stats.getRobosEmpatando());
+        dto.setRobosPerdiendo(stats.getRobosPerdiendo());
+        dto.setRobosP90(stats.getRobosP90());
         dto.setPromedioGoles(stats.getPromedioGoles());
         dto.setPromedioAsistencias(stats.getPromedioAsistencias());
         dto.setRating(stats.getRating());
@@ -648,6 +1041,37 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         dto.setPasesClavePerdiendo(stats.getPasesClavePerdiendo());
         dto.setPasesClaveP90(stats.getPasesClaveP90());
         dto.setMayorPasador(stats.getMayorPasador());
+        dto.setTotalTirosAPuerta(stats.getTotalTirosAPuerta());
+        dto.setTirosAPuerta0_15(stats.getTirosAPuerta0_15());
+        dto.setTirosAPuerta16_30(stats.getTirosAPuerta16_30());
+        dto.setTirosAPuerta31_45(stats.getTirosAPuerta31_45());
+        dto.setTirosAPuerta46_60(stats.getTirosAPuerta46_60());
+        dto.setTirosAPuerta61_75(stats.getTirosAPuerta61_75());
+        dto.setTirosAPuerta76_90(stats.getTirosAPuerta76_90());
+        dto.setTirosAPuertaGanando(stats.getTirosAPuertaGanando());
+        dto.setTirosAPuertaEmpatando(stats.getTirosAPuertaEmpatando());
+        dto.setTirosAPuertaPerdiendo(stats.getTirosAPuertaPerdiendo());
+        dto.setTirosAPuertaP90(stats.getTirosAPuertaP90());
+        dto.setMayorTirador(stats.getMayorTirador());
+        dto.setTotalTirosRecibidos(stats.getTotalTirosRecibidos());
+        dto.setTirosRecibidos0_15(stats.getTirosRecibidos0_15());
+        dto.setTirosRecibidos16_30(stats.getTirosRecibidos16_30());
+        dto.setTirosRecibidos31_45(stats.getTirosRecibidos31_45());
+        dto.setTirosRecibidos46_60(stats.getTirosRecibidos46_60());
+        dto.setTirosRecibidos61_75(stats.getTirosRecibidos61_75());
+        dto.setTirosRecibidos76_90(stats.getTirosRecibidos76_90());
+        dto.setTotalRobos(stats.getTotalRobos());
+        dto.setRobos0_15(stats.getRobos0_15());
+        dto.setRobos16_30(stats.getRobos16_30());
+        dto.setRobos31_45(stats.getRobos31_45());
+        dto.setRobos46_60(stats.getRobos46_60());
+        dto.setRobos61_75(stats.getRobos61_75());
+        dto.setRobos76_90(stats.getRobos76_90());
+        dto.setRobosGanando(stats.getRobosGanando());
+        dto.setRobosEmpatando(stats.getRobosEmpatando());
+        dto.setRobosPerdiendo(stats.getRobosPerdiendo());
+        dto.setRobosP90(stats.getRobosP90());
+        dto.setMayorRecuperador(stats.getMayorRecuperador());
         dto.setPromedioGolesFavor(stats.getPromedioGolesFavor());
         dto.setPromedioGolesContra(stats.getPromedioGolesContra());
         dto.setEfectividad(stats.getEfectividad());

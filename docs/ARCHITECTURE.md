@@ -2,7 +2,7 @@
 
 Propósito: documentación orientada a programadores que describe la arquitectura del backend (Spring Boot) y frontend (Angular), flujos clave, modelo de datos resumido, **nuevas funciones implementadas**, análisis de mejoras y recomendaciones prácticas para optimización.
 
-**Última actualización:** Enero 8, 2026
+**Última actualización:** Enero 13, 2026
 
 **Cambios recientes implementados:**
 - ✅ Bulk deactivate de partidos con @Modifying JPQL + @Transactional.
@@ -19,7 +19,7 @@ Propósito: documentación orientada a programadores que describe la arquitectur
 - ✅ **Sistema de Estadísticas Completo** (EstadisticasJugador, EstadisticasEquipo, 11 endpoints REST).
 - ✅ **Actualización automática de estadísticas** al finalizar partidos.
 - ✅ **Marcador en tiempo real** con golesEquipo, golesRival y resultado en partido-modo.
-- ✅ **Eventos ampliados** (Gol, Asistencia, Tarjetas, Pase Clave, Robo, Tiro a Puerta).
+- ✅ **Eventos ampliados** (Gol, Asistencia, Tarjetas, Pase Clave, Robo, Tiro a Puerta, Parada).
 - ✅ **Dashboard de Estadísticas** con selector de equipos y visualización de métricas.
 - ✅ **Estadísticas de paradas para porteros** con campo exclusivo y botón en modo partido.
 - ✅ **Eliminación en cascada** con @OnDelete en relaciones EventoJugador y EstadisticasJugador.
@@ -33,16 +33,26 @@ Propósito: documentación orientada a programadores que describe la arquitectur
 - ✅ **Endpoint GET /equipos/{id}** para obtener equipo individual.
 - ✅ **Endpoint PUT /partidos/{id}/alineacion** para actualizar titulares y suplentes.
 - ✅ **Sistema completo de Pases Clave** con análisis temporal, estado del marcador y perfiles de jugadores.
+- ✅ **Sistema completo de Tiros a Puerta** con análisis temporal, estado del marcador y tiros recibidos del rival.
+- ✅ **Sistema completo de Robos** con análisis temporal, estado del marcador y mayor recuperador.
 - ✅ **11 campos de pases clave** en EstadisticasJugador (distribución temporal + estado + métrica P90).
 - ✅ **12 campos de pases clave** en EstadisticasEquipo (11 analíticos + mayorPasador).
+- ✅ **11 campos de tiros a puerta** en EstadisticasJugador (distribución temporal + estado + métrica P90).
+- ✅ **12 campos de tiros a puerta** en EstadisticasEquipo (11 analíticos + mayorTirador).
+- ✅ **7 campos de tiros recibidos** en EstadisticasEquipo (6 temporales + total calculado).
+- ✅ **11 campos de robos** en EstadisticasJugador (distribución temporal + estado + métrica P90).
+- ✅ **12 campos de robos** en EstadisticasEquipo (11 analíticos + mayorRecuperador).
 - ✅ **Evento gol_rival** registrable desde frontend para seguimiento correcto del marcador.
 - ✅ **EventoJugador.jugador_id nullable** para permitir goles del rival sin asociar a jugador del equipo.
 - ✅ **determinarEstadoMarcadorEnMinuto()** con reconstrucción cronológica usando Event ID.
-- ✅ **Distribución temporal de pases clave** en 6 intervalos de 15 minutos (0-15, 16-30, 31-45, 46-60, 61-75, 76-90).
-- ✅ **Análisis por estado del marcador** (GANANDO, EMPATANDO, PERDIENDO) en momento del pase clave.
-- ✅ **Mayor Pasador** automático: jugador con más pases clave + contador.
-- ✅ **Perfiles de Jugadores** (Remontada, Inconsistente, Líder, Equilibrado, Regular) basados en distribución de pases.
-- ✅ **UI mejorada** con cajas coloreadas por estado y cards de perfiles en estadisticas-generales.
+- ✅ **Distribución temporal** en 6 intervalos de 15 minutos (0-15, 16-30, 31-45, 46-60, 61-75, 76-90) para pases clave, tiros y robos.
+- ✅ **Análisis por estado del marcador** (GANANDO, EMPATANDO, PERDIENDO) en momento del evento.
+- ✅ **Top performers automáticos**: Mayor Pasador, Mayor Tirador, Mayor Recuperador con contador de eventos.
+- ✅ **Perfiles de Jugadores** (Remontada, Inconsistente, Líder, Equilibrado, Regular) basados en distribución de eventos.
+- ✅ **UI mejorada** con selector de 3 botones (Pases Clave, Tiros a Puerta, Robos) y cajas coloreadas por estado.
+- ✅ **Integración goles = tiros a puerta** para estadísticas precisas (un gol es un tiro exitoso).
+- ✅ **Tiros recibidos calculados** como suma de PARADAS del portero titular + GOLES del rival.
+- ✅ **Operaciones null-safe** en todas las estadísticas para evitar NullPointerException.
 - ✅ **Repository method** findByJugador_Equipo_IdAndTemporada() en EstadisticasJugadorRepository.
 
 ---

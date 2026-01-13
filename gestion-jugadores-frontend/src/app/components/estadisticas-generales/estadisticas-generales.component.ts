@@ -26,11 +26,16 @@ export class EstadisticasGeneralesComponent implements OnInit {
   cargando: boolean = false;
   mostrarJugadores: boolean = true;
   mostrarEquipo: boolean = true;
+  estadisticaSeleccionada: 'pasesClave' | 'tirosAPuerta' | 'robos' = 'pasesClave';
 
   constructor(
     private estadisticasService: EstadisticasService,
     private equipoService: EquipoService
   ) { }
+
+  seleccionarEstadistica(tipo: 'pasesClave' | 'tirosAPuerta' | 'robos'): void {
+    this.estadisticaSeleccionada = tipo;
+  }
 
   ngOnInit(): void {
     this.obtenerTemporadaActual();

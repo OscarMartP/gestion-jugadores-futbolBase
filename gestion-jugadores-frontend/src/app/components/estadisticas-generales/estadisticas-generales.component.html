@@ -107,8 +107,34 @@
           </div>
         </div>
 
+        <!-- Botones de Selección de Estadísticas -->
+        <div class="row mt-4">
+          <div class="col-12 text-center mb-3">
+            <div class="btn-group" role="group">
+              <button type="button" 
+                      class="btn btn-estadistica" 
+                      [class.active]="estadisticaSeleccionada === 'pasesClave'"
+                      (click)="seleccionarEstadistica('pasesClave')">
+                🔑 Pases Clave
+              </button>
+              <button type="button" 
+                      class="btn btn-estadistica" 
+                      [class.active]="estadisticaSeleccionada === 'tirosAPuerta'"
+                      (click)="seleccionarEstadistica('tirosAPuerta')">
+                ⚽ Tiros a Puerta
+              </button>
+              <button type="button" 
+                      class="btn btn-estadistica" 
+                      [class.active]="estadisticaSeleccionada === 'robos'"
+                      (click)="seleccionarEstadistica('robos')">
+                🛡️ Robos
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Estadísticas de Pases Clave -->
-        <div class="row mt-4" *ngIf="estadisticasEquipo.totalPasesClave > 0">
+        <div class="row mt-4" *ngIf="estadisticaSeleccionada === 'pasesClave' && estadisticasEquipo.totalPasesClave > 0">
           <div class="col-12">
             <h5 class="mb-3">🔑 Estadísticas de Pases Clave</h5>
           </div>
@@ -202,6 +228,250 @@
               <p class="stat-label-estado">⚠️ Perdiendo</p>
               <p class="stat-percentage" *ngIf="estadisticasEquipo.totalPasesClave > 0">
                 {{ (estadisticasEquipo.pasesClavePerdiendo / estadisticasEquipo.totalPasesClave * 100) | number:'1.0-0' }}%
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas de Tiros a Puerta -->
+        <div class="row mt-4" *ngIf="estadisticaSeleccionada === 'tirosAPuerta' && estadisticasEquipo.totalTirosAPuerta >= 0">
+          <div class="col-12">
+            <h5 class="mb-3">⚽ Estadísticas de Tiros a Puerta</h5>
+          </div>
+          
+          <!-- Resumen General - Primera Fila -->
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-box">
+              <h4 class="stat-number text-danger">{{ estadisticasEquipo.totalTirosRecibidos || 0 }}</h4>
+              <p class="stat-label">Tiros Recibidos</p>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-box">
+              <h4 class="stat-number text-success">{{ estadisticasEquipo.totalTirosAPuerta }}</h4>
+              <p class="stat-label">Tiros Realizados</p>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-box">
+              <h4 class="stat-number text-info">{{ estadisticasEquipo.tirosAPuertaP90 | number:'1.2-2' }}</h4>
+              <p class="stat-label">Tiros por 90'</p>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stat-box">
+              <h4 class="stat-number text-primary">{{ estadisticasEquipo.mayorTirador || 'N/A' }}</h4>
+              <p class="stat-label">👑 Mayor Tirador</p>
+            </div>
+          </div>
+          
+          <!-- Distribución Temporal - Tiros Recibidos -->
+          <div class="col-12 mt-3">
+            <h6>📊 Distribución Temporal - Tiros Recibidos (minutos)</h6>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-recibidos">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosRecibidos0_15 || 0 }}</h5>
+              <p class="stat-label-small">0-15'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-recibidos">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosRecibidos16_30 || 0 }}</h5>
+              <p class="stat-label-small">16-30'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-recibidos">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosRecibidos31_45 || 0 }}</h5>
+              <p class="stat-label-small">31-45'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-recibidos">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosRecibidos46_60 || 0 }}</h5>
+              <p class="stat-label-small">46-60'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-recibidos">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosRecibidos61_75 || 0 }}</h5>
+              <p class="stat-label-small">61-75'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-recibidos">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosRecibidos76_90 || 0 }}</h5>
+              <p class="stat-label-small">76-90'</p>
+            </div>
+          </div>
+
+          <!-- Distribución Temporal - Tiros Realizados -->
+          <div class="col-12 mt-3">
+            <h6>📊 Distribución Temporal - Tiros Realizados (minutos)</h6>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-realizados">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosAPuerta0_15 }}</h5>
+              <p class="stat-label-small">0-15'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-realizados">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosAPuerta16_30 }}</h5>
+              <p class="stat-label-small">16-30'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-realizados">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosAPuerta31_45 }}</h5>
+              <p class="stat-label-small">31-45'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-realizados">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosAPuerta46_60 }}</h5>
+              <p class="stat-label-small">46-60'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-realizados">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosAPuerta61_75 }}</h5>
+              <p class="stat-label-small">61-75'</p>
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-4 mb-3">
+            <div class="stat-box-small stat-box-realizados">
+              <h5 class="stat-number-small">{{ estadisticasEquipo.tirosAPuerta76_90 }}</h5>
+              <p class="stat-label-small">76-90'</p>
+            </div>
+          </div>
+          
+          <!-- Estado del Marcador -->
+          <div class="col-12 mt-4" *ngIf="estadisticasEquipo.tirosAPuertaGanando > 0 || estadisticasEquipo.tirosAPuertaEmpatando > 0 || estadisticasEquipo.tirosAPuertaPerdiendo > 0">
+            <h6>🎯 Por Estado del Marcador</h6>
+          </div>
+          <div class="col-md-4 col-sm-4 mb-3" *ngIf="estadisticasEquipo.tirosAPuertaGanando > 0 || estadisticasEquipo.tirosAPuertaEmpatando > 0 || estadisticasEquipo.tirosAPuertaPerdiendo > 0">
+            <div class="stat-box-estado ganando">
+              <h5 class="stat-number-estado">{{ estadisticasEquipo.tirosAPuertaGanando }}</h5>
+              <p class="stat-label-estado">✅ Ganando</p>
+              <p class="stat-percentage" *ngIf="estadisticasEquipo.totalTirosAPuerta > 0">
+                {{ (estadisticasEquipo.tirosAPuertaGanando / estadisticasEquipo.totalTirosAPuerta * 100) | number:'1.0-0' }}%
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4 mb-3" *ngIf="estadisticasEquipo.tirosAPuertaGanando > 0 || estadisticasEquipo.tirosAPuertaEmpatando > 0 || estadisticasEquipo.tirosAPuertaPerdiendo > 0">
+            <div class="stat-box-estado empatando">
+              <h5 class="stat-number-estado">{{ estadisticasEquipo.tirosAPuertaEmpatando }}</h5>
+              <p class="stat-label-estado">⚖️ Empatando</p>
+              <p class="stat-percentage" *ngIf="estadisticasEquipo.totalTirosAPuerta > 0">
+                {{ (estadisticasEquipo.tirosAPuertaEmpatando / estadisticasEquipo.totalTirosAPuerta * 100) | number:'1.0-0' }}%
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4 mb-3" *ngIf="estadisticasEquipo.tirosAPuertaGanando > 0 || estadisticasEquipo.tirosAPuertaEmpatando > 0 || estadisticasEquipo.tirosAPuertaPerdiendo > 0">
+            <div class="stat-box-estado perdiendo">
+              <h5 class="stat-number-estado">{{ estadisticasEquipo.tirosAPuertaPerdiendo }}</h5>
+              <p class="stat-label-estado">⚠️ Perdiendo</p>
+              <p class="stat-percentage" *ngIf="estadisticasEquipo.totalTirosAPuerta > 0">
+                {{ (estadisticasEquipo.tirosAPuertaPerdiendo / estadisticasEquipo.totalTirosAPuerta * 100) | number:'1.0-0' }}%
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas de Robos -->
+        <div class="row mt-4" *ngIf="estadisticaSeleccionada === 'robos'">
+          <!-- Fila 1: Estadísticas Generales de Robos -->
+          <div class="col-md-4 mb-3">
+            <div class="stat-box robos">
+              <h5 class="stat-number">{{ estadisticasEquipo.totalRobos }}</h5>
+              <p class="stat-label">🛡️ Robos Realizados</p>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <div class="stat-box robos">
+              <h5 class="stat-number">{{ estadisticasEquipo.robosP90 | number:'1.2-2' }}</h5>
+              <p class="stat-label">🛡️ Robos P/90</p>
+            </div>
+          </div>
+          <div class="col-md-4 mb-3">
+            <div class="stat-box robos">
+              <h5 class="stat-number mayor-recuperador">{{ estadisticasEquipo.mayorRecuperador || 'N/A' }}</h5>
+              <p class="stat-label">🏆 Mayor Recuperador</p>
+            </div>
+          </div>
+
+          <!-- Fila 2: Distribución Temporal de Robos -->
+          <div class="col-12 mb-3">
+            <div class="stat-box">
+              <h6 class="stat-subtitle">⏱️ Distribución Temporal - Robos</h6>
+              <div class="row text-center mt-2">
+                <div class="col-2">
+                  <div class="stat-interval robos-interval">
+                    <p class="interval-label">0-15'</p>
+                    <p class="interval-value">{{ estadisticasEquipo.robos0_15 }}</p>
+                  </div>
+                </div>
+                <div class="col-2">
+                  <div class="stat-interval robos-interval">
+                    <p class="interval-label">16-30'</p>
+                    <p class="interval-value">{{ estadisticasEquipo.robos16_30 }}</p>
+                  </div>
+                </div>
+                <div class="col-2">
+                  <div class="stat-interval robos-interval">
+                    <p class="interval-label">31-45'</p>
+                    <p class="interval-value">{{ estadisticasEquipo.robos31_45 }}</p>
+                  </div>
+                </div>
+                <div class="col-2">
+                  <div class="stat-interval robos-interval">
+                    <p class="interval-label">46-60'</p>
+                    <p class="interval-value">{{ estadisticasEquipo.robos46_60 }}</p>
+                  </div>
+                </div>
+                <div class="col-2">
+                  <div class="stat-interval robos-interval">
+                    <p class="interval-label">61-75'</p>
+                    <p class="interval-value">{{ estadisticasEquipo.robos61_75 }}</p>
+                  </div>
+                </div>
+                <div class="col-2">
+                  <div class="stat-interval robos-interval">
+                    <p class="interval-label">76-90'</p>
+                    <p class="interval-value">{{ estadisticasEquipo.robos76_90 }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila 3: Robos por Estado del Marcador -->
+          <div class="col-md-4 col-sm-4 mb-3" *ngIf="estadisticasEquipo.robosGanando > 0 || estadisticasEquipo.robosEmpatando > 0 || estadisticasEquipo.robosPerdiendo > 0">
+            <div class="stat-box-estado ganando">
+              <h5 class="stat-number-estado">{{ estadisticasEquipo.robosGanando }}</h5>
+              <p class="stat-label-estado">✅ Ganando</p>
+              <p class="stat-percentage" *ngIf="estadisticasEquipo.totalRobos > 0">
+                {{ (estadisticasEquipo.robosGanando / estadisticasEquipo.totalRobos * 100) | number:'1.0-0' }}%
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4 mb-3" *ngIf="estadisticasEquipo.robosGanando > 0 || estadisticasEquipo.robosEmpatando > 0 || estadisticasEquipo.robosPerdiendo > 0">
+            <div class="stat-box-estado empatando">
+              <h5 class="stat-number-estado">{{ estadisticasEquipo.robosEmpatando }}</h5>
+              <p class="stat-label-estado">⚖️ Empatando</p>
+              <p class="stat-percentage" *ngIf="estadisticasEquipo.totalRobos > 0">
+                {{ (estadisticasEquipo.robosEmpatando / estadisticasEquipo.totalRobos * 100) | number:'1.0-0' }}%
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4 mb-3" *ngIf="estadisticasEquipo.robosGanando > 0 || estadisticasEquipo.robosEmpatando > 0 || estadisticasEquipo.robosPerdiendo > 0">
+            <div class="stat-box-estado perdiendo">
+              <h5 class="stat-number-estado">{{ estadisticasEquipo.robosPerdiendo }}</h5>
+              <p class="stat-label-estado">⚠️ Perdiendo</p>
+              <p class="stat-percentage" *ngIf="estadisticasEquipo.totalRobos > 0">
+                {{ (estadisticasEquipo.robosPerdiendo / estadisticasEquipo.totalRobos * 100) | number:'1.0-0' }}%
               </p>
             </div>
           </div>
