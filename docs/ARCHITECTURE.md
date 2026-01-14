@@ -2,9 +2,12 @@
 
 Propósito: documentación orientada a programadores que describe la arquitectura del backend (Spring Boot) y frontend (Angular), flujos clave, modelo de datos resumido, **nuevas funciones implementadas**, análisis de mejoras y recomendaciones prácticas para optimización.
 
-**Última actualización:** Enero 13, 2026
+**Última actualización:** Enero 14, 2026
 
 **Cambios recientes implementados:**
+- ✅ **Fix distribución temporal de goles del rival** - Corregido cálculo de minuto en eventos GOL_RIVAL (commit 3c89b69, Enero 14 2026).
+- ✅ **Sistema de logging completo** - Configuración SLF4J con archivo logs/application.log, nivel DEBUG para debugging.
+- ✅ **Conteo automático de goles desde eventos** - PartidoServiceImpl cuenta GOL/GOL_RIVAL al finalizar partido.
 - ✅ Bulk deactivate de partidos con @Modifying JPQL + @Transactional.
 - ✅ Listado de jugadores por usuario autenticado (endpoint `/api/v1/jugadores` sin parámetros).
 - ✅ Gestión de partidos en componente separado con selector de equipo.
@@ -1444,6 +1447,112 @@ Frontend: estadisticas-generales.component.ts
 - `pasesClaveGanando/Empatando/Perdiendo`: Impacto del contexto emocional
 - `mayorPasador`: Reconocimiento al mejor creador del equipo
 - **Perfiles**: Clasificación cualitativa basada en patrones cuantitativos
+
+---
+
+### Bug Fixes Recientes
+
+#### Fix: Distribución Temporal de Goles del Rival (Enero 14, 2026)
+
+**Problema identificado:**
+Los goles del rival se registraban con minuto incorrecto, causando que aparecieran en intervalos temporales incorrectos en las estadísticas de tiros recibidos.
+
+**Síntoma:**
+- Gol del rival registrado en minuto 0:30 (30 segundos)
+- Aparecía en intervalo temporal 76-90 en lugar de 0-15
+- Minuto guardado en BD: 78 (incorrecto)
+
+**Causa raíz:**
+En `partido-modo.component.ts`, el método `incrementarGolesRival()` calculaba el minuto incorrectamente:
+
+```typescript
+// ❌ INCORRECTO (anterior)
+minuto: this.duracionPartido - this.tiempoRestante
+// Si duracionPartido=90 y tiempoRestante=12 → minuto=78
+
+// ✅ CORRECTO (actual)
+minuto: Math.floor(this.tiempoRestante / 60)
+// Si tiempoRestante=30 segundos → minuto=0
+```
+
+**Correcciones implementadas:**
+
+1. **Frontend (partido-modo.component.ts):**
+   - Cambio en línea 323: usar `Math.floor(tiempoRestante / 60)` en lugar de `duracionPartido - tiempoRestante`
+
+2. **Backend (PartidoServiceImpl.java):**
+   - Agregar conteo automático de eventos GOL_RIVAL al finalizar partido
+   - Líneas 108-126: Contar eventos GOL y GOL_RIVAL desde `eventos_jugador` y actualizar `partido.golesEquipo` y `partido.golesRival`
+
+3. **Logging (EstadisticasServiceImpl.java):**
+   - Agregar logger SLF4J (líneas 19-20)
+   - Logs detallados con emojis para debugging del flujo de detección de GOL_RIVAL (líneas 645-692)
+
+4. **Configuración (application.properties):**
+   - Agregar configuración de logging con nivel DEBUG para `com.gestion.jugadores`
+   - Archivo de log: `logs/application.log`
+   - Patrones de log para consola y archivo con timestamps y nivel
+
+**Código implementado:**
+
+```java
+// PartidoServiceImpl - Conteo de goles desde eventos
+try {
+    List<EventoJugador> eventos = eventoJugadorRepository.findByPartido_Id(id);
+    
+    long golesEquipo = eventos.stream()
+        .filter(e -> e.getTipoEvento() != null && e.getTipoEvento().toUpperCase().equals("GOL"))
+        .count();
+    
+    long golesRival = eventos.stream()
+        .filter(e -> e.getTipoEvento() != null && e.getTipoEvento().toUpperCase().equals("GOL_RIVAL"))
+        .count();
+    
+    partido.setGolesEquipo((int) golesEquipo);
+    partido.setGolesRival((int) golesRival);
+    
+    logger.info("Goles contados desde eventos - Equipo: {}, Rival: {} para partido {}", golesEquipo, golesRival, id);
+}
+```
+
+```java
+// EstadisticasServiceImpl - Logging detallado
+logger.info("🔍 PARTIDO ID: {} - GolesRival: {} - Eventos totales: {}", partido.getId(), partido.getGolesRival(), eventosPartido.size());
+if (partido.getGolesRival() != null && partido.getGolesRival() > 0) {
+    logger.info("🔍 Procesando goles del rival para partido ID: {} - Total goles rival: {}", partido.getId(), partido.getGolesRival());
+    
+    for (EventoJugador evento : eventosPartido) {
+        String tipo = evento.getTipoEvento().toUpperCase();
+        logger.debug("  📝 Evento: tipo={}, minuto={}, jugador={}", tipo, evento.getMinuto(), (evento.getJugador() != null ? evento.getJugador().getId() : "null"));
+        
+        if (tipo.equals("GOL_RIVAL")) {
+            logger.info("    ✅ GOL_RIVAL detectado en minuto: {}", evento.getMinuto());
+            golesEventos.add(evento);
+        }
+    }
+    
+    logger.info("  🎯 Total eventos de gol del rival encontrados: {}", golesEventos.size());
+}
+```
+
+```properties
+# application.properties - Configuración de logging
+logging.level.root=INFO
+logging.level.com.gestion.jugadores=DEBUG
+logging.file.name=logs/application.log
+logging.file.max-size=10MB
+logging.file.max-history=10
+logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n
+logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+```
+
+**Validación:**
+- ✅ Gol registrado en minuto 0:30 se guarda con minuto=0
+- ✅ Aparece en intervalo temporal 0-15 en estadísticas
+- ✅ Logs muestran: "GOL_RIVAL detectado en minuto: 0" y "Asignado a intervalo 0-15"
+- ✅ partido.golesRival se actualiza correctamente al finalizar partido
+
+**Commit:** `3c89b69` - "fix: Corregir distribución temporal de goles del rival"
 
 ---
 
