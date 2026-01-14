@@ -104,6 +104,26 @@ public class PartidoServiceImpl implements PartidoService {
             logger.error("Error al calcular minutos jugados: {}", e.getMessage());
         }
         
+        // Contar goles desde los eventos registrados
+        try {
+            List<EventoJugador> eventos = eventoJugadorRepository.findByPartido_Id(id);
+            
+            long golesEquipo = eventos.stream()
+                .filter(e -> e.getTipoEvento() != null && e.getTipoEvento().toUpperCase().equals("GOL"))
+                .count();
+            
+            long golesRival = eventos.stream()
+                .filter(e -> e.getTipoEvento() != null && e.getTipoEvento().toUpperCase().equals("GOL_RIVAL"))
+                .count();
+            
+            partido.setGolesEquipo((int) golesEquipo);
+            partido.setGolesRival((int) golesRival);
+            
+            logger.info("Goles contados desde eventos - Equipo: {}, Rival: {} para partido {}", golesEquipo, golesRival, id);
+        } catch (Exception e) {
+            logger.error("Error al contar goles desde eventos: {}", e.getMessage());
+        }
+        
         // Calcular resultado del partido basándose en goles
         if (partido.getGolesEquipo() != null && partido.getGolesRival() != null) {
             if (partido.getGolesEquipo() > partido.getGolesRival()) {
@@ -204,10 +224,24 @@ public class PartidoServiceImpl implements PartidoService {
     }
     
     @Override
+    @Transactional
     public void eliminarPartido(Long id) {
         Partido partido = partidoRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Partido no encontrado con id: " + id));
+        
+        // Primero eliminar todos los eventos asociados al partido
+        logger.info("Eliminando eventos del partido con id: {}", id);
+        List<EventoJugador> eventos = eventoJugadorRepository.findByPartido_Id(id);
+        if (!eventos.isEmpty()) {
+            logger.info("Se encontraron {} eventos para eliminar", eventos.size());
+            eventoJugadorRepository.deleteAll(eventos);
+            logger.info("Eventos eliminados exitosamente");
+        }
+        
+        // Ahora eliminar el partido
+        logger.info("Eliminando partido con id: {}", id);
         partidoRepository.delete(partido);
+        logger.info("Partido eliminado exitosamente");
     }
     
     /**

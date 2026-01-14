@@ -320,7 +320,7 @@ export class PartidoModoComponent implements OnInit, OnDestroy {
       jugadorId: null, // Gol del rival, no tiene jugador de nuestro equipo
       partidoId: this.partidoActivo.id,
       tipoEvento: 'gol_rival',
-      minuto: this.duracionPartido - this.tiempoRestante
+      minuto: Math.floor(this.tiempoRestante / 60)
     };
     
     console.log('📤 Enviando evento de gol rival:', eventoGolRival);

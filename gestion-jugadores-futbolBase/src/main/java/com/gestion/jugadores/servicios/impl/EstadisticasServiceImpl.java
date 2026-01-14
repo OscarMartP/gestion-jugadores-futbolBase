@@ -14,10 +14,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @Transactional
 public class EstadisticasServiceImpl implements EstadisticasService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(EstadisticasServiceImpl.class);
     
     @Autowired
     private EstadisticasJugadorRepository estadisticasJugadorRepository;
@@ -639,41 +643,55 @@ public class EstadisticasServiceImpl implements EstadisticasService {
             }
             
             // Contar goles del rival (son tiros recibidos que no fueron parados)
-            // Los goles del rival se distribuyen uniformemente en los intervalos
-            // basándonos en el total de minutos jugados
+            logger.info("🔍 PARTIDO ID: {} - GolesRival: {} - Eventos totales: {}", partido.getId(), partido.getGolesRival(), eventosPartido.size());
             if (partido.getGolesRival() != null && partido.getGolesRival() > 0) {
+                logger.info("🔍 Procesando goles del rival para partido ID: {} - Total goles rival: {}", partido.getId(), partido.getGolesRival());
                 // Buscar eventos de gol del rival para saber en qué minutos ocurrieron
                 List<EventoJugador> golesEventos = new ArrayList<>();
                 for (EventoJugador evento : eventosPartido) {
                     String tipo = evento.getTipoEvento().toUpperCase();
-                    // Buscar eventos GOL de jugadores que NO son de nuestro equipo
-                    if ((tipo.equals("GOL") || tipo.equals("GOL_RIVAL")) && 
-                        !evento.getJugador().getEquipo().getId().equals(equipoId)) {
+                    logger.debug("  📝 Evento: tipo={}, minuto={}, jugador={}", tipo, evento.getMinuto(), (evento.getJugador() != null ? evento.getJugador().getId() : "null"));
+                    // GOL_RIVAL tiene jugador null, o GOL de jugadores que NO son de nuestro equipo
+                    if (tipo.equals("GOL_RIVAL")) {
+                        logger.info("    ✅ GOL_RIVAL detectado en minuto: {}", evento.getMinuto());
+                        golesEventos.add(evento);
+                    } else if (tipo.equals("GOL") && evento.getJugador() != null && 
+                               !evento.getJugador().getEquipo().getId().equals(equipoId)) {
+                        logger.info("    ✅ GOL del rival detectado en minuto: {}", evento.getMinuto());
                         golesEventos.add(evento);
                     }
                 }
                 
+                logger.info("  🎯 Total eventos de gol del rival encontrados: {}", golesEventos.size());
                 // Si encontramos eventos de gol con minuto, usarlos
                 if (!golesEventos.isEmpty()) {
                     for (EventoJugador golEvento : golesEventos) {
                         Integer minuto = golEvento.getMinuto();
+                        logger.info("    ⏱️ Procesando gol en minuto: {}", minuto);
                         if (minuto != null) {
                             if (minuto >= 0 && minuto <= 15) {
+                                logger.info("      → Asignado a intervalo 0-15");
                                 stats.setTirosRecibidos0_15(stats.getTirosRecibidos0_15() + 1);
                             } else if (minuto >= 16 && minuto <= 30) {
+                                logger.info("      → Asignado a intervalo 16-30");
                                 stats.setTirosRecibidos16_30(stats.getTirosRecibidos16_30() + 1);
                             } else if (minuto >= 31 && minuto <= 45) {
+                                logger.info("      → Asignado a intervalo 31-45");
                                 stats.setTirosRecibidos31_45(stats.getTirosRecibidos31_45() + 1);
                             } else if (minuto >= 46 && minuto <= 60) {
+                                logger.info("      → Asignado a intervalo 46-60");
                                 stats.setTirosRecibidos46_60(stats.getTirosRecibidos46_60() + 1);
                             } else if (minuto >= 61 && minuto <= 75) {
+                                logger.info("      → Asignado a intervalo 61-75");
                                 stats.setTirosRecibidos61_75(stats.getTirosRecibidos61_75() + 1);
                             } else if (minuto >= 76 && minuto <= 90) {
+                                logger.info("      → Asignado a intervalo 76-90");
                                 stats.setTirosRecibidos76_90(stats.getTirosRecibidos76_90() + 1);
                             }
                         }
                     }
                 } else {
+                    logger.warn("  ⚠️ No se encontraron eventos, distribuyendo uniformemente");
                     // Si no hay eventos de gol con minuto, distribuir proporcionalmente
                     // basándonos en que el partido duró 90 minutos
                     int golesRival = partido.getGolesRival();

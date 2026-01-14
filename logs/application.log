@@ -1,0 +1,192 @@
+2026-01-14 14:46:42 [main] INFO  c.g.j.GestionJugadoresFutbolBaseApplication - Starting GestionJugadoresFutbolBaseApplication v1.0 using Java 24.0.2 on DESKTOP-5DEJGCG with PID 8848 (C:\Users\Oscar\Documents\ESTUDIOS\CertificacionJava\gestion-jugadores-futbolBase\gestion-jugadores-futbolBase\target\gestion-jugadores-futbolBase-1.0.jar started by Oscar in C:\Users\Oscar\Documents\ESTUDIOS\CertificacionJava\gestion-jugadores-futbolBase)
+2026-01-14 14:46:42 [main] DEBUG c.g.j.GestionJugadoresFutbolBaseApplication - Running with Spring Boot v2.5.6, Spring v5.3.12
+2026-01-14 14:46:42 [main] INFO  c.g.j.GestionJugadoresFutbolBaseApplication - No active profile set, falling back to default profiles: default
+2026-01-14 14:46:44 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-14 14:46:44 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 99 ms. Found 8 JPA repository interfaces.
+2026-01-14 14:46:44 [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@57c03d88' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2026-01-14 14:46:44 [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2026-01-14 14:46:45 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2026-01-14 14:46:45 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-14 14:46:45 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.54]
+2026-01-14 14:46:45 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-01-14 14:46:45 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2271 ms
+2026-01-14 14:46:45 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-14 14:46:45 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.4.32.Final
+2026-01-14 14:46:45 [main] INFO  o.h.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2026-01-14 14:46:45 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-01-14 14:46:46 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-01-14 14:46:46 [main] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+2026-01-14 14:46:47 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-01-14 14:46:47 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-14 14:46:47 [main] DEBUG c.g.j.c.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-01-14 14:46:48 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-14 14:46:48 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@7c90b7b7, org.springframework.security.web.context.SecurityContextPersistenceFilter@5809fa26, org.springframework.security.web.header.HeaderWriterFilter@125d47c4, org.springframework.web.filter.CorsFilter@5d7911d5, org.springframework.security.web.authentication.logout.LogoutFilter@131a7516, com.gestion.jugadores.configuraciones.JwtAuthenticationFilter@12b5736c, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@23468512, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3caafa67, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3ba1308d, org.springframework.security.web.session.SessionManagementFilter@78b7f805, org.springframework.security.web.access.ExceptionTranslationFilter@2d5a1588, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@2ad99cf3]
+2026-01-14 14:46:50 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+2026-01-14 14:46:50 [main] INFO  c.g.j.GestionJugadoresFutbolBaseApplication - Started GestionJugadoresFutbolBaseApplication in 7.819 seconds (JVM running for 8.401)
+2026-01-14 14:48:37 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-14 14:48:37 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-14 14:48:37 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-01-14 14:48:41 [http-nio-8080-exec-6] INFO  c.g.j.s.impl.PartidoServiceImpl - Eliminando eventos del partido con id: 108
+2026-01-14 14:48:41 [http-nio-8080-exec-6] INFO  c.g.j.s.impl.PartidoServiceImpl - Se encontraron 11 eventos para eliminar
+2026-01-14 14:48:41 [http-nio-8080-exec-6] INFO  c.g.j.s.impl.PartidoServiceImpl - Eventos eliminados exitosamente
+2026-01-14 14:48:41 [http-nio-8080-exec-6] INFO  c.g.j.s.impl.PartidoServiceImpl - Eliminando partido con id: 108
+2026-01-14 14:48:41 [http-nio-8080-exec-6] INFO  c.g.j.s.impl.PartidoServiceImpl - Partido eliminado exitosamente
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Desactivando partido con id: 109
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Calculando minutos jugados para partido 109
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 32 con 90 minutos
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 33 con 90 minutos
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 34 con 90 minutos
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 35 con 90 minutos
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 36 con 90 minutos
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 37 con 90 minutos
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 38 con 90 minutos
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 39 con 90 minutos
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento actualizado para jugador 29 con 90 minutos
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 30 con 90 minutos
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 31 con 90 minutos
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Cálculo de minutos jugados completado para partido 109
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Minutos jugados calculados correctamente para partido 109
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Goles contados desde eventos - Equipo: 0, Rival: 1 para partido 109
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Resultado del partido 109: DERROTA
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Partido 109 finalizado correctamente
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del equipo 10 para temporada 2025-2026
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba1 Prueba para temporada 2025-2026
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba12 Prueba para temporada 2025-2026
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 14:49:27 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 14:49:28 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Estadísticas actualizadas correctamente para equipo 10
+2026-01-14 14:53:15 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-14 14:53:15 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-01-14 14:53:15 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-01-14 15:20:35 [restartedMain] INFO  c.g.j.GestionJugadoresFutbolBaseApplication - Starting GestionJugadoresFutbolBaseApplication using Java 24.0.2 on DESKTOP-5DEJGCG with PID 7324 (C:\Users\Oscar\Documents\ESTUDIOS\CertificacionJava\gestion-jugadores-futbolBase\gestion-jugadores-futbolBase\target\classes started by Oscar in C:\Users\Oscar\Documents\ESTUDIOS\CertificacionJava\gestion-jugadores-futbolBase)
+2026-01-14 15:20:35 [restartedMain] DEBUG c.g.j.GestionJugadoresFutbolBaseApplication - Running with Spring Boot v2.5.6, Spring v5.3.12
+2026-01-14 15:20:35 [restartedMain] INFO  c.g.j.GestionJugadoresFutbolBaseApplication - No active profile set, falling back to default profiles: default
+2026-01-14 15:20:35 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-01-14 15:20:35 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-01-14 15:20:36 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-14 15:20:36 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 133 ms. Found 8 JPA repository interfaces.
+2026-01-14 15:20:37 [restartedMain] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@6eaef6bb' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2026-01-14 15:20:37 [restartedMain] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2026-01-14 15:20:37 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2026-01-14 15:20:37 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-14 15:20:37 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.54]
+2026-01-14 15:20:37 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-01-14 15:20:37 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2802 ms
+2026-01-14 15:20:38 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-14 15:20:38 [restartedMain] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.4.32.Final
+2026-01-14 15:20:38 [restartedMain] INFO  o.h.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2026-01-14 15:20:38 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-01-14 15:20:39 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-01-14 15:20:39 [restartedMain] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+2026-01-14 15:20:40 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-01-14 15:20:40 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-14 15:20:41 [restartedMain] DEBUG c.g.j.c.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-01-14 15:20:41 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-14 15:20:42 [restartedMain] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6f679d37, org.springframework.security.web.context.SecurityContextPersistenceFilter@69740e0c, org.springframework.security.web.header.HeaderWriterFilter@27f6aa0c, org.springframework.web.filter.CorsFilter@4348f9e0, org.springframework.security.web.authentication.logout.LogoutFilter@122b3fc4, com.gestion.jugadores.configuraciones.JwtAuthenticationFilter@1591c83c, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@63c38c9, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@e6b8e39, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@606f2b80, org.springframework.security.web.session.SessionManagementFilter@1fc1f22b, org.springframework.security.web.access.ExceptionTranslationFilter@4259afa5, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@3b280c4]
+2026-01-14 15:20:44 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path ''
+2026-01-14 15:20:44 [restartedMain] INFO  c.g.j.GestionJugadoresFutbolBaseApplication - Started GestionJugadoresFutbolBaseApplication in 9.781 seconds (JVM running for 10.731)
+2026-01-14 15:21:01 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-14 15:21:01 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-14 15:21:01 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-01-14 15:21:03 [http-nio-8080-exec-6] INFO  c.g.j.s.impl.PartidoServiceImpl - Eliminando eventos del partido con id: 111
+2026-01-14 15:21:03 [http-nio-8080-exec-6] INFO  c.g.j.s.impl.PartidoServiceImpl - Se encontraron 11 eventos para eliminar
+2026-01-14 15:21:03 [http-nio-8080-exec-6] INFO  c.g.j.s.impl.PartidoServiceImpl - Eventos eliminados exitosamente
+2026-01-14 15:21:03 [http-nio-8080-exec-6] INFO  c.g.j.s.impl.PartidoServiceImpl - Eliminando partido con id: 111
+2026-01-14 15:21:03 [http-nio-8080-exec-6] INFO  c.g.j.s.impl.PartidoServiceImpl - Partido eliminado exitosamente
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Desactivando partido con id: 112
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Calculando minutos jugados para partido 112
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 32 con 90 minutos
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 33 con 90 minutos
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 34 con 90 minutos
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 35 con 90 minutos
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 36 con 90 minutos
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 37 con 90 minutos
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 38 con 90 minutos
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 39 con 90 minutos
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento actualizado para jugador 29 con 90 minutos
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 30 con 90 minutos
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 31 con 90 minutos
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Cálculo de minutos jugados completado para partido 112
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Minutos jugados calculados correctamente para partido 112
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Goles contados desde eventos - Equipo: 0, Rival: 1 para partido 112
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Resultado del partido 112: DERROTA
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Partido 112 finalizado correctamente
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del equipo 10 para temporada 2025-2026
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba1 Prueba para temporada 2025-2026
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba12 Prueba para temporada 2025-2026
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:21:24 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:21:25 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.EstadisticasServiceImpl - 🔍 PARTIDO ID: 112 - GolesRival: 1 - Eventos totales: 11
+2026-01-14 15:21:45 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.EstadisticasServiceImpl - 🔍 Procesando goles del rival para partido ID: 112 - Total goles rival: 1
+2026-01-14 15:24:39 [http-nio-8080-exec-1] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=GOL_RIVAL, minuto=87, jugador=29
+2026-01-14 15:24:39 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.EstadisticasServiceImpl -     ✅ GOL_RIVAL detectado en minuto: 87
+2026-01-14 15:24:39 [http-nio-8080-exec-1] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=PARTICIPACION, minuto=0, jugador=32
+2026-01-14 15:24:39 [http-nio-8080-exec-1] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=PARTICIPACION, minuto=0, jugador=33
+2026-01-14 15:24:39 [http-nio-8080-exec-1] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=PARTICIPACION, minuto=0, jugador=34
+2026-01-14 15:24:39 [http-nio-8080-exec-1] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=PARTICIPACION, minuto=0, jugador=35
+2026-01-14 15:24:39 [http-nio-8080-exec-1] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=PARTICIPACION, minuto=0, jugador=36
+2026-01-14 15:24:39 [http-nio-8080-exec-1] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=PARTICIPACION, minuto=0, jugador=37
+2026-01-14 15:24:39 [http-nio-8080-exec-1] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=PARTICIPACION, minuto=0, jugador=38
+2026-01-14 15:24:39 [http-nio-8080-exec-1] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=PARTICIPACION, minuto=0, jugador=39
+2026-01-14 15:24:39 [http-nio-8080-exec-1] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=PARTICIPACION, minuto=0, jugador=30
+2026-01-14 15:24:39 [http-nio-8080-exec-1] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=PARTICIPACION, minuto=0, jugador=31
+2026-01-14 15:24:39 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.EstadisticasServiceImpl -   🎯 Total eventos de gol del rival encontrados: 1
+2026-01-14 15:24:39 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.EstadisticasServiceImpl -     ⏱️ Procesando gol en minuto: 87
+2026-01-14 15:24:39 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.EstadisticasServiceImpl -       → Asignado a intervalo 76-90
+2026-01-14 15:24:41 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Estadísticas actualizadas correctamente para equipo 10
+2026-01-14 15:26:58 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Eliminando eventos del partido con id: 112
+2026-01-14 15:26:58 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Se encontraron 11 eventos para eliminar
+2026-01-14 15:26:58 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Eventos eliminados exitosamente
+2026-01-14 15:26:58 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Eliminando partido con id: 112
+2026-01-14 15:26:58 [http-nio-8080-exec-1] INFO  c.g.j.s.impl.PartidoServiceImpl - Partido eliminado exitosamente
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Desactivando partido con id: 113
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Calculando minutos jugados para partido 113
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 32 con 90 minutos
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 33 con 90 minutos
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 34 con 90 minutos
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 35 con 90 minutos
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 36 con 90 minutos
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 37 con 90 minutos
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 38 con 90 minutos
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 39 con 90 minutos
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento actualizado para jugador 29 con 90 minutos
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 30 con 90 minutos
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Evento de participación creado para jugador 31 con 90 minutos
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Cálculo de minutos jugados completado para partido 113
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Minutos jugados calculados correctamente para partido 113
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Goles contados desde eventos - Equipo: 0, Rival: 1 para partido 113
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Resultado del partido 113: DERROTA
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Partido 113 finalizado correctamente
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del equipo 10 para temporada 2025-2026
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba1 Prueba para temporada 2025-2026
+2026-01-14 15:27:36 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:27:37 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba12 Prueba para temporada 2025-2026
+2026-01-14 15:27:37 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:27:37 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:27:37 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:27:37 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.PartidoServiceImpl - Actualizando estadísticas del jugador Prueba Prueba para temporada 2025-2026
+2026-01-14 15:27:37 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.EstadisticasServiceImpl - 🔍 PARTIDO ID: 113 - GolesRival: 1 - Eventos totales: 11
+2026-01-14 15:27:37 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.EstadisticasServiceImpl - 🔍 Procesando goles del rival para partido ID: 113 - Total goles rival: 1
+2026-01-14 15:37:12 [http-nio-8080-exec-9] DEBUG c.g.j.s.impl.EstadisticasServiceImpl -   📝 Evento: tipo=GOL_RIVAL, minuto=78, jugador=29
+2026-01-14 15:37:39 [http-nio-8080-exec-9] INFO  c.g.j.s.impl.EstadisticasServiceImpl -     ✅ GOL_RIVAL detectado en minuto: 78
+2026-01-14 15:45:05 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-14 15:45:05 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-01-14 15:45:05 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
