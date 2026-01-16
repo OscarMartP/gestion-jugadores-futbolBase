@@ -6,6 +6,7 @@ import {
   EstadisticasEquipoDTO, 
   ResumenEstadisticasDTO 
 } from '../models/estadisticas.model';
+import { EstadisticasPartidoDTO } from '../models/estadisticas-partido.model';
 
 @Injectable({
   providedIn: 'root'
@@ -150,5 +151,12 @@ export class EstadisticasService {
     } else {
       return `${year}-${year + 1}`;
     }
+  }
+
+  /**
+   * Obtener estadísticas de un partido individual
+   */
+  obtenerEstadisticasPartido(partidoId: number): Observable<EstadisticasPartidoDTO> {
+    return this.http.get<EstadisticasPartidoDTO>(`${this.apiUrl}/partido/${partidoId}`);
   }
 }

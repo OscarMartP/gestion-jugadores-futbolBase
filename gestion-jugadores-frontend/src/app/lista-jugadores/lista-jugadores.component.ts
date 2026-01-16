@@ -128,10 +128,4 @@ export class ListaJugadoresComponent implements OnInit {
   verDetallesDelJugador(id: number) {
     this.router.navigate(['jugador-detalles', id]);
   }
-
-  verEstadisticas() {
-    if (this.equipoId && this.equipoId > 0) {
-      this.router.navigate(['estadisticas', this.equipoId]);
-    }
-  }
 }

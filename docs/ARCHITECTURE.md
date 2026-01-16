@@ -2,9 +2,15 @@
 
 Propósito: documentación orientada a programadores que describe la arquitectura del backend (Spring Boot) y frontend (Angular), flujos clave, modelo de datos resumido, **nuevas funciones implementadas**, análisis de mejoras y recomendaciones prácticas para optimización.
 
-**Última actualización:** Enero 14, 2026
+**Última actualización:** Enero 16, 2026
 
 **Cambios recientes implementados:**
+- ✅ **Sistema de Estadísticas de Partido Individual** - Nuevo DTO EstadisticasPartidoDTO con análisis completo por partido (Enero 16 2026).
+- ✅ **Modal de estadísticas en gestionar-partidos** - UI completa con resumen general, estadísticas por jugador y distribuciones temporales (Enero 16 2026).
+- ✅ **Resultados con color en lista de partidos** - Filas coloreadas (verde=victoria, amarillo=empate, rojo=derrota) con columna de resultado (Enero 16 2026).
+- ✅ **Robos y Tiros en estadísticas de partido** - Agregados campos robos y tirosAPuerta a EventoJugadorResumen con contador por jugador (Enero 16 2026).
+- ✅ **Fix inicialización de campos robos** - Corregido bug de persistencia en actualizarEstadisticasEquipo y actualizarEstadisticasJugador que causaba valores incorrectos al eliminar partidos (Enero 16 2026).
+- ✅ **Limpieza UI lista-jugadores** - Eliminado botón redundante de estadísticas de equipo (Enero 16 2026).
 - ✅ **Fix distribución temporal de goles del rival** - Corregido cálculo de minuto en eventos GOL_RIVAL (commit 3c89b69, Enero 14 2026).
 - ✅ **Sistema de logging completo** - Configuración SLF4J con archivo logs/application.log, nivel DEBUG para debugging.
 - ✅ **Conteo automático de goles desde eventos** - PartidoServiceImpl cuenta GOL/GOL_RIVAL al finalizar partido.
@@ -138,6 +144,7 @@ Paquetes clave (resumen):
 - GET `/api/v1/estadisticas/equipo/{id}/top-goleadores` — top 5 goleadores del equipo
 - GET `/api/v1/estadisticas/equipo/{id}/top-asistentes` — top 5 asistentes del equipo
 - GET `/api/v1/estadisticas/equipo/{id}/mejor-rating` — top 5 con mejor rating del equipo
+- GET `/api/v1/estadisticas/partido/{partidoId}` — obtener estadísticas completas de un partido individual (nuevo Enero 16 2026)
 - PUT `/api/v1/estadisticas/jugador/{id}/actualizar` — actualizar estadísticas de un jugador
 - PUT `/api/v1/estadisticas/equipo/{id}/actualizar` — actualizar estadísticas de un equipo
 - PUT `/api/v1/estadisticas/actualizar-todas` — actualizar todas las estadísticas del sistema
@@ -1651,6 +1658,132 @@ Cuando se elimina un partido:
 3. **Monitoring:** Integrar Spring Boot Actuator + Prometheus + Grafana para métricas.
 4. **Logging centralizado:** ELK Stack (Elasticsearch, Logstash, Kibana) o equivalente.
 5. **BD migrations:** Usar Flyway o Liquibase para versionado de schema.
+
+---
+
+### Sistema de Estadísticas de Partido Individual
+
+**Estado: IMPLEMENTADO COMPLETO**  
+**Fecha: Enero 16, 2026**
+
+**Motivación:**
+Proporcionar análisis detallado de cada partido individual, permitiendo a entrenadores y analistas evaluar el rendimiento específico del equipo y jugadores en un encuentro concreto, con estadísticas completas y distribuciones temporales.
+
+#### Modelo de Datos (DTO)
+
+**EstadisticasPartidoDTO** - Nueva clase con información completa del partido:
+- Datos generales: partidoId, nombreRival, fechaPartido, golesEquipo, golesRival, resultado
+- Totales del partido: totalGoles, totalAsistencias, totalTarjetasAmarillas, totalTarjetasRojas, totalRobos, totalTirosAPuerta
+- Lista de EventoJugadorResumen con estadísticas individuales (8 campos: goles, asistencias, pasesClave, tarjetas, robos, tiros)
+- 4 DistribucionTemporal (goles, asistencias, tarjetas, tiros recibidos) con 6 intervalos de 15 minutos cada una
+
+#### Backend Implementation
+
+**EstadisticasServiceImpl.obtenerEstadisticasPartido()** - Método de líneas 1103-1271:
+1. Obtiene partido y valida existencia
+2. Consulta eventos del partido desde EventoJugadorRepository
+3. Agrupa eventos por jugador usando HashMap
+4. Procesa cada evento (GOL, ASISTENCIA, PASE_CLAVE, TARJETAS, ROBO, TIRO_A_PUERTA, GOL_RIVAL)
+5. Calcula distribuciones temporales por intervalos de 15 minutos
+6. Calcula tiros recibidos (PARADAS + GOL_RIVAL)
+7. Retorna EstadisticasPartidoDTO completo
+
+**EstadisticasControlador - Nuevo endpoint:**
+```java
+@GetMapping("/partido/{partidoId}")
+public ResponseEntity<EstadisticasPartidoDTO> obtenerEstadisticasPartido(@PathVariable Long partidoId)
+```
+
+#### Frontend Implementation
+
+**Component: gestionar-partidos.component.ts**
+- Nuevas propiedades: estadisticasPartido, mostrarModal
+- Método `abrirEstadisticas(partido)`: llama al servicio y abre modal
+- Método `obtenerColorResultado(partido)`: retorna clase CSS según resultado (table-success/warning/danger)
+- Método `obtenerTextoResultado(partido)`: formatea score "X - Y"
+- Método `obtenerValorIntervalo(distribucion, intervalo)`: mapea intervalo a propiedad del DTO
+
+**Template: gestionar-partidos.component.html**
+- Tabla con nueva columna "Resultado" mostrando score y badge
+- Filas coloreadas con `[ngClass]="obtenerColorResultado(partido)"`
+- Botón "📊 Estadísticas" para partidos inactivos
+- Modal-xl con Bootstrap 5 dividido en 4 secciones:
+  1. Información general (rival, fecha, resultado, score)
+  2. 6 cards de resumen con métricas (goles, asistencias, tarjetas, robos, tiros)
+  3. Tabla de jugadores (8 columnas con todos los eventos)
+  4. 4 tablas de distribución temporal (6 intervalos × 4 tipos de eventos)
+
+**Service: estadisticas.service.ts**
+```typescript
+obtenerEstadisticasPartido(partidoId: number): Observable<EstadisticasPartidoDTO>
+```
+
+**Model: estadisticas-partido.model.ts** - Nuevos archivos TypeScript:
+- Interface EstadisticasPartidoDTO (espejo del DTO Java)
+- Interface EventoJugadorResumen
+- Interface DistribucionTemporal
+
+#### Color Coding de Resultados
+
+- 🟢 **Verde (table-success):** VICTORIA
+- 🟡 **Amarillo (table-warning):** EMPATE
+- 🔴 **Rojo (table-danger):** DERROTA
+- 🔵 **Azul (table-primary):** Partido activo
+- ⚪ **Gris (table-secondary):** Sin resultado
+
+#### Eventos Procesados en Estadísticas de Partido
+
+- ⚽ **GOL:** Incrementa goles del jugador, también cuenta como tiro a puerta
+- 🎯 **ASISTENCIA:** Incrementa asistencias del jugador
+- 🔑 **PASE_CLAVE:** Incrementa pases clave del jugador
+- 🟨 **TARJETA_AMARILLA:** Incrementa tarjetas amarillas
+- 🟥 **TARJETA_ROJA:** Incrementa tarjetas rojas
+- 🛡️ **ROBO:** Incrementa robos del jugador (nuevo Enero 16 2026)
+- 🥅 **TIRO_A_PUERTA:** Incrementa tiros del jugador (nuevo Enero 16 2026)
+- 👥 **GOL_RIVAL:** Contribuye a tiros recibidos, no asociado a jugador
+
+#### Bug Fixes Relacionados (Enero 16, 2026)
+
+**Problema:** Al eliminar todos los partidos y actualizar estadísticas, los campos de robos mantenían valores anteriores (ej: 5 robos cuando debería ser 0). Los campos de pasesClave y tirosAPuerta sí se reseteaban correctamente.
+
+**Causa raíz:** Los métodos `actualizarEstadisticasEquipo()` y `actualizarEstadisticasJugador()` no inicializaban los campos de robos a 0 antes de recalcular, a diferencia de pasesClave y tirosAPuerta que sí tenían inicialización.
+
+**Solución aplicada:**
+- En `EstadisticasServiceImpl.actualizarEstadisticasEquipo()` (líneas ~460):
+  - Agregadas 10 líneas de inicialización: `stats.setTotalRobos(0)`, `stats.setRobos0_15(0)`, ... `stats.setRobosPerdiendo(0)`
+- En `EstadisticasServiceImpl.actualizarEstadisticasJugador()` (líneas ~220):
+  - Agregadas 11 líneas de inicialización incluyendo `stats.setRobosP90(0.0)`
+
+**Impacto:** Ahora el "mayor recuperador" y todas las estadísticas de robos muestran correctamente 0 cuando no hay partidos, consistente con el comportamiento de otras métricas.
+
+#### Cleanup Realizado
+
+**lista-jugadores.component:**
+- ❌ Eliminado botón redundante "📊 Ver Estadísticas del Equipo"
+- ❌ Eliminado método `verEstadisticas()` del TypeScript
+- **Justificación:** Las estadísticas del equipo ya están accesibles desde la sección dedicada "Estadísticas Generales", evitando duplicación de funcionalidad
+
+#### Beneficios del Sistema
+
+**Para Entrenadores:**
+- Análisis post-partido con todas las métricas en una vista
+- Identificación rápida de jugadores destacados por partido
+- Evaluación de patrones temporales (ej: más goles en segundos tiempos)
+- Comparación visual con colores del resultado
+
+**Para Analistas:**
+- Datos estructurados exportables
+- Distribuciones temporales para análisis táctico avanzado
+- Métricas de robos y tiros por partido individual
+- Información completa de cada evento registrado
+
+**Para la Aplicación:**
+- UI intuitiva con color-coding de resultados
+- Modal organizado con Bootstrap 5 responsive
+- Integración completa con sistema de eventos existente
+- Endpoint REST documentado en Swagger
+
+---
 
 ### Frontend (Angular)
 

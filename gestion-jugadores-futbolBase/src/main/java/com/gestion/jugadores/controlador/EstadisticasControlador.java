@@ -2,6 +2,7 @@ package com.gestion.jugadores.controlador;
 
 import com.gestion.jugadores.dto.EstadisticasEquipoDTO;
 import com.gestion.jugadores.dto.EstadisticasJugadorDTO;
+import com.gestion.jugadores.dto.EstadisticasPartidoDTO;
 import com.gestion.jugadores.dto.ResumenEstadisticasDTO;
 import com.gestion.jugadores.servicios.EstadisticasService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -134,6 +135,16 @@ public class EstadisticasControlador {
         
         ResumenEstadisticasDTO resumen = estadisticasService.obtenerResumenEquipo(equipoId, temporada);
         return ResponseEntity.ok(resumen);
+    }
+    
+    @GetMapping("/partido/{partidoId}")
+    @Operation(summary = "Obtener estadísticas de un partido individual",
+               description = "Retorna todas las estadísticas detalladas de un partido específico")
+    public ResponseEntity<EstadisticasPartidoDTO> obtenerEstadisticasPartido(
+            @Parameter(description = "ID del partido") @PathVariable Long partidoId) {
+        
+        EstadisticasPartidoDTO estadisticas = estadisticasService.obtenerEstadisticasPartido(partidoId);
+        return ResponseEntity.ok(estadisticas);
     }
 
     // ========== ENDPOINTS DE ACTUALIZACIÓN ==========

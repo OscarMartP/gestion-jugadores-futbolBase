@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { PartidoService } from '../../partido.service';
 import { EquipoService } from '../../equipo.service';
 import { UserService } from '../../login/services/user.service';
+import { EstadisticasService } from '../../services/estadisticas.service';
+import { EstadisticasPartidoDTO } from '../../models/estadisticas-partido.model';
 
 @Component({
   selector: 'app-gestionar-partidos',
@@ -17,11 +19,16 @@ export class GestionarPartidosComponent implements OnInit {
   mensaje: string = '';
   tipoMensaje: 'success' | 'error' | 'info' = 'info';
   usuarioId: number;
+  
+  // Para el modal de estadísticas
+  estadisticasPartido: EstadisticasPartidoDTO | null = null;
+  mostrarModal: boolean = false;
 
   constructor(
     private partidoService: PartidoService,
     private equipoService: EquipoService,
-    private userService: UserService
+    private userService: UserService,
+    private estadisticasService: EstadisticasService
   ) { }
 
   ngOnInit(): void {
@@ -186,5 +193,58 @@ export class GestionarPartidosComponent implements OnInit {
         }
       );
     }
+  }
+
+  obtenerColorResultado(partido: any): string {
+    if (!partido.resultado) return '';
+    
+    switch (partido.resultado.toUpperCase()) {
+      case 'VICTORIA':
+        return 'table-success';
+      case 'EMPATE':
+        return 'table-warning';
+      case 'DERROTA':
+        return 'table-danger';
+      default:
+        return '';
+    }
+  }
+
+  obtenerTextoResultado(partido: any): string {
+    if (!partido.golesEquipo && partido.golesEquipo !== 0) return '-';
+    if (!partido.golesRival && partido.golesRival !== 0) return '-';
+    
+    return `${partido.golesEquipo} - ${partido.golesRival}`;
+  }
+
+  abrirEstadisticas(partido: any): void {
+    this.cargando = true;
+    this.estadisticasService.obtenerEstadisticasPartido(partido.id).subscribe(
+      (estadisticas: EstadisticasPartidoDTO) => {
+        this.estadisticasPartido = estadisticas;
+        this.mostrarModal = true;
+        this.cargando = false;
+      },
+      (error) => {
+        console.error('Error al cargar estadísticas del partido:', error);
+        this.mostrarMensaje('Error al cargar estadísticas del partido', 'error');
+        this.cargando = false;
+      }
+    );
+  }
+
+  cerrarModal(): void {
+    this.mostrarModal = false;
+    this.estadisticasPartido = null;
+  }
+
+  obtenerIntervalos(): string[] {
+    return ['0-15', '16-30', '31-45', '46-60', '61-75', '76-90'];
+  }
+
+  obtenerValorIntervalo(distribucion: any, intervalo: string): number {
+    if (!distribucion) return 0;
+    const key = 'intervalo' + intervalo.replace('-', '_');
+    return distribucion[key] || 0;
   }
 }

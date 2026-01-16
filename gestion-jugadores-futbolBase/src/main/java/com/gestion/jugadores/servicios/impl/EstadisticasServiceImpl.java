@@ -2,6 +2,7 @@ package com.gestion.jugadores.servicios.impl;
 
 import com.gestion.jugadores.dto.EstadisticasEquipoDTO;
 import com.gestion.jugadores.dto.EstadisticasJugadorDTO;
+import com.gestion.jugadores.dto.EstadisticasPartidoDTO;
 import com.gestion.jugadores.dto.ResumenEstadisticasDTO;
 import com.gestion.jugadores.modelo.*;
 import com.gestion.jugadores.repositorio.*;
@@ -12,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -214,6 +217,19 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         stats.setTirosAPuertaEmpatando(0);
         stats.setTirosAPuertaPerdiendo(0);
         stats.setTirosAPuertaP90(0.0);
+        
+        // Inicializar campos de robos a 0
+        stats.setTotalRobos(0);
+        stats.setRobos0_15(0);
+        stats.setRobos16_30(0);
+        stats.setRobos31_45(0);
+        stats.setRobos46_60(0);
+        stats.setRobos61_75(0);
+        stats.setRobos76_90(0);
+        stats.setRobosGanando(0);
+        stats.setRobosEmpatando(0);
+        stats.setRobosPerdiendo(0);
+        stats.setRobosP90(0.0);
         
         // Obtener todos los eventos del jugador en la temporada
         List<EventoJugador> eventos = eventoJugadorRepository.findByJugador_Id(jugadorId);
@@ -454,6 +470,18 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         stats.setTirosAPuertaGanando(0);
         stats.setTirosAPuertaEmpatando(0);
         stats.setTirosAPuertaPerdiendo(0);
+        
+        // Inicializar campos de robos a 0
+        stats.setTotalRobos(0);
+        stats.setRobos0_15(0);
+        stats.setRobos16_30(0);
+        stats.setRobos31_45(0);
+        stats.setRobos46_60(0);
+        stats.setRobos61_75(0);
+        stats.setRobos76_90(0);
+        stats.setRobosGanando(0);
+        stats.setRobosEmpatando(0);
+        stats.setRobosPerdiendo(0);
         
         // Obtener todos los partidos del equipo (finalizados y activos)
         List<Partido> partidos = partidoRepository.findByEquipo_Id(equipoId);
@@ -1095,5 +1123,173 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         dto.setEfectividad(stats.getEfectividad());
         
         return dto;
+    }
+    
+    // ========== ESTADÍSTICAS DE PARTIDO INDIVIDUAL ==========
+    
+    @Override
+    public EstadisticasPartidoDTO obtenerEstadisticasPartido(Long partidoId) {
+        // Obtener el partido
+        Partido partido = partidoRepository.findById(partidoId)
+            .orElseThrow(() -> new RuntimeException("Partido no encontrado con id: " + partidoId));
+        
+        // Obtener todos los eventos del partido
+        List<EventoJugador> eventos = eventoJugadorRepository.findByPartido_Id(partidoId);
+        
+        // Crear el DTO
+        EstadisticasPartidoDTO dto = new EstadisticasPartidoDTO();
+        dto.setId(partido.getId());
+        dto.setEquipoId(partido.getEquipo().getId());
+        dto.setEquipoNombre(partido.getEquipo().getNombre());
+        dto.setFecha(partido.getFecha());
+        dto.setTitulo(partido.getTitulo());
+        dto.setDuracion(partido.getDuracion());
+        dto.setResultado(partido.getResultado());
+        dto.setGolesEquipo(partido.getGolesEquipo() != null ? partido.getGolesEquipo() : 0);
+        dto.setGolesRival(partido.getGolesRival() != null ? partido.getGolesRival() : 0);
+        
+        // Agrupar eventos por jugador
+        Map<Long, EstadisticasPartidoDTO.EventoJugadorResumen> eventosPorJugador = new HashMap<>();
+        
+        // Contadores totales
+        int totalGoles = 0, totalAsistencias = 0, totalPasesClave = 0;
+        int totalTarjetasAmarillas = 0, totalTarjetasRojas = 0;
+        
+        // Distribuciones temporales
+        EstadisticasPartidoDTO.DistribucionTemporal distGoles = new EstadisticasPartidoDTO.DistribucionTemporal();
+        EstadisticasPartidoDTO.DistribucionTemporal distAsistencias = new EstadisticasPartidoDTO.DistribucionTemporal();
+        EstadisticasPartidoDTO.DistribucionTemporal distTarjetas = new EstadisticasPartidoDTO.DistribucionTemporal();
+        EstadisticasPartidoDTO.DistribucionTemporal distTirosRecibidos = new EstadisticasPartidoDTO.DistribucionTemporal();
+        
+        // Inicializar distribuciones
+        distGoles.setIntervalo0_15(0);
+        distGoles.setIntervalo16_30(0);
+        distGoles.setIntervalo31_45(0);
+        distGoles.setIntervalo46_60(0);
+        distGoles.setIntervalo61_75(0);
+        distGoles.setIntervalo76_90(0);
+        
+        distAsistencias.setIntervalo0_15(0);
+        distAsistencias.setIntervalo16_30(0);
+        distAsistencias.setIntervalo31_45(0);
+        distAsistencias.setIntervalo46_60(0);
+        distAsistencias.setIntervalo61_75(0);
+        distAsistencias.setIntervalo76_90(0);
+        
+        distTarjetas.setIntervalo0_15(0);
+        distTarjetas.setIntervalo16_30(0);
+        distTarjetas.setIntervalo31_45(0);
+        distTarjetas.setIntervalo46_60(0);
+        distTarjetas.setIntervalo61_75(0);
+        distTarjetas.setIntervalo76_90(0);
+        
+        distTirosRecibidos.setIntervalo0_15(0);
+        distTirosRecibidos.setIntervalo16_30(0);
+        distTirosRecibidos.setIntervalo31_45(0);
+        distTirosRecibidos.setIntervalo46_60(0);
+        distTirosRecibidos.setIntervalo61_75(0);
+        distTirosRecibidos.setIntervalo76_90(0);
+        
+        // Procesar cada evento
+        for (EventoJugador evento : eventos) {
+            String tipoEvento = evento.getTipoEvento().toUpperCase();
+            Integer minuto = evento.getMinuto() != null ? evento.getMinuto() : 0;
+            
+            // Solo procesar eventos con jugador asignado (no GOL_RIVAL)
+            if (evento.getJugador() != null) {
+                Long jugadorId = evento.getJugador().getId();
+                
+                // Obtener o crear resumen del jugador
+                EstadisticasPartidoDTO.EventoJugadorResumen resumen = eventosPorJugador.get(jugadorId);
+                if (resumen == null) {
+                    resumen = new EstadisticasPartidoDTO.EventoJugadorResumen();
+                    resumen.setJugadorId(jugadorId);
+                    resumen.setJugadorNombre(evento.getJugador().getNombre());
+                    resumen.setGoles(0);
+                    resumen.setAsistencias(0);
+                    resumen.setPasesClave(0);
+                    resumen.setTarjetasAmarillas(0);
+                    resumen.setTarjetasRojas(0);
+                    resumen.setRobos(0);
+                    resumen.setTirosAPuerta(0);
+                    eventosPorJugador.put(jugadorId, resumen);
+                }
+                
+                // Contar evento según tipo
+                switch (tipoEvento) {
+                    case "GOL":
+                        resumen.setGoles(resumen.getGoles() + 1);
+                        totalGoles++;
+                        incrementarIntervalo(distGoles, minuto);
+                        break;
+                    case "ASISTENCIA":
+                        resumen.setAsistencias(resumen.getAsistencias() + 1);
+                        totalAsistencias++;
+                        incrementarIntervalo(distAsistencias, minuto);
+                        break;
+                    case "PASE_CLAVE":
+                        resumen.setPasesClave(resumen.getPasesClave() + 1);
+                        totalPasesClave++;
+                        break;
+                    case "TARJETA_AMARILLA":
+                        resumen.setTarjetasAmarillas(resumen.getTarjetasAmarillas() + 1);
+                        totalTarjetasAmarillas++;
+                        incrementarIntervalo(distTarjetas, minuto);
+                        break;
+                    case "TARJETA_ROJA":
+                        resumen.setTarjetasRojas(resumen.getTarjetasRojas() + 1);
+                        totalTarjetasRojas++;
+                        incrementarIntervalo(distTarjetas, minuto);
+                        break;
+                    case "ROBO":
+                        resumen.setRobos(resumen.getRobos() + 1);
+                        break;
+                    case "TIRO_A_PUERTA":
+                        resumen.setTirosAPuerta(resumen.getTirosAPuerta() + 1);
+                        break;
+                }
+            } else if (tipoEvento.equals("GOL_RIVAL")) {
+                // Procesar goles del rival
+                incrementarIntervalo(distTirosRecibidos, minuto);
+            }
+        }
+        
+        // Asignar totales
+        dto.setTotalGoles(totalGoles);
+        dto.setTotalAsistencias(totalAsistencias);
+        dto.setTotalPasesClave(totalPasesClave);
+        dto.setTotalTarjetasAmarillas(totalTarjetasAmarillas);
+        dto.setTotalTarjetasRojas(totalTarjetasRojas);
+        dto.setTirosRecibidos(dto.getGolesRival());
+        
+        // Asignar distribuciones
+        dto.setDistribucionGoles(distGoles);
+        dto.setDistribucionAsistencias(distAsistencias);
+        dto.setDistribucionTarjetas(distTarjetas);
+        dto.setDistribucionTirosRecibidos(distTirosRecibidos);
+        
+        // Convertir map a lista
+        dto.setEventosPorJugador(new ArrayList<>(eventosPorJugador.values()));
+        
+        return dto;
+    }
+    
+    /**
+     * Helper method to increment the correct time interval
+     */
+    private void incrementarIntervalo(EstadisticasPartidoDTO.DistribucionTemporal dist, int minuto) {
+        if (minuto <= 15) {
+            dist.setIntervalo0_15(dist.getIntervalo0_15() + 1);
+        } else if (minuto <= 30) {
+            dist.setIntervalo16_30(dist.getIntervalo16_30() + 1);
+        } else if (minuto <= 45) {
+            dist.setIntervalo31_45(dist.getIntervalo31_45() + 1);
+        } else if (minuto <= 60) {
+            dist.setIntervalo46_60(dist.getIntervalo46_60() + 1);
+        } else if (minuto <= 75) {
+            dist.setIntervalo61_75(dist.getIntervalo61_75() + 1);
+        } else {
+            dist.setIntervalo76_90(dist.getIntervalo76_90() + 1);
+        }
     }
 }

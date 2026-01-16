@@ -2,6 +2,7 @@ package com.gestion.jugadores.servicios;
 
 import com.gestion.jugadores.dto.EstadisticasJugadorDTO;
 import com.gestion.jugadores.dto.EstadisticasEquipoDTO;
+import com.gestion.jugadores.dto.EstadisticasPartidoDTO;
 import com.gestion.jugadores.dto.ResumenEstadisticasDTO;
 import java.util.List;
 
@@ -70,4 +71,9 @@ public interface EstadisticasService {
      * Actualizar estadísticas después de registrar un evento
      */
     void actualizarDespuesDeEvento(Long jugadorId, Long partidoId);
+    
+    /**
+     * Obtener estadísticas individuales de un partido
+     */
+    EstadisticasPartidoDTO obtenerEstadisticasPartido(Long partidoId);
 }
