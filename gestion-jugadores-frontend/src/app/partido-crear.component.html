@@ -1,0 +1,33 @@
+<div class="container mt-4">
+  <h2>Crear Partido</h2>
+
+  <form [formGroup]="partidoForm" (ngSubmit)="crearPartido()">
+    <div class="form-group mb-3">
+      <label for="equipoId">Selecciona Equipo:</label>
+      <select class="form-select" id="equipoId" formControlName="equipoId">
+        <option [value]="null" disabled selected>-- Selecciona un equipo --</option>
+        <option *ngFor="let equipo of equipos" [value]="equipo.id">{{ equipo.nombre }}</option>
+      </select>
+      <div *ngIf="partidoForm.get('equipoId')?.invalid && partidoForm.get('equipoId')?.touched" class="text-danger">
+        Selecciona un equipo válido.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="titulo">Título del Partido (Equipo Rival):</label>
+      <input type="text" class="form-control" id="titulo" formControlName="titulo" placeholder="Ej: vs Real Madrid">
+      <div *ngIf="partidoForm.get('titulo')?.invalid && partidoForm.get('titulo')?.touched" class="text-danger">
+        El título es obligatorio.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="fecha">Fecha y hora:</label>
+      <input type="datetime-local" class="form-control" id="fecha" formControlName="fecha">
+    </div>
+
+    <div class="text-center">
+      <button class="btn btn-primary" type="submit" [disabled]="partidoForm.invalid">Crear Partido</button>
+    </div>
+  </form>
+</div>

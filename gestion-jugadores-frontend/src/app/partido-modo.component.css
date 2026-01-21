@@ -1,0 +1,256 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.card {
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  border-radius: 8px 8px 0 0;
+  padding: 1.25rem;
+  font-weight: 600;
+}
+
+.timer-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.timer-section .card-body {
+  padding: 2rem;
+}
+
+.timer-section h4 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.timer-section .badge {
+  font-size: 1.5rem;
+  padding: 0.75rem 1.25rem;
+}
+
+.timer-section .btn {
+  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+}
+
+.jugadores-lista {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.jugador-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-left: 4px solid #667eea;
+}
+
+.jugador-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.jugador-card .card-title {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.botones-evento {
+  gap: 0.5rem;
+}
+
+.botones-evento button {
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.botones-evento button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.bg-primary {
+  background-color: #667eea !important;
+}
+
+.bg-success {
+  background-color: #48bb78 !important;
+}
+
+.text-white {
+  color: white;
+}
+
+/* Marcador Section */
+.marcador-section .card-body {
+  padding: 1.5rem;
+}
+
+.marcador-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.marcador-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  gap: 1rem;
+}
+
+.equipo-label {
+  font-weight: 600;
+  color: #495057;
+  min-width: 100px;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.goles-display {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #2c3e50;
+  min-width: 50px;
+  text-align: center;
+  padding: 0.25rem 0.75rem;
+  background: white;
+  border-radius: 6px;
+  border: 2px solid #e9ecef;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .timer-section h4 {
+    font-size: 1.75rem;
+  }
+
+  .botones-evento {
+    flex-direction: column;
+  }
+
+  .botones-evento button {
+    width: 100%;
+  }
+
+  .d-grid {
+    gap: 0.5rem;
+  }
+
+  .marcador-row {
+    gap: 0.5rem;
+  }
+
+  .equipo-label {
+    min-width: 70px;
+    font-size: 0.9rem;
+  }
+
+  .goles-display {
+    font-size: 1.5rem;
+    min-width: 40px;
+  }
+}
+/* Modal de Sustitución */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+.modal-dialog {
+  background: white;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content {
+  padding: 0;
+}
+
+.modal-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close:hover {
+  background: #f8f9fa;
+  border-radius: 50%;
+}
+
+.modal-body {
+  padding: 1.25rem;
+}
+
+.list-group-item {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.list-group-item:hover {
+  background: #f8f9fa;
+  transform: translateX(5px);
+}

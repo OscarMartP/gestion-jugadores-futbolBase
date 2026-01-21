@@ -1,0 +1,258 @@
+<div class="container mt-5">
+  <!-- ===== FASE 1: Seleccionar Partido ===== -->
+  <div *ngIf="!enModoJuego" class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">⚽ Iniciar Partido</h3>
+    </div>
+
+    <div class="card-body">
+      <!-- Mensaje de feedback -->
+      <div *ngIf="mensaje" 
+           class="alert" 
+           [ngClass]="{'alert-success': tipoMensaje === 'success', 'alert-danger': tipoMensaje === 'error', 'alert-info': tipoMensaje === 'info'}"
+           role="alert">
+        {{ mensaje }}
+      </div>
+
+      <!-- Spinner de carga -->
+      <div *ngIf="cargando" class="text-center mb-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+
+      <!-- Selector de Equipo -->
+      <div class="row mb-4" *ngIf="!cargando">
+        <div class="col-md-6">
+          <label for="equipoSelect" class="form-label">
+            <strong>1. Selecciona tu equipo:</strong>
+          </label>
+          <select 
+            id="equipoSelect" 
+            class="form-select" 
+            [ngModel]="equipoSeleccionado"
+            (ngModelChange)="onEquipoSeleccionado($event)"
+            [disabled]="equipos.length === 0 || cargando">
+            <option *ngFor="let equipo of equipos" 
+                    [ngValue]="equipo">
+              {{ equipo.nombre }}
+            </option>
+          </select>
+          <small class="text-muted" *ngIf="equipos.length === 0">
+            No tienes equipos. Crea uno en "Crear Equipo".
+          </small>
+        </div>
+      </div>
+
+      <!-- Selector de Partido -->
+      <div class="row mb-4" *ngIf="!cargando && equipoSeleccionado">
+        <div class="col-md-6">
+          <label for="partidoSelect" class="form-label">
+            <strong>2. Selecciona un partido:</strong>
+          </label>
+          <select 
+            id="partidoSelect" 
+            class="form-select" 
+            [ngModel]="partidoSeleccionado"
+            (ngModelChange)="onPartidoSeleccionado($event)"
+            [disabled]="partidos.length === 0 || cargando">
+            <option *ngFor="let partido of partidos" 
+                    [ngValue]="partido">
+              {{ partido.fecha | date: 'dd/MM/yyyy HH:mm' }}
+            </option>
+          </select>
+          <small class="text-muted" *ngIf="partidos.length === 0">
+            No hay partidos disponibles. Crea uno en "Crear Partido".
+          </small>
+        </div>
+      </div>
+
+      <!-- Resumen del partido seleccionado -->
+      <div class="card bg-light mb-4" *ngIf="!cargando && partidoSeleccionado">
+        <div class="card-body">
+          <h5 class="card-title">📋 Resumen del Partido</h5>
+          <p>
+            <strong>Equipo:</strong> {{ equipoSeleccionado.nombre }}
+          </p>
+          <p>
+            <strong>Fecha:</strong> {{ partidoSeleccionado.fecha | date: 'dd/MM/yyyy HH:mm' }}
+          </p>
+          <p>
+            <strong>Duración:</strong> {{ equipoSeleccionado.duracionPartido }} minutos
+          </p>
+          <p>
+            <strong>Jugadores:</strong> {{ equipoSeleccionado.jugadores?.length || 0 }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Botón Iniciar Partido -->
+      <div class="d-grid gap-2" *ngIf="!cargando && partidoSeleccionado">
+        <button 
+          class="btn btn-success btn-lg" 
+          (click)="iniciarPartido()"
+          [disabled]="cargando">
+          🟢 Iniciar Partido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FASE 2: Modo Juego ===== -->
+  <div *ngIf="enModoJuego && partidoActivo" class="card shadow">
+    <div class="card-header bg-success text-white">
+      <h3 class="mb-0">⚽ En Vivo - Partido Activo</h3>
+    </div>
+
+    <div class="card-body">
+      <!-- Información del partido en vivo -->
+      <div class="alert alert-success" role="alert">
+        <h5>✓ Partido en progreso</h5>
+        <p>
+          <strong>Equipo:</strong> {{ equipoSeleccionado.nombre }} <br>
+          <strong>Iniciado:</strong> {{ partidoActivo.fecha | date: 'dd/MM/yyyy HH:mm' }}
+        </p>
+      </div>
+
+      <!-- Timer -->
+      <div class="timer-section card mb-4">
+        <div class="card-body text-center">
+          <h4>Tiempo: <span class="badge bg-primary">{{ formatearTiempo() }}</span></h4>
+          <button 
+            class="btn"
+            [ngClass]="timerActivo ? 'btn-warning' : 'btn-info'"
+            (click)="toggleTimer()"
+            [disabled]="cargando">
+            {{ timerActivo ? '⏸️ Pausar' : '▶️ Reanudar' }} Partido
+          </button>
+        </div>
+      </div>
+
+      <!-- Marcador en Tiempo Real -->
+      <div class="marcador-section card mb-4">
+        <div class="card-body">
+          <h5 class="text-center mb-3">📊 Marcador</h5>
+          <div class="marcador-container">
+            <div class="marcador-row">
+              <span class="equipo-label">{{ equipoSeleccionado.nombre }}</span>
+              <button class="btn btn-sm btn-outline-secondary" type="button" (click)="decrementarGolesEquipo()">-</button>
+              <span class="goles-display">{{ golesEquipo }}</span>
+              <button class="btn btn-sm btn-outline-secondary" type="button" (click)="incrementarGolesEquipo()">+</button>
+            </div>
+            <div class="text-center my-2">
+              <h4>-</h4>
+            </div>
+            <div class="marcador-row">
+              <span class="equipo-label">Rival</span>
+              <button class="btn btn-sm btn-outline-secondary" type="button" (click)="decrementarGolesRival()">-</button>
+              <span class="goles-display">{{ golesRival }}</span>
+              <button class="btn btn-sm btn-outline-secondary" type="button" (click)="incrementarGolesRival()">+</button>
+            </div>
+          </div>
+          <div class="text-center mt-3">
+            <span class="badge fs-6"
+                  [ngClass]="{
+                    'bg-success': obtenerResultado() === 'Victoria',
+                    'bg-warning': obtenerResultado() === 'Empate',
+                    'bg-danger': obtenerResultado() === 'Derrota'
+                  }">
+              Resultado actual: {{ obtenerResultado() }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Registro de eventos -->
+      <h5 class="mb-3">Registrar Eventos</h5>
+      <div class="jugadores-lista">
+        <div *ngIf="jugadores.length === 0" class="alert alert-warning">
+          Cargando jugadores...
+        </div>
+        <div *ngFor="let jugador of jugadores" class="card mb-3 jugador-card">
+          <div class="card-body">
+            <h6 class="card-title">
+              {{ jugador.nombre }} {{ jugador.apellido }} 
+              <span class="badge bg-secondary">{{ jugador.posicion }}</span>
+            </h6>
+            <div class="botones-evento d-flex gap-2 flex-wrap">
+              <button 
+                *ngFor="let evento of eventosDisponibles"
+                class="btn btn-sm" 
+                [ngClass]="'btn-' + evento.color"
+                (click)="registrarEvento(jugador.id, evento.tipo)"
+                [disabled]="cargando"
+                [title]="evento.nombre">
+                {{ evento.icono }} {{ evento.nombre }}
+              </button>
+              <!-- Botón exclusivo para porteros -->
+              <button 
+                *ngIf="esPortero(jugador)"
+                class="btn btn-sm" 
+                [ngClass]="'btn-' + eventoPortero.color"
+                (click)="registrarEvento(jugador.id, eventoPortero.tipo)"
+                [disabled]="cargando"
+                [title]="eventoPortero.nombre">
+                {{ eventoPortero.icono }} {{ eventoPortero.nombre }}
+              </button>
+              <!-- Botón de Cambio/Sustitución -->
+              <button 
+                *ngIf="suplentes.length > 0 || partidoActivo?.suplentes?.length > 0"
+                class="btn btn-sm btn-warning ms-auto" 
+                (click)="abrirDialogoSustitucion(jugador)"
+                [disabled]="cargando"
+                title="Realizar cambio">
+                🔄 Cambio
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diálogo de Sustitución -->
+      <div *ngIf="mostrarDialogoSustitucion" class="modal-overlay" (click)="cerrarDialogoSustitucion()">
+        <div class="modal-dialog" (click)="$event.stopPropagation()">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Realizar Cambio</h5>
+              <button type="button" class="btn-close" (click)="cerrarDialogoSustitucion()"></button>
+            </div>
+            <div class="modal-body">
+              <p><strong>Sale:</strong> {{ jugadorASalir?.nombre }} {{ jugadorASalir?.apellido }}</p>
+              <p><strong>Selecciona quién entra:</strong></p>
+              <div class="list-group">
+                <button 
+                  *ngFor="let suplente of suplentes"
+                  type="button" 
+                  class="list-group-item list-group-item-action"
+                  (click)="realizarSustitucion(suplente)">
+                  {{ suplente.nombre }} {{ suplente.apellido }}
+                  <span class="badge bg-secondary ms-2">{{ suplente.posicion }}</span>
+                </button>
+                <div *ngIf="suplentes.length === 0" class="alert alert-info mt-2">
+                  No hay suplentes disponibles
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de control -->
+      <div class="d-grid gap-2 d-sm-flex justify-content-center mt-4">
+        <button 
+          class="btn btn-success btn-lg" 
+          (click)="finalizarPartido()"
+          [disabled]="cargando">
+          ✓ Finalizar Partido
+        </button>
+        <button 
+          class="btn btn-outline-danger btn-lg" 
+          (click)="cancelarPartido()"
+          [disabled]="cargando">
+          ✗ Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+  

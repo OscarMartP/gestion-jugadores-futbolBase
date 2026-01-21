@@ -1,0 +1,92 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Seleccionar Alineación</mat-card-title>
+      <mat-card-subtitle>
+        {{ tipoFutbol === 'FUTBOL_7' ? 'Fútbol 7 - Selecciona 7 titulares' : 'Fútbol 11 - Selecciona 11 titulares' }}
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content *ngIf="!cargando">
+      <div class="alineacion-grid">
+        <!-- Columna de Jugadores Disponibles -->
+        <div class="columna">
+          <h3>Jugadores Disponibles ({{ jugadoresDisponibles.length }})</h3>
+          <div class="lista-jugadores">
+            <mat-card *ngFor="let jugador of jugadoresDisponibles" class="jugador-card">
+              <mat-card-content>
+                <div class="jugador-info">
+                  <span class="numero">#{{ jugador.id }}</span>
+                  <span class="nombre">{{ jugador.nombre }} {{ jugador.apellido }}</span>
+                  <span class="posicion">{{ jugador.posicion }}</span>
+                </div>
+                <div class="acciones">
+                  <button mat-raised-button color="primary" (click)="agregarTitular(jugador)">
+                    Titular
+                  </button>
+                  <button mat-raised-button (click)="agregarSuplente(jugador)">
+                    Suplente
+                  </button>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- Columna de Titulares -->
+        <div class="columna">
+          <h3>Titulares ({{ titulares.length }}/{{ numeroTitulares }})</h3>
+          <div class="lista-jugadores">
+            <mat-card *ngFor="let jugador of titulares" class="jugador-card titular">
+              <mat-card-content>
+                <div class="jugador-info">
+                  <span class="numero">#{{ jugador.id }}</span>
+                  <span class="nombre">{{ jugador.nombre }} {{ jugador.apellido }}</span>
+                  <span class="posicion">{{ jugador.posicion }}</span>
+                </div>
+                <button mat-icon-button color="warn" (click)="quitarTitular(jugador)">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- Columna de Suplentes -->
+        <div class="columna">
+          <h3>Suplentes ({{ suplentes.length }})</h3>
+          <div class="lista-jugadores">
+            <mat-card *ngFor="let jugador of suplentes" class="jugador-card suplente">
+              <mat-card-content>
+                <div class="jugador-info">
+                  <span class="numero">#{{ jugador.id }}</span>
+                  <span class="nombre">{{ jugador.nombre }} {{ jugador.apellido }}</span>
+                  <span class="posicion">{{ jugador.posicion }}</span>
+                </div>
+                <button mat-icon-button color="warn" (click)="quitarSuplente(jugador)">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-content *ngIf="cargando">
+      <div class="loading-container">
+        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        <p>Cargando jugadores...</p>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="confirmarAlineacion()" [disabled]="titulares.length !== numeroTitulares">
+        Confirmar Alineación y Comenzar Partido
+      </button>
+      <button mat-raised-button (click)="cancelar()">
+        Cancelar
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

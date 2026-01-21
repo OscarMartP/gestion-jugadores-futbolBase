@@ -1,0 +1,221 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="header-custom">
+    <ion-title>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ion-icon name="football" size="large"></ion-icon>
+        <span>Mis Partidos</span>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="fade-in">
+  <!-- Estadísticas de partidos -->
+  <ion-card class="stats-card">
+    <ion-card-content>
+      <div style="display: flex; justify-content: space-around; text-align: center;">
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-primary);">{{ partidos.length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Total</p>
+        </div>
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-success);">{{ obtenerPartidosPorEstado('COMPLETADO').length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Jugados</p>
+        </div>
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-warning);">{{ obtenerPartidosPorEstado('PROGRAMADO').length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Programados</p>
+        </div>
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-tertiary);">{{ obtenerPartidosPorEstado('EN_CURSO').length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">En Curso</p>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Filtros de partidos -->
+  <ion-card class="filter-card">
+    <ion-card-content>
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+        <ion-chip 
+          [color]="filtroActivo === 'TODOS' ? 'primary' : 'medium'"
+          (click)="filtrarPartidos('TODOS')"
+          style="cursor: pointer;">
+          <ion-label>Todos</ion-label>
+        </ion-chip>
+        <ion-chip 
+          [color]="filtroActivo === 'PROGRAMADO' ? 'warning' : 'medium'"
+          (click)="filtrarPartidos('PROGRAMADO')"
+          style="cursor: pointer;">
+          <ion-label>Programados</ion-label>
+        </ion-chip>
+        <ion-chip 
+          [color]="filtroActivo === 'EN_CURSO' ? 'tertiary' : 'medium'"
+          (click)="filtrarPartidos('EN_CURSO')"
+          style="cursor: pointer;">
+          <ion-label>En Curso</ion-label>
+        </ion-chip>
+        <ion-chip 
+          [color]="filtroActivo === 'COMPLETADO' ? 'success' : 'medium'"
+          (click)="filtrarPartidos('COMPLETADO')"
+          style="cursor: pointer;">
+          <ion-label>Terminados</ion-label>
+        </ion-chip>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="refrescarPartidos($event)">
+    <ion-refresher-content 
+      pullingIcon="chevron-down-circle-outline"
+      pulling-text="Desliza para refrescar"
+      refreshingSpinner="circles"
+      refreshing-text="Actualizando partidos...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading spinner -->
+  <div *ngIf="cargando" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px;">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p style="margin-top: 16px; color: var(--ion-color-primary);">Cargando partidos...</p>
+  </div>
+
+  <!-- Lista de partidos -->
+  <div *ngIf="!cargando">
+    <ion-card 
+      *ngFor="let partido of partidosFiltrados" 
+      class="match-card"
+      [ngClass]="partido.estado.toLowerCase()">
+      
+      <ion-card-header>
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+          <div style="flex: 1;">
+            <ion-card-title style="font-size: 1.1rem; margin-bottom: 8px;">
+              {{ partido.equipoLocal }} vs {{ partido.equipoVisitante }}
+            </ion-card-title>
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+              <span class="match-status-badge" 
+                    [ngClass]="partido.estado.toLowerCase().replace('_', '-')">
+                {{ obtenerTextoEstado(partido.estado) }}
+              </span>
+              <span class="match-date">
+                <ion-icon name="calendar-outline" style="margin-right: 4px;"></ion-icon>
+                {{ formatearFecha(partido.fechaHora) }}
+              </span>
+            </div>
+          </div>
+          <ion-icon 
+            name="football" 
+            size="large" 
+            [style.color]="obtenerColorEstado(partido.estado)"
+            style="opacity: 0.7;">
+          </ion-icon>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+        <!-- Resultado o información del partido -->
+        <div style="margin-bottom: 12px;">
+          <div *ngIf="partido.estado === 'COMPLETADO'" 
+               style="display: flex; justify-content: center; align-items: center; gap: 16px; margin: 16px 0;">
+            <div style="text-align: center;">
+              <h2 style="margin: 0; font-size: 2rem; color: var(--ion-color-primary);">{{ partido.golesLocal || 0 }}</h2>
+              <p style="margin: 0; font-size: 0.9rem; color: var(--ion-color-medium);">{{ partido.equipoLocal }}</p>
+            </div>
+            <div style="font-size: 1.5rem; color: var(--ion-color-medium);">-</div>
+            <div style="text-align: center;">
+              <h2 style="margin: 0; font-size: 2rem; color: var(--ion-color-primary);">{{ partido.golesVisitante || 0 }}</h2>
+              <p style="margin: 0; font-size: 0.9rem; color: var(--ion-color-medium);">{{ partido.equipoVisitante }}</p>
+            </div>
+          </div>
+          
+          <div *ngIf="partido.estado !== 'COMPLETADO'">
+            <p style="margin: 0; color: var(--ion-color-medium); font-size: 0.9rem;">
+              <ion-icon name="time-outline" style="margin-right: 4px;"></ion-icon>
+              {{ formatearHora(partido.fechaHora) }} - Duración: {{ partido.duracion }}min
+            </p>
+            <p *ngIf="partido.ubicacion" style="margin: 4px 0 0 0; color: var(--ion-color-medium); font-size: 0.9rem;">
+              <ion-icon name="location-outline" style="margin-right: 4px;"></ion-icon>
+              {{ partido.ubicacion }}
+            </p>
+          </div>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <ion-button 
+            *ngIf="partido.estado === 'PROGRAMADO'"
+            fill="outline" 
+            size="small" 
+            color="success"
+            (click)="iniciarPartido(partido)">
+            <ion-icon name="play-outline" slot="start"></ion-icon>
+            Iniciar
+          </ion-button>
+          
+          <ion-button 
+            *ngIf="partido.estado === 'EN_CURSO'"
+            fill="outline" 
+            size="small" 
+            color="warning"
+            (click)="gestionarPartido(partido)">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Gestionar
+          </ion-button>
+          
+          <ion-button 
+            *ngIf="partido.estado !== 'COMPLETADO'"
+            fill="outline" 
+            size="small" 
+            color="primary"
+            (click)="editarPartido(partido)">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Editar
+          </ion-button>
+          
+          <ion-button 
+            fill="outline" 
+            size="small" 
+            color="secondary"
+            (click)="verDetalles(partido)">
+            <ion-icon name="eye-outline" slot="start"></ion-icon>
+            Ver
+          </ion-button>
+          
+          <ion-button 
+            fill="clear" 
+            color="danger" 
+            size="small"
+            (click)="eliminarPartido(partido)">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
+            Eliminar
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Mensaje cuando no hay partidos -->
+    <div *ngIf="partidosFiltrados.length === 0" 
+         style="text-align: center; padding: 60px 20px;">
+      <ion-icon 
+        name="football-outline" 
+        size="large" 
+        style="color: var(--ion-color-medium); margin-bottom: 16px; font-size: 4rem;">
+      </ion-icon>
+      <h2 style="color: var(--ion-color-medium); margin-bottom: 8px;">No hay partidos</h2>
+      <p style="color: var(--ion-color-medium); margin-bottom: 24px;">
+        {{ filtroActivo === 'TODOS' ? 'Programa tu primer partido' : 'No hay partidos con este filtro' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- FAB para agregar partido -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button class="fab-custom" (click)="agregarPartido()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

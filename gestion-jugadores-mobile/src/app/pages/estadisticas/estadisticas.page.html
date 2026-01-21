@@ -1,0 +1,243 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="header-custom">
+    <ion-title>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ion-icon name="stats-chart" size="large"></ion-icon>
+        <span>Estadísticas</span>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="fade-in">
+
+  <!-- Resumen general -->
+  <ion-card class="summary-card">
+    <ion-card-header>
+      <ion-card-title style="display: flex; align-items: center; gap: 8px; color: var(--ion-color-primary);">
+        <ion-icon name="trophy-outline"></ion-icon>
+        Resumen General
+      </ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" style="color: var(--ion-color-primary);">{{ estadisticas.totalJugadores }}</div>
+          <div class="stat-label">Jugadores</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" style="color: var(--ion-color-secondary);">{{ estadisticas.totalEquipos }}</div>
+          <div class="stat-label">Equipos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" style="color: var(--ion-color-tertiary);">{{ estadisticas.totalPartidos }}</div>
+          <div class="stat-label">Partidos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" style="color: var(--ion-color-success);">{{ estadisticas.partidosGanados }}</div>
+          <div class="stat-label">Ganados</div>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Gráfico de resultados -->
+  <ion-card class="chart-card">
+    <ion-card-header>
+      <ion-card-title style="display: flex; align-items: center; gap: 8px; color: var(--ion-color-primary);">
+        <ion-icon name="pie-chart-outline"></ion-icon>
+        Resultados de Partidos
+      </ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content>
+      <div class="chart-container">
+        <div class="donut-chart">
+          <div class="donut-inner">
+            <div class="donut-text">
+              <div class="donut-number">{{ estadisticas.totalPartidos }}</div>
+              <div class="donut-label">Total</div>
+            </div>
+          </div>
+          <svg viewBox="0 0 42 42" class="donut-svg">
+            <circle 
+              class="donut-hole" 
+              cx="21" cy="21" r="15.91549430918954"
+              fill="transparent">
+            </circle>
+            <circle 
+              class="donut-ring" 
+              cx="21" cy="21" r="15.91549430918954"
+              fill="transparent" 
+              stroke="var(--ion-color-light)"
+              stroke-width="3">
+            </circle>
+            
+            <!-- Ganados -->
+            <circle 
+              class="donut-segment ganados"
+              cx="21" cy="21" r="15.91549430918954"
+              fill="transparent" 
+              stroke="var(--ion-color-success)"
+              stroke-width="3"
+              [attr.stroke-dasharray]="getStrokeDashArray('ganados')"
+              stroke-dashoffset="25">
+            </circle>
+            
+            <!-- Empates -->
+            <circle 
+              class="donut-segment empates"
+              cx="21" cy="21" r="15.91549430918954"
+              fill="transparent" 
+              stroke="var(--ion-color-warning)"
+              stroke-width="3"
+              [attr.stroke-dasharray]="getStrokeDashArray('empates')"
+              [attr.stroke-dashoffset]="getStrokeDashOffset('empates')">
+            </circle>
+            
+            <!-- Perdidos -->
+            <circle 
+              class="donut-segment perdidos"
+              cx="21" cy="21" r="15.91549430918954"
+              fill="transparent" 
+              stroke="var(--ion-color-danger)"
+              stroke-width="3"
+              [attr.stroke-dasharray]="getStrokeDashArray('perdidos')"
+              [attr.stroke-dashoffset]="getStrokeDashOffset('perdidos')">
+            </circle>
+          </svg>
+        </div>
+        
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-color" style="background: var(--ion-color-success);"></div>
+            <span>Ganados ({{ estadisticas.partidosGanados }})</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: var(--ion-color-warning);"></div>
+            <span>Empates ({{ estadisticas.partidosEmpatados }})</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: var(--ion-color-danger);"></div>
+            <span>Perdidos ({{ estadisticas.partidosPerdidos }})</span>
+          </div>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Estadísticas por posición -->
+  <ion-card class="chart-card">
+    <ion-card-header>
+      <ion-card-title style="display: flex; align-items: center; gap: 8px; color: var(--ion-color-primary);">
+        <ion-icon name="people-outline"></ion-icon>
+        Jugadores por Posición
+      </ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content>
+      <div class="bar-chart">
+        <div class="bar-item" *ngFor="let pos of estadisticas.jugadoresPorPosicion">
+          <div class="bar-label">{{ pos.posicion }}</div>
+          <div class="bar-container">
+            <div 
+              class="bar-fill" 
+              [style.width.%]="getBarWidth(pos.cantidad)"
+              [style.background]="getColorPorPosicion(pos.posicion)">
+            </div>
+            <div class="bar-value">{{ pos.cantidad }}</div>
+          </div>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Rendimiento de equipos -->
+  <ion-card class="chart-card">
+    <ion-card-header>
+      <ion-card-title style="display: flex; align-items: center; gap: 8px; color: var(--ion-color-primary);">
+        <ion-icon name="shield-outline"></ion-icon>
+        Rendimiento por Equipo
+      </ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content>
+      <div class="team-stats">
+        <div class="team-stat-item" *ngFor="let equipo of estadisticas.rendimientoPorEquipo">
+          <div class="team-header">
+            <h3>{{ equipo.nombre }}</h3>
+            <div class="team-score">{{ equipo.puntos }}pts</div>
+          </div>
+          
+          <div class="team-details">
+            <div class="team-detail">
+              <span class="detail-label">Partidos:</span>
+              <span class="detail-value">{{ equipo.partidos }}</span>
+            </div>
+            <div class="team-detail">
+              <span class="detail-label">Victorias:</span>
+              <span class="detail-value success">{{ equipo.victorias }}</span>
+            </div>
+            <div class="team-detail">
+              <span class="detail-label">Empates:</span>
+              <span class="detail-value warning">{{ equipo.empates }}</span>
+            </div>
+            <div class="team-detail">
+              <span class="detail-label">Derrotas:</span>
+              <span class="detail-value danger">{{ equipo.derrotas }}</span>
+            </div>
+          </div>
+          
+          <div class="progress-bar">
+            <div class="progress-fill" 
+                 [style.width.%]="getWinPercentage(equipo)"
+                 [style.background]="getTeamColor(equipo)"></div>
+          </div>
+          <div class="progress-label">{{ getWinPercentage(equipo) | number:'1.0-1' }}% efectividad</div>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Últimos partidos -->
+  <ion-card class="chart-card">
+    <ion-card-header>
+      <ion-card-title style="display: flex; align-items: center; gap: 8px; color: var(--ion-color-primary);">
+        <ion-icon name="time-outline"></ion-icon>
+        Últimos Resultados
+      </ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content>
+      <div class="recent-matches">
+        <div class="match-result" *ngFor="let partido of estadisticas.ultimosPartidos">
+          <div class="match-teams">
+            <span class="team-name">{{ partido.equipoLocal }}</span>
+            <div class="match-score">
+              <span class="score">{{ partido.golesLocal }}</span>
+              <span class="separator">-</span>
+              <span class="score">{{ partido.golesVisitante }}</span>
+            </div>
+            <span class="team-name">{{ partido.equipoVisitante }}</span>
+          </div>
+          <div class="match-date">{{ formatearFecha(partido.fecha) }}</div>
+          <div class="match-result-badge" [ngClass]="getResultClass(partido)">
+            {{ getResultText(partido) }}
+          </div>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="refrescarEstadisticas($event)">
+    <ion-refresher-content 
+      pullingIcon="chevron-down-circle-outline"
+      pulling-text="Desliza para refrescar"
+      refreshingSpinner="circles"
+      refreshing-text="Actualizando estadísticas...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+</ion-content>

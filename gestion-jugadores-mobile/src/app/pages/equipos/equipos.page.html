@@ -1,0 +1,144 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="header-custom">
+    <ion-title>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ion-icon name="shield" size="large"></ion-icon>
+        <span>Mis Equipos</span>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="fade-in">
+  <!-- Estadísticas de equipos -->
+  <ion-card class="stats-card">
+    <ion-card-content>
+      <div style="display: flex; justify-content: space-around; text-align: center;">
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-primary);">{{ equipos.length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Total Equipos</p>
+        </div>
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-secondary);">{{ obtenerEquiposPorTipo('FUTBOL_11').length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Fútbol 11</p>
+        </div>
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-tertiary);">{{ obtenerEquiposPorTipo('FUTBOL_7').length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Fútbol 7</p>
+        </div>
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-success);">{{ obtenerEquiposPorTipo('FUTBOL_5').length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Fútbol 5</p>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Barra de búsqueda -->
+  <ion-searchbar 
+    class="search-bar-custom"
+    placeholder="Buscar equipo por nombre..." 
+    (ionInput)="buscarEquipos($event)"
+    [debounce]="300"
+    show-clear-button="focus">
+  </ion-searchbar>
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="refrescarEquipos($event)">
+    <ion-refresher-content 
+      pullingIcon="chevron-down-circle-outline"
+      pulling-text="Desliza para refrescar"
+      refreshingSpinner="circles"
+      refreshing-text="Actualizando equipos...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading spinner -->
+  <div *ngIf="cargando" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px;">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p style="margin-top: 16px; color: var(--ion-color-primary);">Cargando equipos...</p>
+  </div>
+
+  <!-- Lista de equipos -->
+  <div *ngIf="!cargando">
+    <ion-card 
+      *ngFor="let equipo of equiposFiltrados" 
+      class="team-card">
+      
+      <ion-card-header>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <ion-card-title style="font-size: 1.3rem; margin-bottom: 8px;">
+              {{ equipo.nombre }}
+            </ion-card-title>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span class="team-type-badge" 
+                    [ngClass]="equipo.tipoFutbol.toLowerCase().replace('_', '-')">
+                {{ equipo.tipoFutbol.replace('_', ' ') }}
+              </span>
+              <span class="duration-badge">
+                <ion-icon name="time-outline" style="margin-right: 4px;"></ion-icon>
+                {{ equipo.duracionPartido }}min
+              </span>
+            </div>
+          </div>
+          <ion-icon 
+            name="shield" 
+            size="large" 
+            style="color: var(--ion-color-primary); opacity: 0.7;">
+          </ion-icon>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div>
+            <p style="margin: 0; color: var(--ion-color-medium); font-size: 0.9rem;">
+              <ion-icon name="people-outline" style="margin-right: 4px;"></ion-icon>
+              {{ obtenerJugadoresDelEquipo(equipo.id).length }} jugadores
+            </p>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 8px; margin-top: 12px;">
+          <ion-button fill="outline" size="small" color="primary" (click)="verEquipo(equipo)">
+            <ion-icon name="eye-outline" slot="start"></ion-icon>
+            Ver
+          </ion-button>
+          
+          <ion-button fill="outline" size="small" color="secondary" (click)="editarEquipo(equipo)">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Editar
+          </ion-button>
+          
+          <ion-button fill="clear" color="danger" size="small" (click)="eliminarEquipo(equipo)">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
+            Eliminar
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Mensaje cuando no hay equipos -->
+    <div *ngIf="equiposFiltrados.length === 0" 
+         style="text-align: center; padding: 60px 20px;">
+      <ion-icon 
+        name="shield-outline" 
+        size="large" 
+        style="color: var(--ion-color-medium); margin-bottom: 16px; font-size: 4rem;">
+      </ion-icon>
+      <h2 style="color: var(--ion-color-medium); margin-bottom: 8px;">No hay equipos</h2>
+      <p style="color: var(--ion-color-medium); margin-bottom: 24px;">
+        Crea tu primer equipo presionando el botón +
+      </p>
+    </div>
+  </div>
+
+  <!-- FAB para agregar equipo -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button class="fab-custom" (click)="agregarEquipo()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

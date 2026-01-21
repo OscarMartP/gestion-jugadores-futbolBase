@@ -1,0 +1,125 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import '@ionic/angular/css/palettes/dark.system.css';
+
+/* Estilos personalizados para la app de gestión de jugadores */
+.football-gradient {
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+}
+
+.player-card {
+  --background: #ffffff;
+  --border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+  margin: 8px 16px;
+  
+  &:hover {
+    box-shadow: 0 8px 25px rgba(30, 58, 138, 0.15);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+  }
+}
+
+.search-bar-custom {
+  --background: #ffffff;
+  --border-radius: 12px;
+  --box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
+  margin: 16px;
+}
+
+.header-custom {
+  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  --color: white;
+}
+
+.fab-custom {
+  --background: var(--ion-color-secondary);
+  --color: white;
+  --box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+}
+
+.position-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  
+  &.portero {
+    background: var(--ion-color-warning);
+    color: var(--ion-color-warning-contrast);
+  }
+  
+  &.defensa {
+    background: var(--ion-color-primary);
+    color: var(--ion-color-primary-contrast);
+  }
+  
+  &.centrocampista {
+    background: var(--ion-color-tertiary);
+    color: var(--ion-color-tertiary-contrast);
+  }
+  
+  &.delantero {
+    background: var(--ion-color-danger);
+    color: var(--ion-color-danger-contrast);
+  }
+}
+
+.stats-card {
+  --background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(30, 58, 138, 0.05));
+  --border-radius: 16px;
+  border-left: 4px solid var(--ion-color-primary);
+  margin: 8px 16px;
+}
+
+// Animaciones
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

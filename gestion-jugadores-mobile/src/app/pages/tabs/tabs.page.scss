@@ -1,0 +1,25 @@
+ion-tab-bar {
+  ion-icon {
+    color: white;
+  }
+  
+  ion-label {
+    color: white;
+  }
+  
+  ion-tab-button {
+    --color: white;
+    --color-selected: white;
+  }
+}
+
+.logout-button {
+  --border-radius: 8px;
+  margin-right: 8px;
+  font-weight: 500;
+  text-transform: none;
+  
+  ion-icon {
+    margin-right: 4px;
+  }
+}

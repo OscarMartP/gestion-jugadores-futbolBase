@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar class="football-gradient">
+    <ion-title>Gestión Fútbol Base</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarSesion()" color="light" fill="solid" class="logout-button">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        Cerrar sesión
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-tabs>
+  <ion-tab-bar slot="bottom" class="football-gradient">
+    <ion-tab-button tab="jugadores">
+      <ion-icon name="people"></ion-icon>
+      <ion-label>Jugadores</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="equipos">
+      <ion-icon name="shield"></ion-icon>
+      <ion-label>Equipos</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="partidos">
+      <ion-icon name="football"></ion-icon>
+      <ion-label>Partidos</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="estadisticas">
+      <ion-icon name="stats-chart"></ion-icon>
+      <ion-label>Estadísticas</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

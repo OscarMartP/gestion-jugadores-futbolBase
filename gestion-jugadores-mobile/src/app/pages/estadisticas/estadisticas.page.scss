@@ -1,0 +1,388 @@
+// Estilos para la página de estadísticas
+
+.summary-card, .chart-card {
+  margin: 16px;
+  --border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+  
+  ion-card-header {
+    padding: 16px 16px 8px 16px;
+    
+    ion-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+  }
+  
+  ion-card-content {
+    padding: 8px 16px 16px 16px;
+  }
+}
+
+// Grid de estadísticas
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 12px;
+  background: rgba(var(--ion-color-primary-rgb), 0.02);
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+// Gráfico de dona
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.donut-chart {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.donut-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.donut-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.donut-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.donut-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+}
+
+.donut-label {
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.donut-segment {
+  transition: all 0.5s ease;
+}
+
+// Leyenda del gráfico
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+// Gráfico de barras
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bar-label {
+  min-width: 120px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ion-color-primary);
+}
+
+.bar-container {
+  flex: 1;
+  position: relative;
+  height: 24px;
+  background: rgba(var(--ion-color-medium-rgb), 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 1s ease;
+  background: linear-gradient(90deg, currentColor, color-mix(in srgb, currentColor, white 20%));
+}
+
+.bar-value {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+// Rendimiento de equipos
+.team-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.team-stat-item {
+  padding: 16px;
+  background: rgba(var(--ion-color-primary-rgb), 0.02);
+  border-radius: 12px;
+  border-left: 4px solid var(--ion-color-primary);
+}
+
+.team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  
+  h3 {
+    margin: 0;
+    color: var(--ion-color-primary);
+    font-size: 1.1rem;
+  }
+}
+
+.team-score {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ion-color-secondary);
+}
+
+.team-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.team-detail {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.detail-label {
+  color: var(--ion-color-medium);
+}
+
+.detail-value {
+  font-weight: 600;
+  
+  &.success { color: var(--ion-color-success); }
+  &.warning { color: var(--ion-color-warning); }
+  &.danger { color: var(--ion-color-danger); }
+}
+
+.progress-bar {
+  height: 4px;
+  background: rgba(var(--ion-color-medium-rgb), 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 1s ease;
+  border-radius: 2px;
+}
+
+.progress-label {
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+}
+
+// Últimos partidos
+.recent-matches {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.match-result {
+  padding: 12px;
+  background: rgba(var(--ion-color-primary-rgb), 0.02);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.match-teams {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.team-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ion-color-primary);
+  flex: 1;
+  
+  &:first-child {
+    text-align: left;
+  }
+  
+  &:last-child {
+    text-align: right;
+  }
+}
+
+.match-score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--ion-color-dark);
+}
+
+.score {
+  min-width: 20px;
+  text-align: center;
+}
+
+.separator {
+  color: var(--ion-color-medium);
+}
+
+.match-date {
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+  text-align: center;
+}
+
+.match-result-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  
+  &.win {
+    background: var(--ion-color-success);
+    color: var(--ion-color-success-contrast);
+  }
+  
+  &.draw {
+    background: var(--ion-color-warning);
+    color: var(--ion-color-warning-contrast);
+  }
+  
+  &.loss {
+    background: var(--ion-color-danger);
+    color: var(--ion-color-danger-contrast);
+  }
+}
+
+// Header personalizado
+.header-custom {
+  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  --color: white;
+  
+  ion-title {
+    font-weight: 600;
+  }
+}
+
+// Animación de entrada
+.fade-in {
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive
+@media (max-width: 576px) {
+  .summary-card, .chart-card {
+    margin: 8px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .donut-chart {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .donut-number {
+    font-size: 1.5rem;
+  }
+  
+  .team-details {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

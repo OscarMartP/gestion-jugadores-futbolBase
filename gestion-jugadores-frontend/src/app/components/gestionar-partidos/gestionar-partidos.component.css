@@ -1,0 +1,78 @@
+/* Estilos para las filas de la tabla según resultado */
+.table-success {
+  background-color: #d1e7dd !important;
+}
+
+.table-warning {
+  background-color: #fff3cd !important;
+}
+
+.table-danger {
+  background-color: #f8d7da !important;
+}
+
+/* Estilos para el modal */
+.modal.show {
+  display: block;
+}
+
+.modal-xl {
+  max-width: 1140px;
+}
+
+/* Estilos para las cajas de estadísticas */
+.stat-box {
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  margin-bottom: 10px;
+}
+
+.stat-box h3 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.stat-box p {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Estilos para las tarjetas del modal */
+.modal-body .card {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: none;
+}
+
+.modal-body .card-header {
+  font-weight: 600;
+}
+
+/* Estilos para las tablas del modal */
+.modal-body .table {
+  margin-bottom: 0;
+}
+
+.modal-body .table th {
+  font-weight: 600;
+  background-color: #f8f9fa;
+}
+
+/* Hover effect para las filas de partido */
+.table-hover tbody tr:hover {
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .stat-box h3 {
+    font-size: 1.5rem;
+  }
+  
+  .modal-xl {
+    max-width: 95%;
+  }
+}

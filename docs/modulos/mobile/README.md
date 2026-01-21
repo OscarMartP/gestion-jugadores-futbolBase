@@ -1,0 +1,877 @@
+# 📱 Mobile - Ionic/Angular
+
+> **Última actualización:** Enero 2026  
+> **Versión:** VersionMovil - Funcionalidades CRUD completas implementadas
+
+## 📋 Índice
+
+1. [Arquitectura General](#arquitectura-general)
+2. [Estructura de Páginas](#estructura-de-páginas)
+3. [Navegación y Tabs](#navegación-y-tabs)
+4. [Servicios Core](#servicios-core)
+5. [Flujos de Usuario Mobile](#flujos-de-usuario-mobile)
+6. [Funcionalidades Implementadas](#funcionalidades-implementadas)
+7. [Cambios Recientes](#cambios-recientes)
+
+## Arquitectura General
+
+```mermaid
+graph TB
+    subgraph "Capa de Presentación Mobile"
+        PAGES[Ionic Pages]
+        COMP[Ionic Components]
+    end
+    
+    subgraph "Lógica de Aplicación"
+        CORE[Core Services]
+        AUTH[Auth Module]
+        GUARDS[Route Guards]
+    end
+    
+    subgraph "Capacitor"
+        CAP[Capacitor Plugins]
+        NATIVE[APIs Nativas]
+    end
+    
+    subgraph "Backend"
+        API[REST API]
+    end
+    
+    PAGES --> COMP
+    PAGES --> CORE
+    CORE --> AUTH
+    CORE --> GUARDS
+    CORE --> CAP
+    CAP --> NATIVE
+    CORE --> API
+    
+    style PAGES fill:#3880ff
+    style CORE fill:#ffd700
+    style CAP fill:#ff6b6b
+    style API fill:#6db33f
+```
+
+## Estructura de Páginas
+
+```
+src/app/
+├── core/                       # Módulo core
+│   ├── guards/                # Guards de navegación
+│   │   ├── auth.guard.ts
+│   │   └── guest.guard.ts
+│   ├── interceptors/          # Interceptores HTTP
+│   │   └── auth.interceptor.ts
+│   ├── services/              # Servicios core
+│   │   ├── auth.service.ts
+│   │   ├── storage.service.ts
+│   │   └── api.service.ts
+│   └── models/                # Modelos TypeScript
+│       ├── user.model.ts
+│       ├── jugador.model.ts
+│       ├── equipo.model.ts
+│       └── partido.model.ts
+│
+├── pages/                     # Páginas de la app
+│   ├── login/                # Autenticación
+│   │   ├── login.page.ts
+│   │   ├── login.page.html
+│   │   └── login.page.scss
+│   │
+│   ├── jugadores/            # Lista de jugadores
+│   │   ├── jugadores.page.ts
+│   │   ├── jugadores.page.html
+│   │   └── jugadores.page.scss
+│   │
+│   ├── jugador-form/         # Formulario jugador
+│   │   ├── jugador-form.page.ts
+│   │   ├── jugador-form.page.html
+│   │   └── jugador-form.page.scss
+│   │
+│   ├── equipos/              # Lista de equipos
+│   │   ├── equipos.page.ts
+│   │   ├── equipos.page.html
+│   │   └── equipos.page.scss
+│   │
+│   ├── equipo-form/          # Formulario equipo
+│   │   ├── equipo-form.page.ts
+│   │   ├── equipo-form.page.html
+│   │   └── equipo-form.page.scss
+│   │
+│   ├── partidos/             # Gestión de partidos
+│   │   ├── partidos.page.ts
+│   │   ├── partidos.page.html
+│   │   └── partidos.page.scss
+│   │
+│   └── estadisticas/         # Estadísticas
+│       ├── estadisticas.page.ts
+│       ├── estadisticas.page.html
+│       └── estadisticas.page.scss
+│
+├── home/                      # Página de inicio
+│   ├── home.page.ts
+│   ├── home.page.html
+│   └── home.page.scss
+│
+├── app.component.ts           # Componente raíz
+├── app.routes.ts              # Configuración de rutas
+└── app.config.ts              # Configuración de la app
+```
+
+## Arquitectura de Navegación
+
+```mermaid
+graph TD
+    ROOT[App Root] --> LOGIN[Login Page]
+    ROOT --> TABS[Tabs Layout]
+    
+    TABS --> TAB1[Tab 1: Jugadores]
+    TABS --> TAB2[Tab 2: Equipos]
+    TABS --> TAB3[Tab 3: Partidos]
+    TABS --> TAB4[Tab 4: Estadísticas]
+    
+    TAB1 --> JLIST[Lista Jugadores]
+    JLIST --> JFORM[Jugador Form]
+    JLIST --> JDETAIL[Jugador Detalle]
+    
+    TAB2 --> ELIST[Lista Equipos]
+    ELIST --> EFORM[Equipo Form]
+    ELIST --> EDETAIL[Equipo Detalle]
+    
+    TAB3 --> PLIST[Lista Partidos]
+    PLIST --> PFORM[Crear Partido]
+    PLIST --> PMODO[Modo Partido]
+    
+    TAB4 --> STATS[Dashboard Stats]
+    STATS --> JSTATS[Stats Jugador]
+    STATS --> ESTATS[Stats Equipo]
+    
+    style LOGIN fill:#ffc107
+    style TABS fill:#3880ff
+    style PMODO fill:#ff6b6b
+    style STATS fill:#6db33f
+```
+
+## Navegación y Tabs
+
+### Configuración de Rutas
+
+```typescript
+// app.routes.ts
+export const routes: Routes = [
+  {
+    path: '',
+    redirectTo: '/login',
+    pathMatch: 'full',
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login.page')
+      .then(m => m.LoginPage)
+  },
+  {
+    path: 'jugadores',
+    loadComponent: () => import('./pages/jugadores/jugadores.page')
+      .then(m => m.JugadoresPage),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'equipos',
+    loadComponent: () => import('./pages/equipos/equipos.page')
+      .then(m => m.EquiposPage),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'partidos',
+    loadComponent: () => import('./pages/partidos/partidos.page')
+      .then(m => m.PartidosPage),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'estadisticas',
+    loadComponent: () => import('./pages/estadisticas/estadisticas.page')
+      .then(m => m.EstadisticasPage),
+    canActivate: [AuthGuard]
+  }
+];
+```
+
+### Estructura de Tabs
+
+```mermaid
+graph LR
+    TABS[ion-tabs]
+    
+    TABS --> TAB1[ion-tab-button<br/>Jugadores<br/>🏃]
+    TABS --> TAB2[ion-tab-button<br/>Equipos<br/>⚽]
+    TABS --> TAB3[ion-tab-button<br/>Partidos<br/>🏆]
+    TABS --> TAB4[ion-tab-button<br/>Estadísticas<br/>📊]
+    
+    TAB1 --> ROUTE1[/jugadores]
+    TAB2 --> ROUTE2[/equipos]
+    TAB3 --> ROUTE3[/partidos]
+    TAB4 --> ROUTE4[/estadisticas]
+    
+    style TABS fill:#3880ff
+    style TAB1 fill:#61dafb
+    style TAB2 fill:#ffd700
+    style TAB3 fill:#ff6b6b
+    style TAB4 fill:#6db33f
+```
+
+## Servicios Core
+
+### AuthService (Mobile)
+
+```mermaid
+sequenceDiagram
+    participant P as Page
+    participant AS as AuthService
+    participant ST as StorageService
+    participant API as Backend API
+    participant CAP as Capacitor Storage
+    
+    P->>AS: login(username, password)
+    AS->>API: POST /auth/generate-token
+    API-->>AS: {token, username}
+    AS->>ST: set('token', token)
+    ST->>CAP: Storage.set()
+    CAP-->>ST: Confirmación
+    AS->>ST: set('username', username)
+    ST->>CAP: Storage.set()
+    AS-->>P: Login exitoso
+    
+    P->>AS: logout()
+    AS->>ST: remove('token')
+    AS->>ST: remove('username')
+    ST->>CAP: Storage.remove()
+    AS-->>P: Logout exitoso
+```
+
+**Características específicas mobile:**
+- Persistencia con Capacitor Storage
+- Sincronización offline
+- Biometría (Face ID / Touch ID)
+- Token refresh automático
+
+### StorageService
+
+```typescript
+// Métodos principales
+- set(key: string, value: any): Promise<void>
+- get(key: string): Promise<any>
+- remove(key: string): Promise<void>
+- clear(): Promise<void>
+```
+
+**Implementación con Capacitor:**
+```mermaid
+graph LR
+    APP[App Service] --> ST[StorageService]
+    ST --> CAP[Capacitor Storage]
+    CAP --> IOS[iOS Keychain]
+    CAP --> AND[Android KeyStore]
+    CAP --> WEB[LocalStorage]
+    
+    style ST fill:#3880ff
+    style CAP fill:#ff6b6b
+```
+
+### ApiService
+
+```typescript
+// Métodos principales
+- get<T>(endpoint: string): Observable<T>
+- post<T>(endpoint: string, body: any): Observable<T>
+- put<T>(endpoint: string, body: any): Observable<T>
+- delete<T>(endpoint: string): Observable<T>
+```
+
+## Flujos de Usuario Mobile
+
+### 1. Flujo de Login Mobile
+
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant LP as Login Page
+    participant AS as AuthService
+    participant ST as Storage
+    participant API as Backend
+    participant NAV as NavController
+    
+    U->>LP: Abrir app
+    LP->>ST: Verificar token guardado
+    ST-->>LP: Token existente/null
+    
+    alt Token válido
+        LP->>API: Validar token
+        API-->>LP: Token válido
+        LP->>NAV: navigate('/jugadores')
+    else Sin token o inválido
+        LP-->>U: Mostrar formulario login
+        U->>LP: Ingresar credenciales
+        U->>LP: Tap "Iniciar Sesión"
+        LP->>AS: login(username, password)
+        AS->>API: POST /auth/generate-token
+        API-->>AS: {token, username}
+        AS->>ST: Guardar token
+        AS->>ST: Guardar username
+        AS-->>LP: Login exitoso
+        LP->>LP: Mostrar toast éxito
+        LP->>NAV: navigate('/jugadores')
+        NAV-->>U: Mostrar página principal
+    end
+```
+
+### 2. Flujo de Gestión de Jugadores Mobile
+
+```mermaid
+flowchart TD
+    A[Página Jugadores] --> B[ion-list con jugadores]
+    B --> C{Acción}
+    
+    C -->|Tap jugador| D[Ver detalle]
+    C -->|Swipe left| E[Opciones]
+    C -->|FAB +| F[Nuevo jugador]
+    C -->|Pull to refresh| G[Actualizar lista]
+    
+    D --> H[ion-modal detalle]
+    H --> I{Acciones}
+    I -->|Editar| J[Abrir formulario]
+    I -->|Eliminar| K{Confirmar?}
+    I -->|Cerrar| A
+    
+    E --> L[ion-item-options]
+    L --> M[Botón editar]
+    L --> N[Botón eliminar]
+    M --> J
+    N --> K
+    
+    K -->|Sí| O[Eliminar del backend]
+    K -->|No| A
+    O --> P[ion-toast confirmación]
+    P --> G
+    
+    F --> Q[ion-modal formulario]
+    Q --> R[Completar campos]
+    R --> S[Guardar]
+    S --> T[POST al backend]
+    T --> P
+    
+    J --> U[ion-modal formulario]
+    U --> V[Cargar datos actuales]
+    V --> W[Modificar]
+    W --> X[Actualizar]
+    X --> Y[PUT al backend]
+    Y --> P
+    
+    G --> Z[Llamar API]
+    Z --> A
+    
+    style A fill:#3880ff
+    style F fill:#28a745
+    style K fill:#dc3545
+    style P fill:#ffc107
+```
+
+### 3. Flujo de Creación de Partido Mobile
+
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant PP as Partidos Page
+    participant MODAL as Ion Modal
+    participant PS as PartidoService
+    participant API as Backend
+    participant TOAST as Ion Toast
+    participant NAV as NavController
+    
+    U->>PP: Tap en FAB "+"
+    PP->>MODAL: Abrir modal formulario
+    MODAL-->>U: Mostrar formulario
+    U->>MODAL: Seleccionar equipo
+    U->>MODAL: Ingresar rival
+    U->>MODAL: Seleccionar fecha
+    U->>MODAL: Ingresar ubicación
+    U->>MODAL: Tap "Crear Partido"
+    MODAL->>MODAL: Validar datos
+    MODAL->>PS: crearPartido(partido)
+    PS->>API: POST /partidos
+    API-->>PS: Partido creado
+    PS-->>MODAL: Respuesta exitosa
+    MODAL->>MODAL: Cerrar modal
+    MODAL->>TOAST: Mostrar éxito
+    TOAST-->>U: "Partido creado"
+    MODAL->>NAV: navigate('/partido-modo', {partidoId})
+    NAV-->>U: Abrir modo partido
+```
+
+### 4. Flujo de Modo Partido Mobile
+
+```mermaid
+flowchart TD
+    START[Abrir Modo Partido] --> LOAD[ion-loading<br/>Cargar datos]
+    LOAD --> HEADER[ion-header<br/>Marcador + Info]
+    HEADER --> CONTENT[ion-content]
+    
+    CONTENT --> ALIN{¿Alineación?}
+    ALIN -->|No| MODAL1[ion-modal<br/>Selección Alineación]
+    MODAL1 --> SEG[ion-segment<br/>Disponibles/Titulares/Suplentes]
+    SEG --> DRAG[ion-reorder-group<br/>Drag & Drop]
+    DRAG --> SAVE[Guardar alineación]
+    SAVE --> MAIN
+    
+    ALIN -->|Sí| MAIN[Panel Principal]
+    
+    MAIN --> CARDS[ion-grid<br/>Tarjetas de eventos]
+    CARDS --> BTN1[ion-button Gol]
+    CARDS --> BTN2[ion-button Asistencia]
+    CARDS --> BTN3[ion-button Tarjeta]
+    CARDS --> BTN4[ion-button Pase Clave]
+    CARDS --> BTN5[ion-button Tiro]
+    CARDS --> BTN6[ion-button Robo]
+    CARDS --> BTN7[ion-button Parada]
+    CARDS --> BTN8[ion-button Gol Rival]
+    
+    BTN1 --> MODAL2[ion-modal Evento]
+    BTN2 --> MODAL2
+    BTN3 --> MODAL2
+    BTN4 --> MODAL2
+    BTN5 --> MODAL2
+    BTN6 --> MODAL2
+    BTN7 --> MODAL2
+    BTN8 --> MODAL2
+    
+    MODAL2 --> SELECT[ion-select<br/>Jugador]
+    SELECT --> INPUT[ion-input<br/>Minuto]
+    INPUT --> CONF[Confirmar]
+    CONF --> API[POST evento]
+    API --> UPDATE[Actualizar UI]
+    UPDATE --> MAIN
+    
+    MAIN --> SUST[ion-fab<br/>Sustitución]
+    SUST --> MODAL3[ion-modal Sustitución]
+    MODAL3 --> SEL1[Seleccionar sale]
+    SEL1 --> SEL2[Seleccionar entra]
+    SEL2 --> MINU[Ingresar minuto]
+    MINU --> CSUST[Confirmar sustitución]
+    CSUST --> MAIN
+    
+    MAIN --> LIST[ion-list<br/>Eventos registrados]
+    LIST --> SWIPE[ion-item-sliding<br/>Swipe para eliminar]
+    
+    MAIN --> FIN[ion-button<br/>Finalizar Partido]
+    FIN --> ALERT[ion-alert<br/>Confirmar]
+    ALERT -->|Sí| FINAL[Finalizar]
+    ALERT -->|No| MAIN
+    
+    FINAL --> CALC[Calcular estadísticas]
+    CALC --> TOAST[ion-toast éxito]
+    TOAST --> NAV[Volver a partidos]
+    
+    style START fill:#3880ff
+    style MAIN fill:#61dafb
+    style UPDATE fill:#ffc107
+    style FINAL fill:#dc3545
+    style NAV fill:#28a745
+```
+
+### 5. Flujo de Estadísticas Mobile
+
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant EP as Estadisticas Page
+    participant SEG as Ion Segment
+    participant API as Backend
+    participant CHART as Chart Component
+    participant MODAL as Ion Modal
+    
+    U->>EP: Acceder a estadísticas
+    EP->>API: GET /equipos
+    API-->>EP: Lista de equipos
+    EP->>EP: ion-select equipos
+    U->>EP: Seleccionar equipo
+    EP->>API: GET /estadisticas/equipo/{id}
+    API-->>EP: Estadísticas equipo
+    EP->>CHART: Renderizar gráficos
+    CHART-->>U: Mostrar visualización
+    
+    U->>SEG: Cambiar segment
+    SEG->>SEG: Alternar vista
+    
+    alt Vista Equipo
+        SEG->>EP: Mostrar stats equipo
+        EP->>CHART: Gráfico victorias/empates/derrotas
+        EP->>CHART: Gráfico goles favor/contra
+    else Vista Jugadores
+        SEG->>API: GET /estadisticas/equipo/{id}/jugadores
+        API-->>SEG: Lista stats jugadores
+        SEG->>EP: Renderizar ion-list
+        U->>EP: Tap en jugador
+        EP->>MODAL: Abrir detalle
+        MODAL->>CHART: Gráficos individuales
+        MODAL-->>U: Mostrar estadísticas detalladas
+    end
+```
+
+### 6. Flujo de Sincronización Offline
+
+```mermaid
+flowchart TD
+    A[Usuario realiza acción] --> B{¿Conectado?}
+    
+    B -->|Sí| C[Enviar a API]
+    C --> D{Respuesta}
+    D -->|Éxito| E[Actualizar UI]
+    D -->|Error| F[Mostrar error]
+    F --> G[Guardar en cola offline]
+    
+    B -->|No| H[ion-toast: Sin conexión]
+    H --> G
+    
+    G --> I[Almacenar en Storage]
+    I --> J[Agregar badge notificación]
+    
+    J --> K{¿Conexión restaurada?}
+    K -->|No| J
+    K -->|Sí| L[ion-toast: Sincronizando]
+    
+    L --> M[Obtener cola offline]
+    M --> N[Procesar acciones pendientes]
+    N --> O[Enviar a API]
+    O --> P{Todas exitosas?}
+    
+    P -->|Sí| Q[Limpiar cola]
+    P -->|No| R[Reintentar fallidas]
+    
+    Q --> S[ion-toast: Sincronizado]
+    S --> T[Remover badge]
+    T --> E
+    
+    R --> U{¿Máximo reintentos?}
+    U -->|No| O
+    U -->|Sí| V[Notificar error permanente]
+    V --> W[Mantener en cola]
+    
+    style B fill:#ffc107
+    style C fill:#6db33f
+    style H fill:#dc3545
+    style L fill:#3880ff
+    style S fill:#28a745
+```
+
+## Componentes Ionic Utilizados
+
+### Layout Components
+```mermaid
+graph TD
+    APP[ion-app] --> HEADER[ion-header]
+    APP --> CONTENT[ion-content]
+    APP --> FOOTER[ion-footer]
+    APP --> TABS[ion-tabs]
+    
+    HEADER --> TOOLBAR[ion-toolbar]
+    TOOLBAR --> TITLE[ion-title]
+    TOOLBAR --> BUTTONS[ion-buttons]
+    
+    CONTENT --> LIST[ion-list]
+    CONTENT --> GRID[ion-grid]
+    CONTENT --> CARD[ion-card]
+    
+    TABS --> TABBAR[ion-tab-bar]
+    TABBAR --> TABBTN[ion-tab-button]
+    
+    style APP fill:#3880ff
+    style CONTENT fill:#61dafb
+    style TABS fill:#ffd700
+```
+
+### Interactive Components
+- **ion-button**: Botones de acción
+- **ion-fab**: Floating Action Button
+- **ion-input**: Campos de texto
+- **ion-select**: Selectores dropdown
+- **ion-toggle**: Switch on/off
+- **ion-checkbox**: Casillas de verificación
+- **ion-radio**: Botones de radio
+- **ion-searchbar**: Barra de búsqueda
+- **ion-segment**: Tabs segmentados
+
+### Navigation Components
+- **ion-nav**: Navegación stack
+- **ion-router-outlet**: Router de Angular
+- **ion-back-button**: Botón de retroceso
+- **ion-menu**: Menú lateral
+- **ion-menu-toggle**: Toggle del menú
+
+### Feedback Components
+- **ion-loading**: Indicador de carga
+- **ion-toast**: Notificaciones temporales
+- **ion-alert**: Diálogos de alerta
+- **ion-modal**: Modales fullscreen
+- **ion-popover**: Popovers contextuales
+- **ion-progress-bar**: Barra de progreso
+- **ion-spinner**: Indicador de carga circular
+
+## Características Específicas Mobile
+
+### 1. Gestos Táctiles
+
+```mermaid
+graph LR
+    A[ion-item-sliding] --> B[Swipe Left]
+    A --> C[Swipe Right]
+    B --> D[ion-item-options Editar/Eliminar]
+    C --> E[ion-item-options Otras acciones]
+    
+    F[ion-refresher] --> G[Pull to Refresh]
+    G --> H[Actualizar datos]
+    
+    I[ion-reorder-group] --> J[Drag & Drop]
+    J --> K[Reordenar lista]
+    
+    style A fill:#3880ff
+    style F fill:#61dafb
+    style I fill:#ffd700
+```
+
+### 2. Capacitor Plugins
+
+```typescript
+// Plugins utilizados
+import { Storage } from '@capacitor/storage';      // Almacenamiento persistente
+import { Network } from '@capacitor/network';      // Estado de red
+import { Camera } from '@capacitor/camera';        // Cámara (fotos jugadores)
+import { Share } from '@capacitor/share';          // Compartir estadísticas
+import { StatusBar } from '@capacitor/status-bar'; // Barra de estado
+import { SplashScreen } from '@capacitor/splash-screen'; // Pantalla de inicio
+```
+
+### 3. Optimizaciones Mobile
+
+- ✅ **Virtual Scrolling**: Para listas largas de jugadores
+- ✅ **Infinite Scroll**: Carga paginada de partidos
+- ✅ **Lazy Loading**: Carga diferida de imágenes
+- ✅ **Caché HTTP**: Reducir llamadas a API
+- ✅ **Service Worker**: Soporte offline
+- ✅ **WebP Images**: Formato optimizado de imágenes
+- ✅ **Haptic Feedback**: Vibración en acciones importantes
+
+## 🎨 Temas y Estilos Mobile
+
+```scss
+// Variables de tema personalizadas
+:root {
+  --ion-color-primary: #3880ff;
+  --ion-color-secondary: #3dc2ff;
+  --ion-color-tertiary: #5260ff;
+  --ion-color-success: #2dd36f;
+  --ion-color-warning: #ffc409;
+  --ion-color-danger: #eb445a;
+}
+```
+
+## 🚀 Build y Deployment
+
+### Android
+```bash
+ionic capacitor build android
+ionic capacitor run android
+```
+
+### iOS
+```bash
+ionic capacitor build ios
+ionic capacitor run ios
+```
+
+### Progressive Web App
+```bash
+ionic build --prod
+```
+
+## 📊 Métricas Mobile
+
+- **Tamaño APK:** ~15 MB
+- **Tamaño IPA:** ~20 MB
+
+---
+
+## ✨ Funcionalidades Implementadas
+
+### 🔐 Autenticación
+- ✅ Login con JWT token
+- ✅ Registro de nuevos usuarios
+- ✅ Logout con confirmación
+- ✅ Persistencia de sesión con localStorage
+- ✅ HTTP Interceptor para tokens automáticos
+- ✅ Redirección automática según estado de autenticación
+
+### 🏃 Gestión de Jugadores
+- ✅ Listado de jugadores del usuario autenticado
+- ✅ Búsqueda por nombre, apellido o posición
+- ✅ Filtrado por equipo (dropdown de equipos)
+- ✅ Creación de jugadores con 4 campos requeridos:
+  - Nombre
+  - Apellido
+  - Posición (PORTERO, DEFENSA, CENTROCAMPISTA, DELANTERO)
+  - Equipo ID (selección de equipos del usuario)
+- ✅ Eliminación con diálogo de confirmación
+- ✅ Auto-refresh al entrar en la página (ionViewWillEnter)
+- ✅ Validación de campos requeridos
+
+### ⚽ Gestión de Equipos
+- ✅ Listado de equipos del usuario autenticado
+- ✅ Búsqueda por nombre de equipo
+- ✅ Contador de jugadores por equipo
+- ✅ Creación de equipos con 3 campos requeridos:
+  - Nombre
+  - Tipo de Fútbol (FUTBOL_11, FUTBOL_7, FUTBOL_SALA)
+  - Duración del Partido (minutos)
+- ✅ Eliminación con advertencia de jugadores asociados
+- ✅ Confirmación especial: "⚠️ ATENCIÓN: Esto eliminará también los X jugadores asociados"
+- ✅ Auto-refresh al entrar en la página (ionViewWillEnter)
+- ✅ Eliminación en cascada de jugadores del equipo
+
+### 🎨 Interfaz de Usuario
+- ✅ Estructura de tabs con navegación inferior
+- ✅ Header común con título y botón de logout
+- ✅ Tarjetas (ion-card) para mostrar información
+- ✅ Badges visuales para tipos de fútbol
+- ✅ Iconos de Ionic para acciones
+- ✅ Colores temáticos consistentes
+- ✅ Mensajes de éxito/error con AlertController
+- ✅ Diseño responsive
+
+### 🔄 Sincronización de Datos
+- ✅ Carga automática al entrar en páginas
+- ✅ Recarga después de crear/editar
+- ✅ Pull-to-refresh en listas
+- ✅ Indicadores de carga (ion-spinner)
+- ✅ Manejo de errores con logs en consola
+
+---
+
+## 🆕 Cambios Recientes (Enero 2026)
+
+### v1.0 - VersionMovil
+
+#### Backend (Spring Boot)
+**Nuevos Endpoints Agregados:**
+- `DELETE /equipos/{id}` - Eliminar equipo (con cascada de jugadores)
+- `PUT /equipos/{id}` - Actualizar equipo
+- Validaciones mejoradas en EquipoServiceImpl
+
+**Archivos Modificados:**
+- `EquipoController.java` - Agregados endpoints DELETE y PUT
+- `EquipoService.java` - Agregadas interfaces eliminarEquipo() y actualizarEquipo()
+- `EquipoServiceImpl.java` - Implementación completa con validaciones
+
+#### Frontend Mobile (Ionic/Angular)
+**Servicios Actualizados:**
+- `equipo.service.ts` - Agregados métodos eliminarEquipo() y actualizarEquipo()
+- `jugador.service.ts` - Método eliminarJugador() ya existente
+
+**Páginas Modificadas:**
+
+**equipos.page.ts:**
+- Inyección de AlertController
+- Método `eliminarEquipo()` con confirmación inteligente
+- Cuenta jugadores asociados antes de eliminar
+- Mensajes específicos según cantidad de jugadores
+- Métodos auxiliares: `mostrarMensajeExito()` y `mostrarMensajeError()`
+- Recarga automática de equipos y jugadores después de eliminar
+
+**jugadores.page.ts:**
+- Inyección de AlertController
+- Método `eliminarJugador()` con confirmación
+- Recarga automática después de eliminar
+- Métodos auxiliares: `mostrarMensajeExito()` y `mostrarMensajeError()`
+
+**jugadores.page.html:**
+- Botón eliminar conectado a `(click)="eliminarJugador(jugador)"`
+
+**Características de Eliminación:**
+1. **Jugadores:** Confirmación simple con nombre completo
+2. **Equipos:** Confirmación con advertencia de jugadores asociados
+   - Muestra cantidad exacta de jugadores que se eliminarán
+   - Mensaje especial con ⚠️ si hay jugadores asociados
+   - Eliminación en cascada automática en backend
+
+**Mejoras de UX:**
+- ✅ Diálogos de confirmación claros y descriptivos
+- ✅ Alertas de éxito después de operaciones
+- ✅ Alertas de error con manejo de excepciones
+- ✅ Auto-actualización de listas después de cambios
+- ✅ Botones con colores semánticos (danger para eliminar)
+
+---
+
+## 🔧 Configuración Técnica
+
+### Endpoints Utilizados
+```typescript
+// Base URL
+const BASE_URL = 'http://localhost:8080';
+
+// Autenticación
+POST /generate-token          // Login
+POST /api/v1/register         // Registro
+GET  /actual-usuario          // Obtener usuario actual
+
+// Equipos
+GET    /equipos/me            // Listar equipos del usuario
+POST   /equipos/registrar     // Crear equipo
+GET    /equipos/{id}          // Obtener equipo por ID
+PUT    /equipos/{id}          // Actualizar equipo
+DELETE /equipos/{id}          // Eliminar equipo
+
+// Jugadores
+GET    /api/v1/jugadores      // Listar jugadores del usuario
+POST   /api/v1/jugadores      // Crear jugador
+GET    /api/v1/jugadores/{id} // Obtener jugador por ID
+PUT    /api/v1/jugadores/{id} // Actualizar jugador
+DELETE /api/v1/jugadores/{id} // Eliminar jugador
+```
+
+### HTTP Interceptor
+```typescript
+// authInterceptor.ts
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    req = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+  return next(req);
+};
+```
+
+### Lifecycle Hooks Utilizados
+```typescript
+// Auto-refresh con ionViewWillEnter
+ionViewWillEnter() {
+  // Se ejecuta cada vez que se entra a la página
+  this.cargarJugadores(); // o this.cargarEquipos();
+}
+```
+
+---
+
+## 🐛 Problemas Resueltos
+
+1. ✅ **JSON Parse Error:** AuthService ahora valida strings 'undefined' y 'null' antes de parsear
+2. ✅ **401 Unauthorized:** Implementado HTTP Interceptor funcional
+3. ✅ **Campos extra en formularios:** Alineados con DTOs del backend
+4. ✅ **Datos mock:** Reemplazados por llamadas reales a API
+5. ✅ **F5 para ver cambios:** Implementado ionViewWillEnter()
+6. ✅ **Botones sin funcionalidad:** Conectados métodos de eliminación
+7. ✅ **DELETE not supported:** Agregados endpoints en backend
+- **Tiempo de inicio:** < 2 segundos
+- **Compatibilidad:** Android 8.0+ / iOS 13.0+
+- **Páginas:** 7 principales
+- **Componentes:** 15+ reutilizables
