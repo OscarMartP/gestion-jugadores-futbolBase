@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { PartidoService } from '../../core/services/partido.service';
+import { EquipoService } from '../../core/services/equipo.service';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, 
   IonFab, IonFabButton, IonRefresher, IonRefresherContent, 
@@ -9,16 +11,16 @@ import {
   IonChip, IonLabel, AlertController
 } from '@ionic/angular/standalone';
 
-interface Partido {
+interface PartidoView {
   id: number;
-  equipoLocal: string;
-  equipoVisitante: string;
-  fechaHora: Date;
+  titulo: string;
+  equipoNombre: string;
+  fecha: Date;
   duracion: number;
-  estado: 'PROGRAMADO' | 'EN_CURSO' | 'COMPLETADO' | 'CANCELADO';
-  golesLocal?: number;
-  golesVisitante?: number;
-  ubicacion?: string;
+  partidoActivo: boolean;
+  golesEquipo: number;
+  golesRival: number;
+  resultado: 'victoria' | 'empate' | 'derrota' | null;
 }
 
 @Component({
@@ -36,84 +38,104 @@ interface Partido {
 })
 export class PartidosPage implements OnInit {
 
-  partidos: Partido[] = [];
-  partidosFiltrados: Partido[] = [];
+  partidos: PartidoView[] = [];
+  partidosFiltrados: PartidoView[] = [];
   cargando: boolean = false;
   filtroActivo: string = 'TODOS';
+  equiposMap: Map<number, string> = new Map();
 
   constructor(
     private router: Router,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private partidoService: PartidoService,
+    private equipoService: EquipoService
   ) { }
 
   ngOnInit() {
     this.cargarPartidos();
   }
 
+  ionViewWillEnter() {
+    // Recargar partidos cada vez que se entra a esta página
+    this.cargarPartidos();
+  }
+
+  iniciarNuevoPartido() {
+    this.router.navigate(['/seleccion-alineacion']);
+  }
+
   cargarPartidos() {
     this.cargando = true;
     
-    // Datos de ejemplo
-    const partidosEjemplo: Partido[] = [
-      {
-        id: 1,
-        equipoLocal: 'Real Madrid CF',
-        equipoVisitante: 'FC Barcelona',
-        fechaHora: new Date('2026-01-20T16:00:00'),
-        duracion: 90,
-        estado: 'PROGRAMADO',
-        ubicacion: 'Estadio Santiago Bernabéu'
+    // Primero cargar equipos para tener los nombres
+    this.equipoService.obtenerEquiposMe().subscribe({
+      next: (equipos) => {
+        // Crear mapa de equipos
+        equipos.forEach(equipo => {
+          this.equiposMap.set(equipo.id, equipo.nombre);
+        });
+        
+        // Cargar todos los partidos de todos los equipos del usuario
+        const partidosObservables = equipos.map(equipo => 
+          this.partidoService.obtenerPartidosPorEquipo(equipo.id)
+        );
+        
+        // Combinar todos los partidos
+        Promise.all(partidosObservables.map(obs => obs.toPromise()))
+          .then((results: any[]) => {
+            const todosPartidos: any[] = [];
+            results.forEach(partidos => {
+              if (partidos) {
+                todosPartidos.push(...partidos);
+              }
+            });
+            
+            // Convertir a PartidoView
+            this.partidos = todosPartidos.map(partido => this.convertirAPartidoView(partido));
+            this.aplicarFiltro();
+            this.cargando = false;
+          })
+          .catch(error => {
+            console.error('❌ Error al cargar partidos:', error);
+            this.cargando = false;
+          });
       },
-      {
-        id: 2,
-        equipoLocal: 'Los Amigos FC',
-        equipoVisitante: 'Barrio Unidos',
-        fechaHora: new Date('2026-01-18T19:30:00'),
-        duracion: 70,
-        estado: 'EN_CURSO',
-        golesLocal: 1,
-        golesVisitante: 0,
-        ubicacion: 'Campo Municipal'
-      },
-      {
-        id: 3,
-        equipoLocal: 'Real Madrid CF',
-        equipoVisitante: 'Los Amigos FC',
-        fechaHora: new Date('2026-01-15T18:00:00'),
-        duracion: 90,
-        estado: 'COMPLETADO',
-        golesLocal: 3,
-        golesVisitante: 1,
-        ubicacion: 'Estadio Santiago Bernabéu'
-      },
-      {
-        id: 4,
-        equipoLocal: 'FC Barcelona',
-        equipoVisitante: 'Barrio Unidos',
-        fechaHora: new Date('2026-01-22T17:00:00'),
-        duracion: 90,
-        estado: 'PROGRAMADO',
-        ubicacion: 'Camp Nou'
-      },
-      {
-        id: 5,
-        equipoLocal: 'Los Veteranos',
-        equipoVisitante: 'Los Rookies',
-        fechaHora: new Date('2026-01-12T16:30:00'),
-        duracion: 50,
-        estado: 'COMPLETADO',
-        golesLocal: 2,
-        golesVisitante: 2,
-        ubicacion: 'Polideportivo Local'
+      error: (error) => {
+        console.error('❌ Error al cargar equipos:', error);
+        this.cargando = false;
       }
-    ];
+    });
+  }
 
-    // Simular delay de API
-    setTimeout(() => {
-      this.partidos = partidosEjemplo;
-      this.aplicarFiltro();
-      this.cargando = false;
-    }, 1000);
+  convertirAPartidoView(partido: any): PartidoView {
+    let resultado: 'victoria' | 'empate' | 'derrota' | null = null;
+    
+    // Determinar resultado solo si el partido está finalizado (partidoActivo === false)
+    if (partido.partidoActivo === false && 
+        partido.golesEquipo !== undefined && 
+        partido.golesEquipo !== null &&
+        partido.golesRival !== undefined && 
+        partido.golesRival !== null) {
+      if (partido.golesEquipo > partido.golesRival) {
+        resultado = 'victoria';
+      } else if (partido.golesEquipo < partido.golesRival) {
+        resultado = 'derrota';
+      } else {
+        resultado = 'empate';
+      }
+    }
+    
+    return {
+      id: partido.id,
+      titulo: partido.titulo || 'Partido sin nombre',
+      equipoNombre: partido.equipo?.nombre || this.equiposMap.get(partido.equipoId) || 'Equipo',
+      fecha: new Date(partido.fecha),
+      duracion: partido.duracion,
+      partidoActivo: partido.partidoActivo,
+      golesEquipo: partido.golesEquipo || 0,
+      golesRival: partido.golesRival || 0,
+      resultado: resultado
+    };
   }
 
   filtrarPartidos(filtro: string) {
@@ -124,10 +146,10 @@ export class PartidosPage implements OnInit {
   aplicarFiltro() {
     if (this.filtroActivo === 'TODOS') {
       this.partidosFiltrados = [...this.partidos];
-    } else {
-      this.partidosFiltrados = this.partidos.filter(partido => 
-        partido.estado === this.filtroActivo
-      );
+    } else if (this.filtroActivo === 'EN_CURSO') {
+      this.partidosFiltrados = this.partidos.filter(partido => partido.partidoActivo === true);
+    } else if (this.filtroActivo === 'COMPLETADO') {
+      this.partidosFiltrados = this.partidos.filter(partido => partido.partidoActivo === false);
     }
   }
 
@@ -138,8 +160,13 @@ export class PartidosPage implements OnInit {
     }, 1000);
   }
 
-  obtenerPartidosPorEstado(estado: string): Partido[] {
-    return this.partidos.filter(partido => partido.estado === estado);
+  obtenerPartidosPorEstado(estado: string): PartidoView[] {
+    if (estado === 'EN_CURSO') {
+      return this.partidos.filter(partido => partido.partidoActivo === true);
+    } else if (estado === 'COMPLETADO') {
+      return this.partidos.filter(partido => partido.partidoActivo === false);
+    }
+    return [];
   }
 
   obtenerTextoEstado(estado: string): string {
@@ -152,94 +179,13 @@ export class PartidosPage implements OnInit {
     return estados[estado] || estado;
   }
 
-  obtenerColorEstado(estado: string): string {
-    const colores: { [key: string]: string } = {
-      'PROGRAMADO': 'var(--ion-color-warning)',
-      'EN_CURSO': 'var(--ion-color-tertiary)',
-      'COMPLETADO': 'var(--ion-color-success)',
-      'CANCELADO': 'var(--ion-color-danger)'
-    };
-    return colores[estado] || 'var(--ion-color-primary)';
+  continuarPartido(partidoId: number) {
+    this.router.navigate(['/modo-partido', partidoId]);
   }
 
-  formatearFecha(fecha: Date): string {
-    return fecha.toLocaleDateString('es-ES', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short'
-    });
+  verDetalles(partidoId: number) {
+    console.log('Ver detalles del partido:', partidoId);
+    // Navegar a página de detalles/estadísticas cuando esté implementada
+    // this.router.navigate(['/estadisticas-partido', partidoId]);
   }
-
-  formatearHora(fecha: Date): string {
-    return fecha.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  async iniciarPartido(partido: Partido) {
-    const alert = await this.alertController.create({
-      header: 'Iniciar Partido',
-      message: `¿Deseas iniciar el partido ${partido.equipoLocal} vs ${partido.equipoVisitante}?`,
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Iniciar',
-          handler: () => {
-            console.log('Iniciar partido:', partido);
-            // Lógica para cambiar estado a EN_CURSO
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-  gestionarPartido(partido: Partido) {
-    console.log('Gestionar partido en curso:', partido);
-    // Navegar a página de gestión del partido
-  }
-
-  editarPartido(partido: Partido) {
-    console.log('Editar partido:', partido);
-    // Navegar a formulario de edición
-  }
-
-  verDetalles(partido: Partido) {
-    console.log('Ver detalles del partido:', partido);
-    // Navegar a página de detalles
-  }
-
-  async eliminarPartido(partido: Partido) {
-    const alert = await this.alertController.create({
-      header: 'Eliminar Partido',
-      message: `¿Estás seguro de que deseas eliminar el partido ${partido.equipoLocal} vs ${partido.equipoVisitante}?`,
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Eliminar',
-          role: 'destructive',
-          handler: () => {
-            console.log('Eliminar partido:', partido);
-            // Lógica de eliminación
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
-
-  agregarPartido() {
-    console.log('Agregar nuevo partido');
-    // Navegar a formulario de creación de partido
-  }
-
 }

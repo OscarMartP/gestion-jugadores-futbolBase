@@ -1,0 +1,133 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Modo Partido</ion-title>
+    <ion-button slot="end" fill="clear" (click)="salir()">
+      <ion-icon name="close" slot="icon-only"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Marcador y Timer -->
+  <ion-card class="timer-card">
+    <ion-card-content>
+      <div class="marcador">
+        <div class="equipo">
+          <h2>{{ partido?.equipoId }}</h2>
+          <h1 class="goles">{{ golesEquipo }}</h1>
+        </div>
+        <div class="separador">-</div>
+        <div class="rival">
+          <h2>Rival</h2>
+          <h1 class="goles">{{ golesRival }}</h1>
+        </div>
+      </div>
+      
+      <div class="timer">
+        <h1 class="tiempo">{{ tiempoFormateado }}</h1>
+        <p class="duracion">/ {{ partido?.duracion }} min</p>
+      </div>
+
+      <div class="controles">
+        <ion-button 
+          *ngIf="!timerActivo" 
+          (click)="iniciarTimer()" 
+          expand="block" 
+          color="success">
+          <ion-icon name="play" slot="start"></ion-icon>
+          Iniciar
+        </ion-button>
+        <ion-button 
+          *ngIf="timerActivo" 
+          (click)="pausarTimer()" 
+          expand="block" 
+          color="warning">
+          <ion-icon name="pause" slot="start"></ion-icon>
+          Pausar
+        </ion-button>
+
+        <ion-button 
+          (click)="registrarGolRival()" 
+          fill="outline" 
+          size="small" 
+          color="danger"
+          style="margin-top: 8px;">
+          Gol Rival
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Jugadores Titulares -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="star" color="warning"></ion-icon>
+        Titulares ({{ jugadoresTitulares.length }})
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item 
+          *ngFor="let jugador of jugadoresTitulares"
+          button
+          (click)="mostrarMenuEventos(jugador)">
+          <ion-label>
+            <h3>{{ jugador.nombre }} {{ jugador.apellido }}</h3>
+            <p>{{ jugador.posicion }}</p>
+          </ion-label>
+          
+          <div slot="end" class="eventos-badge">
+            <ion-chip *ngIf="contarEventos(jugador, 'gol') > 0" color="success">
+              <ion-icon name="football"></ion-icon>
+              <ion-label>{{ contarEventos(jugador, 'gol') }}</ion-label>
+            </ion-chip>
+            <ion-chip *ngIf="contarEventos(jugador, 'asistencia') > 0" color="secondary">
+              <ion-icon name="hand-right"></ion-icon>
+              <ion-label>{{ contarEventos(jugador, 'asistencia') }}</ion-label>
+            </ion-chip>
+            <ion-chip *ngIf="contarEventos(jugador, 'tarjeta_amarilla') > 0" color="warning">
+              <ion-icon name="square"></ion-icon>
+              <ion-label>{{ contarEventos(jugador, 'tarjeta_amarilla') }}</ion-label>
+            </ion-chip>
+            <ion-chip *ngIf="contarEventos(jugador, 'tarjeta_roja') > 0" color="danger">
+              <ion-icon name="square"></ion-icon>
+              <ion-label>{{ contarEventos(jugador, 'tarjeta_roja') }}</ion-label>
+            </ion-chip>
+          </div>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Jugadores Suplentes -->
+  <ion-card *ngIf="jugadoresSuplentes.length > 0">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="people" color="medium"></ion-icon>
+        Suplentes ({{ jugadoresSuplentes.length }})
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let jugador of jugadoresSuplentes">
+          <ion-icon name="person" color="medium" slot="start"></ion-icon>
+          <ion-label>
+            <h3>{{ jugador.nombre }} {{ jugador.apellido }}</h3>
+            <p>{{ jugador.posicion }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Botón Finalizar -->
+  <ion-button
+    expand="block"
+    color="danger"
+    (click)="finalizarPartido()"
+    style="margin-top: 24px;">
+    <ion-icon name="flag" slot="start"></ion-icon>
+    Finalizar Partido
+  </ion-button>
+</ion-content>

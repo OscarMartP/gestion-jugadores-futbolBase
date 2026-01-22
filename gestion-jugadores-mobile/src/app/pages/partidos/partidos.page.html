@@ -84,136 +84,128 @@
 
   <!-- Lista de partidos -->
   <div *ngIf="!cargando">
+    <!-- Mensaje si no hay partidos -->
+    <ion-card *ngIf="partidosFiltrados.length === 0">
+      <ion-card-content style="text-align: center; padding: 40px 20px;">
+        <ion-icon name="trophy-outline" size="large" color="medium"></ion-icon>
+        <p style="color: var(--ion-color-medium); margin-top: 16px;">
+          No hay partidos {{ filtroActivo === 'TODOS' ? '' : filtroActivo === 'EN_CURSO' ? 'en curso' : 'finalizados' }}
+        </p>
+      </ion-card-content>
+    </ion-card>
+
     <ion-card 
       *ngFor="let partido of partidosFiltrados" 
       class="match-card"
-      [ngClass]="partido.estado.toLowerCase()">
+      [ngClass]="{
+        'victoria-card': partido.resultado === 'victoria',
+        'empate-card': partido.resultado === 'empate',
+        'derrota-card': partido.resultado === 'derrota',
+        'activo-card': partido.partidoActivo
+      }">
       
       <ion-card-header>
         <div style="display: flex; justify-content: space-between; align-items: start;">
           <div style="flex: 1;">
             <ion-card-title style="font-size: 1.1rem; margin-bottom: 8px;">
-              {{ partido.equipoLocal }} vs {{ partido.equipoVisitante }}
+              {{ partido.titulo }}
             </ion-card-title>
             <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
               <span class="match-status-badge" 
-                    [ngClass]="partido.estado.toLowerCase().replace('_', '-')">
-                {{ obtenerTextoEstado(partido.estado) }}
+                    [ngClass]="{
+                      'badge-activo': partido.partidoActivo,
+                      'badge-finalizado': !partido.partidoActivo
+                    }">
+                {{ partido.partidoActivo ? 'En Curso' : 'Finalizado' }}
               </span>
               <span class="match-date">
                 <ion-icon name="calendar-outline" style="margin-right: 4px;"></ion-icon>
-                {{ formatearFecha(partido.fechaHora) }}
+                {{ partido.fecha | date:'dd/MM/yyyy HH:mm' }}
               </span>
             </div>
+            <p style="margin: 4px 0 0 0; color: var(--ion-color-medium); font-size: 0.9rem;">
+              <ion-icon name="people-outline" style="margin-right: 4px;"></ion-icon>
+              {{ partido.equipoNombre }}
+            </p>
           </div>
           <ion-icon 
             name="football" 
             size="large" 
-            [style.color]="obtenerColorEstado(partido.estado)"
+            [style.color]="partido.partidoActivo ? 'var(--ion-color-tertiary)' : 'var(--ion-color-medium)'"
             style="opacity: 0.7;">
           </ion-icon>
         </div>
       </ion-card-header>
 
       <ion-card-content>
-        <!-- Resultado o información del partido -->
-        <div style="margin-bottom: 12px;">
-          <div *ngIf="partido.estado === 'COMPLETADO'" 
-               style="display: flex; justify-content: center; align-items: center; gap: 16px; margin: 16px 0;">
-            <div style="text-align: center;">
-              <h2 style="margin: 0; font-size: 2rem; color: var(--ion-color-primary);">{{ partido.golesLocal || 0 }}</h2>
-              <p style="margin: 0; font-size: 0.9rem; color: var(--ion-color-medium);">{{ partido.equipoLocal }}</p>
-            </div>
-            <div style="font-size: 1.5rem; color: var(--ion-color-medium);">-</div>
-            <div style="text-align: center;">
-              <h2 style="margin: 0; font-size: 2rem; color: var(--ion-color-primary);">{{ partido.golesVisitante || 0 }}</h2>
-              <p style="margin: 0; font-size: 0.9rem; color: var(--ion-color-medium);">{{ partido.equipoVisitante }}</p>
-            </div>
+        <!-- Resultado del partido -->
+        <div *ngIf="!partido.partidoActivo" 
+             style="display: flex; justify-content: center; align-items: center; gap: 16px; margin: 16px 0;">
+          <div style="text-align: center;">
+            <h2 style="margin: 0; font-size: 2rem; color: var(--ion-color-primary);">{{ partido.golesEquipo }}</h2>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--ion-color-medium);">{{ partido.equipoNombre }}</p>
           </div>
-          
-          <div *ngIf="partido.estado !== 'COMPLETADO'">
-            <p style="margin: 0; color: var(--ion-color-medium); font-size: 0.9rem;">
-              <ion-icon name="time-outline" style="margin-right: 4px;"></ion-icon>
-              {{ formatearHora(partido.fechaHora) }} - Duración: {{ partido.duracion }}min
-            </p>
-            <p *ngIf="partido.ubicacion" style="margin: 4px 0 0 0; color: var(--ion-color-medium); font-size: 0.9rem;">
-              <ion-icon name="location-outline" style="margin-right: 4px;"></ion-icon>
-              {{ partido.ubicacion }}
-            </p>
+          <div style="font-size: 1.5rem; color: var(--ion-color-medium);">-</div>
+          <div style="text-align: center;">
+            <h2 style="margin: 0; font-size: 2rem; color: var(--ion-color-primary);">{{ partido.golesRival }}</h2>
+            <p style="margin: 0; font-size: 0.9rem; color: var(--ion-color-medium);">Rival</p>
           </div>
         </div>
         
+        <!-- Badge de resultado -->
+        <div *ngIf="partido.resultado" style="text-align: center; margin-top: 12px;">
+          <ion-chip 
+            [color]="partido.resultado === 'victoria' ? 'success' : partido.resultado === 'empate' ? 'warning' : 'danger'">
+            <ion-icon 
+              [name]="partido.resultado === 'victoria' ? 'trophy' : partido.resultado === 'empate' ? 'remove-circle' : 'close-circle'"
+              style="margin-right: 4px;">
+            </ion-icon>
+            <ion-label>
+              {{ partido.resultado === 'victoria' ? 'VICTORIA' : partido.resultado === 'empate' ? 'EMPATE' : 'DERROTA' }}
+            </ion-label>
+          </ion-chip>
+        </div>
+        
+        <div *ngIf="partido.partidoActivo">
+          <p style="margin: 0; color: var(--ion-color-medium); font-size: 0.9rem;">
+            <ion-icon name="time-outline" style="margin-right: 4px;"></ion-icon>
+            Duración: {{ partido.duracion }} minutos
+          </p>
+          <p style="margin: 4px 0 0 0; color: var(--ion-color-tertiary); font-size: 0.9rem;">
+            <ion-icon name="radio-outline" style="margin-right: 4px;"></ion-icon>
+            Partido en progreso...
+          </p>
+        </div>
+        
         <!-- Botones de acción -->
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px;">
           <ion-button 
-            *ngIf="partido.estado === 'PROGRAMADO'"
-            fill="outline" 
-            size="small" 
-            color="success"
-            (click)="iniciarPartido(partido)">
-            <ion-icon name="play-outline" slot="start"></ion-icon>
-            Iniciar
+            *ngIf="partido.partidoActivo"
+            fill="solid" 
+            color="tertiary"
+            size="small"
+            (click)="continuarPartido(partido.id)">
+            <ion-icon name="play" slot="start"></ion-icon>
+            Continuar
           </ion-button>
           
           <ion-button 
-            *ngIf="partido.estado === 'EN_CURSO'"
-            fill="outline" 
-            size="small" 
-            color="warning"
-            (click)="gestionarPartido(partido)">
-            <ion-icon name="create-outline" slot="start"></ion-icon>
-            Gestionar
-          </ion-button>
-          
-          <ion-button 
-            *ngIf="partido.estado !== 'COMPLETADO'"
+            *ngIf="!partido.partidoActivo"
             fill="outline" 
             size="small" 
             color="primary"
-            (click)="editarPartido(partido)">
-            <ion-icon name="create-outline" slot="start"></ion-icon>
-            Editar
-          </ion-button>
-          
-          <ion-button 
-            fill="outline" 
-            size="small" 
-            color="secondary"
-            (click)="verDetalles(partido)">
+            (click)="verDetalles(partido.id)">
             <ion-icon name="eye-outline" slot="start"></ion-icon>
-            Ver
-          </ion-button>
-          
-          <ion-button 
-            fill="clear" 
-            color="danger" 
-            size="small"
-            (click)="eliminarPartido(partido)">
-            <ion-icon name="trash-outline" slot="start"></ion-icon>
-            Eliminar
+            Ver Detalles
           </ion-button>
         </div>
       </ion-card-content>
     </ion-card>
-
-    <!-- Mensaje cuando no hay partidos -->
-    <div *ngIf="partidosFiltrados.length === 0" 
-         style="text-align: center; padding: 60px 20px;">
-      <ion-icon 
-        name="football-outline" 
-        size="large" 
-        style="color: var(--ion-color-medium); margin-bottom: 16px; font-size: 4rem;">
-      </ion-icon>
-      <h2 style="color: var(--ion-color-medium); margin-bottom: 8px;">No hay partidos</h2>
-      <p style="color: var(--ion-color-medium); margin-bottom: 24px;">
-        {{ filtroActivo === 'TODOS' ? 'Programa tu primer partido' : 'No hay partidos con este filtro' }}
-      </p>
-    </div>
   </div>
 
   <!-- FAB para agregar partido -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button class="fab-custom" (click)="agregarPartido()">
+    <ion-fab-button class="fab-custom" (click)="iniciarNuevoPartido()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

@@ -31,12 +31,14 @@ export class AuthService {
     };
     return this.http.post<{token: string}>(`${this.authUrl}/generate-token`, backendCredentials).pipe(
       switchMap(tokenResponse => {
-        // Guardar token temporalmente para la siguiente petición
+        // IMPORTANTE: Guardar token ANTES de llamar a /actual-usuario
+        // para que el interceptor lo agregue automáticamente
         const token = tokenResponse.token;
-        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        localStorage.setItem('token', token);
+        console.log('🔑 Token guardado, obteniendo datos del usuario...');
         
-        // Obtener datos completos del usuario
-        return this.http.get<any>(`${this.authUrl}/actual-usuario`, { headers }).pipe(
+        // Obtener datos completos del usuario (el interceptor agregará el token)
+        return this.http.get<any>(`${this.authUrl}/actual-usuario`).pipe(
           map(usuario => {
             const authResponse: AuthResponse = {
               token: token,
@@ -74,12 +76,14 @@ export class AuthService {
     
     return this.http.post<{token: string}>(`${this.authUrl}/api/v1/register`, backendUserData).pipe(
       switchMap(tokenResponse => {
-        // Guardar token temporalmente para la siguiente petición
+        // IMPORTANTE: Guardar token ANTES de llamar a /actual-usuario
+        // para que el interceptor lo agregue automáticamente
         const token = tokenResponse.token;
-        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        localStorage.setItem('token', token);
+        console.log('🔑 Token guardado, obteniendo datos del usuario registrado...');
         
-        // Obtener datos completos del usuario recién registrado
-        return this.http.get<any>(`${this.authUrl}/actual-usuario`, { headers }).pipe(
+        // Obtener datos completos del usuario recién registrado (el interceptor agregará el token)
+        return this.http.get<any>(`${this.authUrl}/actual-usuario`).pipe(
           map(usuario => {
             const authResponse: AuthResponse = {
               token: token,

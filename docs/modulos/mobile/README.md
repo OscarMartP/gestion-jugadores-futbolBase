@@ -1,7 +1,7 @@
 # 📱 Mobile - Ionic/Angular
 
-> **Última actualización:** Enero 2026  
-> **Versión:** VersionMovil - Funcionalidades CRUD completas implementadas
+> **Última actualización:** 22 Enero 2026  
+> **Versión:** VersionMovil - Sistema completo de gestión de partidos implementado
 
 ## 📋 Índice
 
@@ -11,7 +11,8 @@
 4. [Servicios Core](#servicios-core)
 5. [Flujos de Usuario Mobile](#flujos-de-usuario-mobile)
 6. [Funcionalidades Implementadas](#funcionalidades-implementadas)
-7. [Cambios Recientes](#cambios-recientes)
+7. [Sistema de Gestión de Partidos](#sistema-de-gestión-de-partidos)
+8. [Cambios Recientes](#cambios-recientes)
 
 ## Arquitectura General
 
@@ -753,9 +754,139 @@ ionic build --prod
 
 ---
 
-## 🆕 Cambios Recientes (Enero 2026)
+## 🆕 Cambios Recientes (22 Enero 2026)
 
-### v1.0 - VersionMovil
+### v2.0 - Sistema Completo de Gestión de Partidos
+
+#### Nuevas Funcionalidades
+
+**1. Sistema de Partidos Completo:**
+- ✅ Creación de partidos con nombre personalizado (ej: "Helios vs Real Madrid")
+- ✅ Selección de alineación con validación estricta de titulares
+- ✅ Modo partido en vivo con timer automático
+- ✅ Registro de 9 tipos de eventos con minuto exacto
+- ✅ Sustituciones ilimitadas (jugadores pueden re-entrar)
+- ✅ Finalización manual o automática
+- ✅ Guardado automático de resultados
+- ✅ Visualización con colores según resultado (victoria/empate/derrota)
+
+**2. Nuevas Páginas:**
+- `seleccion-alineacion/` - Pre-partido: nombre, equipo, alineación
+- `modo-partido/` - Partido en vivo: timer, eventos, sustituciones
+
+**3. Nuevos Servicios:**
+- `PartidoService` - CRUD de partidos
+- `EventoJugadorService` - Registro de eventos
+
+**4. Nuevos Modelos:**
+- `Partido` - Modelo de partido con titulares/suplentes
+- `EventoJugador` - Modelo de evento con tipo y minuto
+- `TipoEvento` - Enum con 9 tipos de eventos
+
+#### Archivos Creados
+
+**Core:**
+- `core/models/partido.ts` - Interfaces de Partido y EventoJugador
+- `core/services/partido.service.ts` - Servicio de partidos
+- `core/services/evento-jugador.service.ts` - Servicio de eventos
+
+**Páginas:**
+- `pages/seleccion-alineacion/seleccion-alineacion.page.ts`
+- `pages/seleccion-alineacion/seleccion-alineacion.page.html`
+- `pages/seleccion-alineacion/seleccion-alineacion.page.scss`
+- `pages/modo-partido/modo-partido.page.ts`
+- `pages/modo-partido/modo-partido.page.html`
+- `pages/modo-partido/modo-partido.page.scss`
+
+#### Archivos Modificados
+
+**Frontend Mobile:**
+- `app.routes.ts` - Agregadas rutas /seleccion-alineacion y /modo-partido/:id
+- `partidos.page.ts` - Reescrito para cargar partidos reales desde backend
+  * Agregado `ionViewWillEnter()` para auto-recarga
+  * Conversión a `PartidoView` con cálculo de resultado
+  * Filtros funcionales (Todos/En Curso/Finalizados)
+- `partidos.page.html` - Nueva UI con colores según resultado
+  * Tarjetas con borde lateral de color
+  * Gradiente de fondo sutil
+  * Chips con resultado (VICTORIA/EMPATE/DERROTA)
+  * Estadísticas en header
+- `partidos.page.scss` - Estilos para victoria/empate/derrota
+  * `.victoria-card` - Verde
+  * `.empate-card` - Amarillo
+  * `.derrota-card` - Rojo
+  * `.activo-card` - Azul con animación
+
+**Backend (ya existía):**
+- Endpoints de partidos ya implementados en `PartidoControladorV2`
+- Lógica de activar/desactivar en `PartidoServiceImpl`
+- Conteo automático de goles al desactivar partido
+
+#### Validaciones Implementadas
+
+**Selección de Alineación:**
+- ❌ Nombre de partido obligatorio
+- ❌ Equipo obligatorio
+- ❌ Número exacto de titulares según tipo de fútbol
+- ✅ Mensaje dinámico: "Necesitas X titular(es) más"
+- ✅ Botón iniciar deshabilitado hasta cumplir validaciones
+- ✅ Botón cancelar con confirmación (color rojo)
+
+**Modo Partido:**
+- ✅ Timer automático con formato MM:SS
+- ✅ Detención automática al terminar tiempo
+- ✅ Confirmación antes de finalizar manualmente
+- ✅ Muestra tiempo restante en confirmación
+- ✅ Eventos guardados con minuto exacto
+- ✅ ActionSheets para selección de eventos
+- ✅ Validaciones específicas (ej: parada solo porteros)
+
+**Lista de Partidos:**
+- ✅ Auto-recarga con `ionViewWillEnter()`
+- ✅ Cálculo automático de resultado
+- ✅ Colores según victoria/empate/derrota
+- ✅ Filtros funcionales
+- ✅ Estadísticas en tiempo real
+
+#### Tipos de Eventos Soportados
+
+```typescript
+enum TipoEvento {
+  GOL = 'gol',                      // ⚽ Gol del equipo
+  ASISTENCIA = 'asistencia',        // 🎯 Asistencia
+  PASE_CLAVE = 'pase_clave',        // 🎪 Pase clave
+  ROBO = 'robo',                    // 🛡️ Recuperación
+  TIRO_PUERTA = 'tiro_puerta',      // 🎯 Tiro a puerta
+  TARJETA_AMARILLA = 'tarjeta_amarilla',  // 🟨 Amonestación
+  TARJETA_ROJA = 'tarjeta_roja',    // 🟥 Expulsión
+  PARADA = 'parada',                // 🧤 Parada (solo porteros)
+  SUSTITUCION = 'sustitucion',      // ♻️ Cambio
+  GOL_RIVAL = 'gol_rival'           // 🎯 Gol del rival (no jugador)
+}
+```
+
+#### Mejoras de UX
+
+**Partidos:**
+- ✅ Colores semánticos claros (verde/amarillo/rojo)
+- ✅ Gradientes sutiles en tarjetas
+- ✅ Iconos descriptivos
+- ✅ Nombre personalizado visible
+- ✅ Resultado numérico prominente
+- ✅ Animación en partidos activos
+- ✅ Pull-to-refresh funcional
+
+**Modo Partido:**
+- ✅ Timer grande y visible
+- ✅ Scoreboard con gradiente
+- ✅ Badges para eventos registrados
+- ✅ ActionSheets para selección rápida
+- ✅ Confirmaciones claras
+- ✅ Feedback visual inmediato
+
+---
+
+### v1.0 - VersionMovil (Enero 2026)
 
 #### Backend (Spring Boot)
 **Nuevos Endpoints Agregados:**
@@ -871,7 +1002,243 @@ ionViewWillEnter() {
 5. ✅ **F5 para ver cambios:** Implementado ionViewWillEnter()
 6. ✅ **Botones sin funcionalidad:** Conectados métodos de eliminación
 7. ✅ **DELETE not supported:** Agregados endpoints en backend
-- **Tiempo de inicio:** < 2 segundos
+
+---
+
+## ⚽ Sistema de Gestión de Partidos
+
+### Flujo Completo de Partido
+
+```mermaid
+graph TB
+    START[Inicio] --> SELECT[Selección Alineación]
+    SELECT --> NAME[Ingresar Nombre Partido]
+    NAME --> TEAM[Seleccionar Equipo]
+    TEAM --> PLAYERS[Asignar Titulares/Suplentes]
+    PLAYERS --> VALIDATE{Validar<br/>Titulares}
+    VALIDATE -->|Correcto| START_MATCH[Iniciar Partido]
+    VALIDATE -->|Incorrecto| PLAYERS
+    START_MATCH --> MODE[Modo Partido]
+    MODE --> TIMER[Timer Automático]
+    MODE --> EVENTS[Registrar Eventos]
+    MODE --> SUBS[Sustituciones]
+    MODE --> FINISH{Finalizar}
+    FINISH -->|Manual| CONFIRM[Confirmar Finalización]
+    FINISH -->|Automático| CONFIRM
+    CONFIRM --> SAVE[Guardar Resultado]
+    SAVE --> LIST[Lista de Partidos]
+    LIST --> COLORS{Mostrar con<br/>Colores}
+    COLORS -->|Victoria| GREEN[🟢 Verde]
+    COLORS -->|Empate| YELLOW[🟡 Amarillo]
+    COLORS -->|Derrota| RED[🔴 Rojo]
+    
+    style START fill:#3880ff
+    style MODE fill:#ff6b6b
+    style GREEN fill:#2dd36f
+    style YELLOW fill:#ffc409
+    style RED fill:#eb445a
+```
+
+### Características del Sistema de Partidos
+
+**1. Selección de Alineación (`/seleccion-alineacion`)**
+- ✅ Campo obligatorio para nombre del partido (ej: "Helios vs Real Madrid")
+- ✅ Selección de equipo del usuario
+- ✅ Detección automática de tipo de fútbol (11, 7, o 5 jugadores)
+- ✅ Asignación de titulares y suplentes con checkboxes
+- ✅ Validación estricta: exactamente N titulares requeridos
+- ✅ Mensaje dinámico mostrando cuántos titulares faltan
+- ✅ Botón cancelar con confirmación (color rojo)
+- ✅ Creación del partido con `partidoActivo = true`
+
+**2. Modo Partido (`/modo-partido/:id`)**
+```typescript
+// Funcionalidades principales
+- Timer con formato MM:SS
+- Contador de goles (Equipo vs Rival)
+- Registro de eventos con minuto exacto:
+  * Gol ⚽
+  * Asistencia 🎯
+  * Pase clave 🎪
+  * Robo 🛡️
+  * Tiro a puerta 🎯
+  * Tarjeta amarilla 🟨
+  * Tarjeta roja 🟥
+  * Parada (solo porteros) 🧤
+  * Sustitución (ilimitadas) ♻️
+  * Gol rival 🎯
+- Historial de eventos en tiempo real
+- Sustituciones sin límite (jugadores pueden re-entrar)
+- Finalización manual o automática al terminar tiempo
+```
+
+**Eventos de Jugador:**
+```typescript
+interface EventoJugador {
+  id?: number;
+  jugadorId: number;
+  partidoId: number;
+  tipoEvento: string;  // 'gol', 'asistencia', 'pase_clave', etc.
+  minuto: number;      // Minuto del evento
+  jugadorSaleId?: number;    // Para sustituciones
+  jugadorEntraId?: number;   // Para sustituciones
+}
+```
+
+**3. Lista de Partidos (`/partidos`)**
+```mermaid
+graph LR
+    LOAD[Cargar Partidos] --> API[Backend API]
+    API --> MAP[Convertir a PartidoView]
+    MAP --> CALC{Calcular<br/>Resultado}
+    CALC -->|golesEquipo > golesRival| VIC[Victoria 🟢]
+    CALC -->|golesEquipo == golesRival| EMP[Empate 🟡]
+    CALC -->|golesEquipo < golesRival| DER[Derrota 🔴]
+    VIC --> DISPLAY[Mostrar con Color]
+    EMP --> DISPLAY
+    DER --> DISPLAY
+    DISPLAY --> FILTER[Filtros: Todos/En Curso/Finalizados]
+    
+    style VIC fill:#2dd36f
+    style EMP fill:#ffc409
+    style DER fill:#eb445a
+```
+
+**Visualización de Partidos:**
+- ✅ Tarjetas con borde lateral de color según resultado
+- ✅ Gradiente de fondo sutil con el color correspondiente
+- ✅ Chip con icono y texto del resultado (VICTORIA/EMPATE/DERROTA)
+- ✅ Muestra nombre personalizado del partido
+- ✅ Muestra equipo del usuario
+- ✅ Resultado numérico (Equipo vs Rival)
+- ✅ Fecha y hora del partido
+- ✅ Badge de estado (En Curso / Finalizado)
+- ✅ Estadísticas en header: Total, Jugados, En Curso
+- ✅ Filtros funcionales por estado
+- ✅ Auto-recarga con `ionViewWillEnter()`
+
+**Colores según resultado:**
+```scss
+.victoria-card {
+  border-left: 5px solid var(--ion-color-success);
+  background: linear-gradient(to right, rgba(var(--ion-color-success-rgb), 0.05), transparent);
+}
+
+.empate-card {
+  border-left: 5px solid var(--ion-color-warning);
+  background: linear-gradient(to right, rgba(var(--ion-color-warning-rgb), 0.05), transparent);
+}
+
+.derrota-card {
+  border-left: 5px solid var(--ion-color-danger);
+  background: linear-gradient(to right, rgba(var(--ion-color-danger-rgb), 0.05), transparent);
+}
+```
+
+### Endpoints de Partidos
+
+```typescript
+// Partidos
+POST   /api/v1/partidos                    // Crear partido
+GET    /api/v1/partidos/{id}               // Obtener partido por ID
+GET    /api/v1/partidos/equipo/{equipoId}  // Obtener partidos por equipo
+PUT    /api/v1/partidos/{id}/activar       // Activar partido
+PUT    /api/v1/partidos/{id}/desactivar    // Desactivar y finalizar partido
+DELETE /api/v1/partidos/{id}               // Eliminar partido
+
+// Eventos de Jugador
+POST   /api/v1/eventos                     // Registrar evento
+GET    /api/v1/eventos/partido/{partidoId} // Obtener eventos por partido
+GET    /api/v1/eventos/jugador/{jugadorId} // Obtener eventos por jugador
+DELETE /api/v1/eventos/{id}                // Eliminar evento
+```
+
+### Validaciones Implementadas
+
+**Selección de Alineación:**
+- ❌ No permite iniciar sin nombre de partido
+- ❌ No permite iniciar sin equipo seleccionado
+- ❌ No permite iniciar sin el número exacto de titulares:
+  * FUTBOL_11: requiere 11 titulares
+  * FUTBOL_7: requiere 7 titulares
+  * FUTBOL_SALA: requiere 5 titulares
+- ✅ Muestra mensaje dinámico: "Necesitas X titular(es) más para iniciar"
+- ✅ Botón iniciar deshabilitado hasta cumplir validaciones
+
+**Modo Partido:**
+- ✅ Timer se detiene automáticamente al llegar al tiempo del partido
+- ✅ Confirmación antes de finalizar partido manualmente
+- ✅ Muestra tiempo restante en mensaje de confirmación
+- ✅ Guarda automáticamente resultado al finalizar
+- ✅ Eventos guardados con minuto exacto para estadísticas
+
+### Servicios Nuevos
+
+**PartidoService:**
+```typescript
+@Injectable({ providedIn: 'root' })
+export class PartidoService {
+  crearPartido(partido: Partido): Observable<Partido>
+  obtenerPartidoPorId(id: number): Observable<Partido>
+  obtenerPartidosPorEquipo(equipoId: number): Observable<Partido[]>
+  activarPartido(id: number): Observable<Partido>
+  desactivarPartido(id: number): Observable<Partido>
+  tienePartidoActivo(equipoId: number): Observable<boolean>
+}
+```
+
+**EventoJugadorService:**
+```typescript
+@Injectable({ providedIn: 'root' })
+export class EventoJugadorService {
+  registrarEvento(evento: EventoJugador): Observable<EventoJugador>
+  obtenerEventosPorPartido(partidoId: number): Observable<EventoJugador[]>
+  obtenerEventosPorJugador(jugadorId: number): Observable<EventoJugador[]>
+  eliminarEvento(id: number): Observable<void>
+}
+```
+
+### Modelos de Datos
+
+**Partido (Frontend):**
+```typescript
+interface Partido {
+  id: number;
+  equipoId: number;
+  fecha: string;
+  duracion: number;
+  titulo?: string;
+  partidoActivo: boolean;
+  resultado?: string;
+  golesEquipo?: number;
+  golesRival?: number;
+  titulares: number[];
+  suplentes: number[];
+}
+```
+
+**PartidoView (Para visualización):**
+```typescript
+interface PartidoView {
+  id: number;
+  titulo: string;
+  equipoNombre: string;
+  fecha: Date;
+  duracion: number;
+  partidoActivo: boolean;
+  golesEquipo: number;
+  golesRival: number;
+  resultado: 'victoria' | 'empate' | 'derrota' | null;
+}
+```
+
+---
+
+## 📊 Rendimiento y Métricas
+
+- **Tiempo de carga inicial:** < 2 segundos
+- **Tiempo de inicio partido:** < 1 segundo
 - **Compatibilidad:** Android 8.0+ / iOS 13.0+
-- **Páginas:** 7 principales
-- **Componentes:** 15+ reutilizables
+- **Páginas:** 9 principales (incluyendo modo partido)
+- **Componentes:** 20+ reutilizables
+- **Servicios:** 6 core services

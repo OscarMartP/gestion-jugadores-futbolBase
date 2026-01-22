@@ -68,5 +68,13 @@ export const routes: Routes = [
   {
     path: 'equipo-form/:id',
     loadComponent: () => import('./pages/equipo-form/equipo-form.page').then( m => m.EquipoFormPage)
+  },
+  {
+    path: 'seleccion-alineacion',
+    loadComponent: () => import('./pages/seleccion-alineacion/seleccion-alineacion.page').then( m => m.SeleccionAlineacionPage)
+  },
+  {
+    path: 'modo-partido/:id',
+    loadComponent: () => import('./pages/modo-partido/modo-partido.page').then( m => m.ModoPartidoPage)
   }
 ];

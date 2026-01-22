@@ -6,22 +6,24 @@
   box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
   transition: all 0.3s ease;
   
-  &.programado {
-    border-left: 4px solid var(--ion-color-warning);
+  &.victoria-card {
+    border-left: 5px solid var(--ion-color-success);
+    background: linear-gradient(to right, rgba(var(--ion-color-success-rgb), 0.05), transparent);
   }
   
-  &.en-curso {
-    border-left: 4px solid var(--ion-color-tertiary);
+  &.empate-card {
+    border-left: 5px solid var(--ion-color-warning);
+    background: linear-gradient(to right, rgba(var(--ion-color-warning-rgb), 0.05), transparent);
+  }
+  
+  &.derrota-card {
+    border-left: 5px solid var(--ion-color-danger);
+    background: linear-gradient(to right, rgba(var(--ion-color-danger-rgb), 0.05), transparent);
+  }
+  
+  &.activo-card {
+    border-left: 5px solid var(--ion-color-tertiary);
     animation: pulse 2s infinite;
-  }
-  
-  &.completado {
-    border-left: 4px solid var(--ion-color-success);
-  }
-  
-  &.cancelado {
-    border-left: 4px solid var(--ion-color-danger);
-    opacity: 0.7;
   }
   
   ion-card-header {
@@ -41,25 +43,15 @@
   font-weight: 600;
   text-transform: uppercase;
   
-  &.programado {
-    background: var(--ion-color-warning);
-    color: var(--ion-color-warning-contrast);
-  }
-  
-  &.en-curso {
+  &.badge-activo {
     background: var(--ion-color-tertiary);
     color: var(--ion-color-tertiary-contrast);
     animation: blink 1.5s infinite;
   }
   
-  &.completado {
-    background: var(--ion-color-success);
-    color: var(--ion-color-success-contrast);
-  }
-  
-  &.cancelado {
-    background: var(--ion-color-danger);
-    color: var(--ion-color-danger-contrast);
+  &.badge-finalizado {
+    background: var(--ion-color-medium);
+    color: var(--ion-color-medium-contrast);
   }
 }
 
