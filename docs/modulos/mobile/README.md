@@ -1,7 +1,7 @@
 # 📱 Mobile - Ionic/Angular
 
-> **Última actualización:** 22 Enero 2026  
-> **Versión:** VersionMovil - Sistema completo de gestión de partidos implementado
+> **Última actualización:** 26 Enero 2026  
+> **Versión:** VersionMovil - Sistema de estadísticas de equipo completo
 
 ## 📋 Índice
 
@@ -1232,6 +1232,112 @@ interface PartidoView {
 }
 ```
 
+**EstadisticasEquipo:**
+```typescript
+interface EstadisticasEquipo {
+  equipoId: number;
+  equipoNombre: string;
+  temporada: string;
+  
+  // Totales generales
+  totalPartidos: number;
+  partidosGanados: number;
+  partidosEmpatados: number;
+  partidosPerdidos: number;
+  totalGoles: number;
+  totalGolesRecibidos: number;
+  totalPasesClave: number;
+  totalRobos: number;
+  totalTirosAPuerta: number;
+  
+  // Distribución por resultado (ganando/empatando/perdiendo)
+  pasesClave_ganando: number;
+  pasesClave_empatando: number;
+  pasesClave_perdiendo: number;
+  
+  tirosAPuerta_ganando: number;
+  tirosAPuerta_empatando: number;
+  tirosAPuerta_perdiendo: number;
+  
+  robos_ganando: number;
+  robos_empatando: number;
+  robos_perdiendo: number;
+  
+  // Distribución por tiempo (6 intervalos de 15 minutos)
+  distribucionPasesClave: DistribucionTemporal;
+  distribucionTirosAPuerta: DistribucionTemporal;
+  distribucionRobos: DistribucionTemporal;
+}
+```
+
+**EstadisticasJugadorEquipo:**
+```typescript
+interface EstadisticasJugadorEquipo {
+  jugadorId: number;
+  jugadorNombre: string;
+  jugadorApellido: string;
+  posicion: string;
+  numeroCamiseta: number;
+  
+  // Estadísticas
+  partidosJugados: number;
+  goles: number;
+  asistencias: number;
+  pasesClave: number;
+  robos: number;
+  tirosAPuerta: number;
+  
+  // Promedios
+  promedioGoles: number;
+  promedioAsistencias: number;
+  promedioPasesClave: number;
+  promedioRobos: number;
+  promedioTirosAPuerta: number;
+}
+```
+
+---
+
+## 📊 Estadísticas de Equipo (Última Implementación)
+
+### Vista Generales
+Análisis detallado de eventos del equipo:
+- **Selector de evento:** Pases Clave / Tiros a Puerta / Robos
+- **Totales:** Cantidad total y promedio por 90 minutos
+- **Distribución por resultado:**
+  - 🟢 Ganando
+  - 🟡 Empatando
+  - 🔴 Perdiendo
+- **Distribución por tiempo:** 6 intervalos de 15 minutos (0-15, 16-30, 31-45, 46-60, 61-75, 76-90)
+
+### Vista Individuales
+Ranking de jugadores por evento:
+- **Selector de evento:** Pases Clave / Tiros a Puerta / Robos
+- **Ranking ordenado** por cantidad del evento seleccionado
+- **Badges de posición:**
+  - 🥇 Oro para el primer lugar
+  - 🥈 Plata para segundo y tercero
+  - ⚪ Claro para el resto
+- **Detalles por jugador:**
+  - Nombre completo
+  - Posición y número de camiseta
+  - Total del evento y partidos jugados
+  - Promedio por partido
+  - Barra de progreso comparativa
+
+### Servicios Relacionados
+- **EstadisticasService:** Conecta con endpoints de estadísticas del backend
+  - `obtenerEstadisticasEquipo(equipoId, temporada?)`
+  - `obtenerEstadisticasJugadores(equipoId, temporada?)`
+  - `obtenerTopGoleadores(equipoId, limite?)`
+  - `obtenerTopAsistentes(equipoId, limite?)`
+  - `obtenerResumenEquipo(equipoId, temporada?)`
+
+### Navegación
+- **Desde /tabs/partidos:** Botón en toolbar ➡️ `/estadisticas-equipo`
+- **Desde /tabs/estadisticas:** Acceso directo en tab de estadísticas (4º tab)
+- **Selector de equipo:** Dropdown para cambiar entre equipos del usuario
+
 ---
 
 ## 📊 Rendimiento y Métricas
@@ -1239,6 +1345,6 @@ interface PartidoView {
 - **Tiempo de carga inicial:** < 2 segundos
 - **Tiempo de inicio partido:** < 1 segundo
 - **Compatibilidad:** Android 8.0+ / iOS 13.0+
-- **Páginas:** 9 principales (incluyendo modo partido)
-- **Componentes:** 20+ reutilizables
-- **Servicios:** 6 core services
+- **Páginas:** 11 principales (incluyendo estadísticas de equipo y partido)
+- **Componentes:** 25+ reutilizables
+- **Servicios:** 7 core services

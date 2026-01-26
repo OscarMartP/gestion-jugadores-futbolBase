@@ -1,35 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, IonCard, 
-  IonCardContent, IonCardHeader, IonCardTitle, IonIcon,
-  IonRefresher, IonRefresherContent, IonSelect, IonSelectOption,
-  IonItem, IonLabel, IonSegment, IonSegmentButton, IonList,
-  IonBadge, IonProgressBar, IonSpinner, IonGrid, IonRow, IonCol,
-  IonChip
+import { Router } from '@angular/router';
+import {
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon,
+  IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonSpinner,
+  IonChip, IonLabel, IonSegment, IonSegmentButton, IonList, IonItem,
+  IonBadge, IonProgressBar, IonSelect, IonSelectOption, IonGrid,
+  IonRow, IonCol
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { statsChart, trophy, football, shield, people, person } from 'ionicons/icons';
+import { arrowBack, statsChart, people, person, trophy, football, shield } from 'ionicons/icons';
 import { EstadisticasService } from '../../core/services/estadisticas.service';
 import { EquipoService } from '../../core/services/equipo.service';
 
 @Component({
-  selector: 'app-estadisticas',
-  templateUrl: './estadisticas.page.html',
-  styleUrls: ['./estadisticas.page.scss'],
+  selector: 'app-estadisticas-equipo',
+  templateUrl: './estadisticas-equipo.page.html',
+  styleUrls: ['./estadisticas-equipo.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, IonCard, 
-    IonCardContent, IonCardHeader, IonCardTitle, IonIcon,
-    IonRefresher, IonRefresherContent, IonSelect, IonSelectOption,
-    IonItem, IonLabel, IonSegment, IonSegmentButton, IonList,
-    IonBadge, IonProgressBar, IonSpinner, IonGrid, IonRow, IonCol,
-    IonChip,
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon,
+    IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonSpinner,
+    IonChip, IonLabel, IonSegment, IonSegmentButton, IonList, IonItem,
+    IonBadge, IonProgressBar, IonSelect, IonSelectOption, IonGrid,
+    IonRow, IonCol,
     CommonModule, FormsModule
   ]
 })
-export class EstadisticasPage implements OnInit {
+export class EstadisticasEquipoPage implements OnInit {
 
   equipos: any[] = [];
   equipoSeleccionado: number | null = null;
@@ -45,10 +44,11 @@ export class EstadisticasPage implements OnInit {
   seccionSeleccionada: 'resultado' | 'tiempo' = 'resultado';
 
   constructor(
+    private router: Router,
     private estadisticasService: EstadisticasService,
     private equipoService: EquipoService
   ) {
-    addIcons({ statsChart, trophy, football, shield, people, person });
+    addIcons({ arrowBack, statsChart, people, person, trophy, football, shield });
   }
 
   ngOnInit() {
@@ -59,6 +59,10 @@ export class EstadisticasPage implements OnInit {
     if (this.equipoSeleccionado) {
       this.cargarEstadisticas();
     }
+  }
+
+  volver() {
+    this.router.navigate(['/tabs/partidos']);
   }
 
   cargarEquipos() {
@@ -99,13 +103,6 @@ export class EstadisticasPage implements OnInit {
       console.error('❌ Error al cargar estadísticas:', error);
       this.cargando = false;
     });
-  }
-
-  doRefresh(event: any) {
-    this.cargarEstadisticas();
-    setTimeout(() => {
-      event.target.complete();
-    }, 1000);
   }
 
   // ========== MÉTODOS PARA VISTA GENERALES ==========
@@ -214,3 +211,4 @@ export class EstadisticasPage implements OnInit {
     return this.getValorJugador(jugadores[0]) || 1;
   }
 }
+

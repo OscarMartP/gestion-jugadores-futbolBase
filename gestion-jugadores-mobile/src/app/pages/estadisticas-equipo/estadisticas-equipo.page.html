@@ -1,16 +1,14 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
+    <ion-button slot="start" fill="clear" (click)="volver()">
+      <ion-icon name="arrowBack"></ion-icon>
+    </ion-button>
     <ion-title>Estadísticas de Equipo</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   
-  <!-- Refresher -->
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-
   <!-- Selector de Equipo -->
   <ion-card>
     <ion-card-content>

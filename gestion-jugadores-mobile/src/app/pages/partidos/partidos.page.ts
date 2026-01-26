@@ -10,6 +10,8 @@ import {
   IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonSpinner,
   IonChip, IonLabel, AlertController
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { statsChart } from 'ionicons/icons';
 
 interface PartidoView {
   id: number;
@@ -49,7 +51,9 @@ export class PartidosPage implements OnInit {
     private alertController: AlertController,
     private partidoService: PartidoService,
     private equipoService: EquipoService
-  ) { }
+  ) {
+    addIcons({ statsChart });
+  }
 
   ngOnInit() {
     this.cargarPartidos();
@@ -184,8 +188,10 @@ export class PartidosPage implements OnInit {
   }
 
   verDetalles(partidoId: number) {
-    console.log('Ver detalles del partido:', partidoId);
-    // Navegar a página de detalles/estadísticas cuando esté implementada
-    // this.router.navigate(['/estadisticas-partido', partidoId]);
+    this.router.navigate(['/estadisticas-partido', partidoId]);
+  }
+
+  verEstadisticasEquipo() {
+    this.router.navigate(['/estadisticas-equipo']);
   }
 }

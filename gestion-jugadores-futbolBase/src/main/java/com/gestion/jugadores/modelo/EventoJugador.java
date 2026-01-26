@@ -3,6 +3,7 @@ package com.gestion.jugadores.modelo;
 import javax.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 //Modelo Evento Jugador
 @Entity
@@ -19,11 +20,13 @@ public class EventoJugador {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jugador_id", nullable = true)  // Cambiado a true para permitir goles del rival
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnoreProperties({"eventos", "equipo", "hibernateLazyInitializer", "handler"})
     private Jugador jugador;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partido_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnoreProperties({"eventos", "equipo", "titulares", "suplentes", "hibernateLazyInitializer", "handler"})
     private Partido partido;
 
     @Column(name = "tipo_evento", nullable = false, length = 50)

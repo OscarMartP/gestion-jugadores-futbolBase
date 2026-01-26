@@ -76,5 +76,13 @@ export const routes: Routes = [
   {
     path: 'modo-partido/:id',
     loadComponent: () => import('./pages/modo-partido/modo-partido.page').then( m => m.ModoPartidoPage)
+  },
+  {
+    path: 'estadisticas-partido/:id',
+    loadComponent: () => import('./pages/estadisticas-partido/estadisticas-partido.page').then( m => m.EstadisticasPartidoPage)
+  },
+  {
+    path: 'estadisticas-equipo',
+    loadComponent: () => import('./pages/estadisticas-equipo/estadisticas-equipo.page').then( m => m.EstadisticasEquipoPage)
   }
 ];
