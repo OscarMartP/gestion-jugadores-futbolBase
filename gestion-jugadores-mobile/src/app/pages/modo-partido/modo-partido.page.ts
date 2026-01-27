@@ -163,6 +163,10 @@ export class ModoPartidoPage implements OnInit, OnDestroy {
         handler: () => this.registrarEvento(jugador, TipoEvento.ROBO)
       },
       {
+        text: '❌ Pérdida',
+        handler: () => this.registrarEvento(jugador, TipoEvento.PERDIDA)
+      },
+      {
         text: '🎯 Tiro a Puerta',
         handler: () => this.registrarEvento(jugador, TipoEvento.TIRO_PUERTA)
       },

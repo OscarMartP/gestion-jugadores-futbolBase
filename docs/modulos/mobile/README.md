@@ -1,7 +1,7 @@
 # 📱 Mobile - Ionic/Angular
 
 > **Última actualización:** 27 Enero 2026  
-> **Versión:** VersionMovil - Sistema de estadísticas + Validaciones BD
+> **Versión:** VersionMovil - Sistema de estadísticas + Evento PERDIDA
 
 ## 📋 Índice
 
@@ -1447,4 +1447,492 @@ public ResponseEntity<?> crearPartido(@RequestBody PartidoDTO dto) {
 - **Sección agregada:** Validación de posiciones y titulares/suplentes
 - **Commits documentados:** Todos los cambios están versionados correctamente
 
+## 🆕 Evento PERDIDA - Enero 2026
+
+### ⚽ Nueva Funcionalidad: Tracking de Pérdidas de Balón
+
+**Objetivo:**
+Permitir registrar y analizar las pérdidas de balón de los jugadores durante los partidos, con el mismo nivel de detalle que otros eventos (pases clave, tiros, robos).
+
+### 📊 Implementación Backend
+
+#### 1. Modelo de Datos - EstadisticasJugador.java
+```java
+// Campos agregados (11 campos + 12 getters/setters)
+@Column(name = "total_perdidas")
+private Integer totalPerdidas = 0;
+
+@Column(name = "perdidas_0_15")
+private Integer perdidas0_15 = 0;
+// ... perdidas16_30, perdidas31_45, perdidas46_60, perdidas61_75, perdidas76_90
+
+@Column(name = "perdidas_ganando")
+private Integer perdidasGanando = 0;
+// ... perdidasEmpatando, perdidasPerdiendo
+
+@Column(name = "perdidas_por_90")
+private Double perdidasP90 = 0.0;
+```
+
+#### 2. DTOs Actualizados
+- **EstadisticasJugadorDTO:** 13 campos de pérdidas (sin mayorPerdedor)
+- **EstadisticasEquipoDTO:** 14 campos de pérdidas (con mayorPerdedor)
+
+#### 3. Entidad EstadisticasEquipo.java
+```java
+// 12 campos agregados
+@Column(name = "total_perdidas")
+private Integer totalPerdidas = 0;
+// ... distribución temporal y por estado de marcador
+
+@Column(name = "mayor_perdedor", length = 100)
+private String mayorPerdedor;
+```
+
+#### 4. Servicio de Estadísticas - EstadisticasServiceImpl.java
+
+**Procesamiento de eventos PERDIDA:**
+```java
+case "PERDIDA":
+case "PERDIDAS":
+    stats.setTotalPerdidas((stats.getTotalPerdidas() != null ? stats.getTotalPerdidas() : 0) + 1);
+    
+    // Distribución temporal
+    Integer minutoPerdida = evento.getMinuto();
+    if (minutoPerdida != null) {
+        if (minutoPerdida >= 0 && minutoPerdida <= 15) {
+            stats.setPerdidas0_15(...);
+        }
+        // ... resto de intervalos
+    }
+    
+    // Distribución por estado del marcador
+    String estadoMarcadorPerdida = determinarEstadoMarcadorEnMinuto(...);
+    if ("GANANDO".equals(estadoMarcadorPerdida)) {
+        stats.setPerdidasGanando(...);
+    }
+    // ... resto de estados
+    break;
+```
+
+**Método calcularMayorPerdedor:**
+```java
+private String calcularMayorPerdedor(Long equipoId, String temporada) {
+    List<EstadisticasJugador> estadisticasJugadores = 
+        estadisticasJugadorRepository.findByJugador_Equipo_IdAndTemporada(equipoId, temporada);
+    
+    EstadisticasJugador mayorPerdedor = estadisticasJugadores.stream()
+        .filter(e -> e.getTotalPerdidas() != null && e.getTotalPerdidas() > 0)
+        .max((e1, e2) -> Integer.compare(
+            e1.getTotalPerdidas() != null ? e1.getTotalPerdidas() : 0,
+            e2.getTotalPerdidas() != null ? e2.getTotalPerdidas() : 0
+        ))
+        .orElse(null);
+    
+    return jugador.getNombre() + " " + jugador.getApellido() + 
+           " (" + mayorPerdedor.getTotalPerdidas() + " pérdidas)";
+}
+```
+
+**Actualización de estadísticas de equipo:**
+```java
+// En actualizarEstadisticasEquipo()
+} else if (tipo.equals("PERDIDA") || tipo.equals("PERDIDAS")) {
+    stats.setTotalPerdidas((stats.getTotalPerdidas() != null ? stats.getTotalPerdidas() : 0) + 1);
+    // ... procesamiento de distribución temporal y por estado
+}
+
+// Calcular mayor perdedor
+String mayorPerdedor = calcularMayorPerdedor(equipoId, temporada);
+stats.setMayorPerdedor(mayorPerdedor);
+```
+
+### 📱 Implementación Mobile
+
+#### 1. Modelo TipoEvento - partido.ts
+```typescript
+export enum TipoEvento {
+  GOL = 'gol',
+  ASISTENCIA = 'asistencia',
+  PASE_CLAVE = 'pase_clave',
+  ROBO = 'robo',
+  TIRO_PUERTA = 'tiro_puerta',
+  PERDIDA = 'PERDIDA',  // ✅ NUEVO
+  TARJETA_AMARILLA = 'tarjeta_amarilla',
+  TARJETA_ROJA = 'tarjeta_roja'
+}
+```
+
+#### 2. Registro de Eventos - modo-partido.page.ts
+```typescript
+// Botón agregado al menú de eventos
+async mostrarMenuEventos(jugador: any) {
+  const actionSheet = await this.actionSheetController.create({
+    header: `${jugador.nombre} - Seleccionar evento`,
+    buttons: [
+      // ... otros eventos
+      {
+        text: '❌ Pérdida',
+        handler: () => {
+          this.registrarEvento(jugador, TipoEvento.PERDIDA);
+        }
+      },
+      // ... resto de eventos
+    ]
+  });
+  await actionSheet.present();
+}
+```
+
+#### 3. Estadísticas por Partido - estadisticas-partido.page.ts
+
+**Modelo de datos:**
+```typescript
+export interface EstadisticasPartido {
+  // ... campos existentes
+  totalPerdidas: number;
+  distribucionPerdidas: DistribucionTemporal;
+  perdidas_ganando: number;
+  perdidas_empatando: number;
+  perdidas_perdiendo: number;
+}
+
+export interface EventoJugadorResumen {
+  // ... campos existentes
+  perdidas: number;
+}
+```
+
+**Procesamiento:**
+```typescript
+// Normalización de eventos (case-insensitive)
+const tipoEvento = evento.tipoEvento.toLowerCase();
+
+switch (tipoEvento) {
+  // ... otros casos
+  case 'perdida':
+    resumen.perdidas++;
+    this.agregarADistribucion(distribucionPerdidas, evento.minuto);
+    if (situacion === 'ganando') perdidas_ganando++;
+    else if (situacion === 'empatando') perdidas_empatando++;
+    else perdidas_perdiendo++;
+    break;
+}
+
+// Totales
+estadisticas.totalPerdidas = eventosPorJugadorArray.reduce((sum, j) => sum + j.perdidas, 0);
+estadisticas.distribucionPerdidas = distribucionPerdidas;
+estadisticas.perdidas_ganando = perdidas_ganando;
+estadisticas.perdidas_empatando = perdidas_empatando;
+estadisticas.perdidas_perdiendo = perdidas_perdiendo;
+```
+
+**Métodos dinámicos:**
+```typescript
+getIconoEvento(): string {
+  if (this.vistaSeleccionada === 'perdidas') return 'close-circle-outline';
+  // ... otros casos
+}
+
+getTituloEvento(): string {
+  if (this.vistaSeleccionada === 'perdidas') return 'Pérdidas';
+  // ... otros casos
+}
+
+getArrayIntervalosTiempo(): number[] {
+  // ... otros casos
+  } else if (this.vistaSeleccionada === 'perdidas') {
+    distribucion = this.estadisticas.distribucionPerdidas;
+  }
+  // ...
+}
+
+getValoresResultado(): { ganando: number, empatando: number, perdiendo: number } {
+  // ... otros casos
+  } else if (this.vistaSeleccionada === 'perdidas') {
+    return {
+      ganando: this.estadisticas.perdidas_ganando,
+      empatando: this.estadisticas.perdidas_empatando,
+      perdiendo: this.estadisticas.perdidas_perdiendo
+    };
+  }
+  // ...
+}
+```
+
+#### 4. HTML - estadisticas-partido.page.html
+```html
+<!-- Segmento selector -->
+<ion-segment [(ngModel)]="vistaSeleccionada">
+  <ion-segment-button value="general">General</ion-segment-button>
+  <ion-segment-button value="pasesClave">Pases Clave</ion-segment-button>
+  <ion-segment-button value="tirosAPuerta">Tiros</ion-segment-button>
+  <ion-segment-button value="robos">Robos</ion-segment-button>
+  <ion-segment-button value="perdidas">Pérdidas</ion-segment-button> <!-- ✅ NUEVO -->
+</ion-segment>
+
+<!-- Vista general - Total pérdidas -->
+<ion-item>
+  <h3>❌ Pérdidas</h3>
+  <ion-badge color="medium">{{ estadisticas.totalPerdidas }}</ion-badge>
+</ion-item>
+
+<!-- Vista específica de pérdidas (usa métodos dinámicos) -->
+<div *ngIf="vistaSeleccionada === 'perdidas'">
+  <!-- Automáticamente muestra distribución temporal y por resultado -->
+</div>
+```
+
+#### 5. Estadísticas de Equipo - estadisticas.page.ts
+
+**TypeScript:**
+```typescript
+eventoSeleccionado: 'pasesClave' | 'tirosAPuerta' | 'robos' | 'perdidas' = 'pasesClave';
+
+getPrefijoEvento(): string {
+  if (this.eventoSeleccionado === 'perdidas') return 'perdidas';
+  // ... otros casos
+}
+
+getTituloEvento(): string {
+  if (this.eventoSeleccionado === 'perdidas') return 'Pérdidas';
+  // ... otros casos
+}
+
+getIconoEvento(): string {
+  if (this.eventoSeleccionado === 'perdidas') return 'close-circle';
+  // ... otros casos
+}
+
+getCampoOrdenamiento(): string {
+  if (this.eventoSeleccionado === 'perdidas') return 'totalPerdidas';
+  // ... otros casos
+}
+
+getTotalEvento(): number {
+  if (this.eventoSeleccionado === 'perdidas') campo = 'totalPerdidas';
+  // ... otros casos
+}
+
+getP90Evento(): number {
+  const campo = `${prefijo}P90`;  // perdidasP90
+  return this.estadisticasEquipo[campo] || 0;
+}
+```
+
+**HTML:**
+```html
+<!-- Selectores de evento (2 ubicaciones) -->
+<ion-segment-button value="perdidas">
+  <ion-label>Pérdidas</ion-label>
+</ion-segment-button>
+```
+
+#### 6. Servicio de Actualización - estadisticas.service.ts
+```typescript
+actualizarEstadisticasEquipo(equipoId: number, temporada?: string): Observable<string> {
+  const url = temporada
+    ? `${this.baseURL}/equipo/${equipoId}/actualizar?temporada=${temporada}`
+    : `${this.baseURL}/equipo/${equipoId}/actualizar`;
+  return this.http.put(url, {}, { responseType: 'text' });
+}
+```
+
+#### 7. Botón de Recalcular - estadisticas.page.html
+```html
+<ion-button 
+  *ngIf="equipoSeleccionado" 
+  (click)="actualizarEstadisticas()" 
+  slot="end"
+  fill="outline"
+  size="small" 
+  color="warning">
+  <ion-icon slot="start" name="sync-outline"></ion-icon>
+  Recalcular
+</ion-button>
+```
+
+```typescript
+async actualizarEstadisticas() {
+  const loading = await this.loadingController.create({
+    message: 'Recalculando estadísticas...'
+  });
+  await loading.present();
+
+  this.estadisticasService.actualizarEstadisticasEquipo(this.equipoSeleccionado, '2025-2026')
+    .subscribe({
+      next: (response) => {
+        loading.dismiss();
+        this.cargarEstadisticas();
+      },
+      error: (error) => {
+        console.error('❌ Error al actualizar:', error);
+        loading.dismiss();
+      }
+    });
+}
+```
+
+### 🔧 Características Técnicas
+
+#### Consistencia de Datos
+- **Backend:** Eventos guardados como "PERDIDA" (mayúsculas) en BD
+- **Mobile:** Normalización a minúsculas (`evento.tipoEvento.toLowerCase()`) para procesamiento
+- **Switch case insensitive:** Funciona con "PERDIDA", "perdida", "Perdida"
+
+#### Distribución Temporal
+- **6 intervalos de 15 minutos:** 0-15, 16-30, 31-45, 46-60, 61-75, 76-90
+- **Progreso visual:** Barras de progreso con porcentajes
+
+#### Distribución por Estado del Marcador
+- **3 estados:** Ganando, Empatando, Perdiendo
+- **Cálculo dinámico:** Basado en marcador en el minuto del evento
+
+#### Métricas Calculadas
+- **Total de pérdidas:** Suma de todas las pérdidas
+- **Pérdidas por 90 minutos (P90):** Promedio normalizado
+- **Mayor perdedor:** Jugador con más pérdidas en el equipo
+- **Top jugadores:** Ranking por pérdidas individuales
+
+### 📊 Visualización
+
+#### Vista General del Partido
+```
+📊 Totales
+┌──────────────────────────┐
+│ ❌ Pérdidas          12  │
+└──────────────────────────┘
+```
+
+#### Vista Específica de Pérdidas
+```
+Pérdidas
+
+📈 Distribución Temporal
+⏱️ Min 0-15     ██████ 3 (25%)
+⏱️ Min 16-30    ████ 2 (17%)
+⏱️ Min 31-45    ████ 2 (17%)
+⏱️ Min 46-60    ██████ 3 (25%)
+⏱️ Min 61-75    ██ 1 (8%)
+⏱️ Min 76-90    ██ 1 (8%)
+
+📊 Según Resultado
+🟢 Ganando     ████ 2 (17%)
+🟡 Empatando   ██████████ 5 (42%)
+🔴 Perdiendo   ██████████ 5 (42%)
+
+🏆 Top Jugador
+Juan Pérez - 4 pérdidas
+```
+
+#### Vista de Equipo
+```
+Estadísticas de Equipo
+
+📊 Totales
+Total: 45
+Por 90min: 3.2
+
+🏆 Mayor Perdedor
+Carlos García (15 pérdidas)
+```
+
+### 🎯 Casos de Uso
+
+1. **Entrenador durante el partido:**
+   - Registra pérdidas en tiempo real
+   - Identifica jugadores que pierden frecuentemente el balón
+   - Toma decisiones de sustitución basadas en datos
+
+2. **Análisis post-partido:**
+   - Revisa distribución temporal de pérdidas
+   - Analiza si las pérdidas aumentan cuando está perdiendo
+   - Compara pérdidas entre diferentes jugadores
+
+3. **Análisis de temporada:**
+   - Identifica tendencias en pérdidas del equipo
+   - Compara pérdidas P90 entre jugadores
+   - Evalúa mejora en control de balón a lo largo de la temporada
+
+### ✅ Testing y Validación
+
+**Pasos de prueba:**
+1. ✅ Registrar evento PERDIDA desde modo-partido
+2. ✅ Verificar almacenamiento en BD (tipo_evento = "PERDIDA")
+3. ✅ Presionar botón "Recalcular" en estadísticas de equipo
+4. ✅ Verificar visualización en estadísticas generales
+5. ✅ Verificar visualización en estadísticas de partido
+6. ✅ Comprobar distribuciones temporal y por resultado
+
+**Resultados esperados:**
+- ✅ Evento se guarda correctamente
+- ✅ Estadísticas se calculan con distribuciones
+- ✅ Mayor perdedor se identifica correctamente
+- ✅ Visualización coherente en todas las vistas
+
+### 🐛 Problemas Resueltos
+
+#### 1. Eventos no se reflejaban en estadísticas
+**Causa:** Faltaba procesamiento en `actualizarEstadisticasEquipo()`
+**Solución:** Agregado bloque else if para PERDIDA con distribuciones
+
+#### 2. Campos faltantes en EstadisticasEquipo
+**Causa:** Entidad no tenía campos de pérdidas
+**Solución:** Agregados 12 @Column con getters/setters
+
+#### 3. Normalización de eventos en frontend
+**Causa:** BD guarda "PERDIDA" pero switch buscaba 'perdida'
+**Solución:** `const tipoEvento = evento.tipoEvento.toLowerCase();`
+
+#### 4. Botón duplicado en HTML
+**Causa:** Dos botones de "Pérdidas" en estadisticas.page.html
+**Solución:** Eliminado botón duplicado
+
+#### 5. Campos sin mapear en DTOs
+**Causa:** convertirAEquipoDTO no mapeaba campos de pérdidas
+**Solución:** Agregados todos los setters en métodos de conversión
+
+### 📈 Métricas de Implementación
+
+- **Backend:**
+  - 4 archivos modificados (EstadisticasJugador, EstadisticasEquipo, DTOs, ServiceImpl)
+  - 37 campos nuevos (entity + DTOs)
+  - 76 métodos nuevos (getters/setters)
+  - 1 método auxiliar (calcularMayorPerdedor)
+
+- **Mobile:**
+  - 8 archivos modificados
+  - 3 interfaces actualizadas
+  - 7 métodos TypeScript modificados
+  - 2 páginas HTML actualizadas
+  - 1 servicio ampliado
+  - 1 botón de actualización agregado
+
+### 🔄 Flujo Completo
+
+```mermaid
+graph LR
+    A[Usuario registra PERDIDA] --> B[modo-partido.page.ts]
+    B --> C[EventoJugadorService.crearEvento]
+    C --> D[Backend: EventoJugador guardado]
+    D --> E[BD: tipo_evento = 'PERDIDA']
+    
+    F[Usuario abre estadísticas] --> G[Presiona Recalcular]
+    G --> H[actualizarEstadisticasEquipo]
+    H --> I[EstadisticasServiceImpl procesa PERDIDA]
+    I --> J[Calcula distribuciones]
+    J --> K[Guarda en EstadisticasEquipo/Jugador]
+    
+    K --> L[Frontend carga estadísticas]
+    L --> M[Visualización en tabs/estadisticas]
+    L --> N[Visualización en estadisticas-partido]
+    
+    style A fill:#3880ff
+    style D fill:#6db33f
+    style G fill:#ffd700
+    style M fill:#ff6b6b
+    style N fill:#ff6b6b
+```
+
 ---
+

@@ -23,14 +23,15 @@ export interface EventoJugador {
 }
 
 export enum TipoEvento {
-  GOL = 'gol',
-  ASISTENCIA = 'asistencia',
-  PASE_CLAVE = 'pase_clave',
-  ROBO = 'robo',
-  TIRO_PUERTA = 'tiro_puerta',
-  TARJETA_AMARILLA = 'tarjeta_amarilla',
-  TARJETA_ROJA = 'tarjeta_roja',
-  PARADA = 'parada',
-  SUSTITUCION = 'sustitucion',
-  GOL_RIVAL = 'gol_rival'
+  GOL = 'GOL',
+  ASISTENCIA = 'ASISTENCIA',
+  PASE_CLAVE = 'PASE_CLAVE',
+  ROBO = 'ROBO',
+  TIRO_PUERTA = 'TIRO_A_PUERTA',
+  TARJETA_AMARILLA = 'TARJETA_AMARILLA',
+  TARJETA_ROJA = 'TARJETA_ROJA',
+  PARADA = 'PARADA',
+  SUSTITUCION = 'SUSTITUCION',
+  GOL_RIVAL = 'GOL_RIVAL',
+  PERDIDA = 'PERDIDA'
 }

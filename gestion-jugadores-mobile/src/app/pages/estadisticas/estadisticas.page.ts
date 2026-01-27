@@ -7,10 +7,10 @@ import {
   IonRefresher, IonRefresherContent, IonSelect, IonSelectOption,
   IonItem, IonLabel, IonSegment, IonSegmentButton, IonList,
   IonBadge, IonProgressBar, IonSpinner, IonGrid, IonRow, IonCol,
-  IonChip
+  IonChip, IonButton, LoadingController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { statsChart, trophy, football, shield, people, person } from 'ionicons/icons';
+import { statsChart, trophy, football, shield, people, person, syncOutline } from 'ionicons/icons';
 import { EstadisticasService } from '../../core/services/estadisticas.service';
 import { EquipoService } from '../../core/services/equipo.service';
 
@@ -25,7 +25,7 @@ import { EquipoService } from '../../core/services/equipo.service';
     IonRefresher, IonRefresherContent, IonSelect, IonSelectOption,
     IonItem, IonLabel, IonSegment, IonSegmentButton, IonList,
     IonBadge, IonProgressBar, IonSpinner, IonGrid, IonRow, IonCol,
-    IonChip,
+    IonChip, IonButton,
     CommonModule, FormsModule
   ]
 })
@@ -41,14 +41,15 @@ export class EstadisticasPage implements OnInit {
   
   // Vistas
   vistaSeleccionada: 'generales' | 'individuales' = 'generales';
-  eventoSeleccionado: 'pasesClave' | 'tirosAPuerta' | 'robos' = 'pasesClave';
+  eventoSeleccionado: 'pasesClave' | 'tirosAPuerta' | 'robos' | 'perdidas' = 'pasesClave';
   seccionSeleccionada: 'resultado' | 'tiempo' = 'resultado';
 
   constructor(
     private estadisticasService: EstadisticasService,
-    private equipoService: EquipoService
+    private equipoService: EquipoService,
+    private loadingController: LoadingController
   ) {
-    addIcons({ statsChart, trophy, football, shield, people, person });
+    addIcons({ statsChart, trophy, football, shield, people, person, syncOutline });
   }
 
   ngOnInit() {
@@ -118,6 +119,8 @@ export class EstadisticasPage implements OnInit {
     if (!this.estadisticasEquipo) return [0, 0, 0, 0, 0, 0];
     
     const prefijo = this.getPrefijoEvento();
+    console.log('🔍 Buscando intervalos con prefijo:', prefijo);
+    console.log('📦 Datos disponibles:', this.estadisticasEquipo);
     return [
       this.estadisticasEquipo[`${prefijo}0_15`] || 0,
       this.estadisticasEquipo[`${prefijo}16_30`] || 0,
@@ -136,11 +139,15 @@ export class EstadisticasPage implements OnInit {
     if (!this.estadisticasEquipo) return { ganando: 0, empatando: 0, perdiendo: 0 };
     
     const prefijo = this.getPrefijoEvento();
-    return {
+    console.log('🔍 Buscando valores resultado con prefijo:', prefijo);
+    console.log('📦 Campos disponibles:', Object.keys(this.estadisticasEquipo));
+    const resultado = {
       ganando: this.estadisticasEquipo[`${prefijo}Ganando`] || 0,
       empatando: this.estadisticasEquipo[`${prefijo}Empatando`] || 0,
       perdiendo: this.estadisticasEquipo[`${prefijo}Perdiendo`] || 0
     };
+    console.log('✅ Resultado:', resultado);
+    return resultado;
   }
 
   getTotalResultado(): number {
@@ -152,6 +159,7 @@ export class EstadisticasPage implements OnInit {
     if (this.eventoSeleccionado === 'pasesClave') return 'pasesClave';
     if (this.eventoSeleccionado === 'tirosAPuerta') return 'tirosAPuerta';
     if (this.eventoSeleccionado === 'robos') return 'robos';
+    if (this.eventoSeleccionado === 'perdidas') return 'perdidas';
     return '';
   }
 
@@ -159,6 +167,7 @@ export class EstadisticasPage implements OnInit {
     if (this.eventoSeleccionado === 'pasesClave') return 'Pases Clave';
     if (this.eventoSeleccionado === 'tirosAPuerta') return 'Tiros a Puerta';
     if (this.eventoSeleccionado === 'robos') return 'Robos';
+    if (this.eventoSeleccionado === 'perdidas') return 'Pérdidas';
     return '';
   }
 
@@ -166,7 +175,29 @@ export class EstadisticasPage implements OnInit {
     if (this.eventoSeleccionado === 'pasesClave') return 'football';
     if (this.eventoSeleccionado === 'tirosAPuerta') return 'trophy';
     if (this.eventoSeleccionado === 'robos') return 'shield';
+    if (this.eventoSeleccionado === 'perdidas') return 'close-circle';
     return 'statsChart';
+  }
+
+  getTotalEvento(): number {
+    if (!this.estadisticasEquipo) return 0;
+    
+    let campo = '';
+    if (this.eventoSeleccionado === 'pasesClave') campo = 'totalPasesClave';
+    else if (this.eventoSeleccionado === 'tirosAPuerta') campo = 'totalTirosAPuerta';
+    else if (this.eventoSeleccionado === 'robos') campo = 'totalRobos';
+    else if (this.eventoSeleccionado === 'perdidas') campo = 'totalPerdidas';
+    
+    console.log('🔍 Buscando campo total:', campo, '=', this.estadisticasEquipo[campo]);
+    return this.estadisticasEquipo[campo] || 0;
+  }
+
+  getP90Evento(): number {
+    if (!this.estadisticasEquipo) return 0;
+    const prefijo = this.getPrefijoEvento();
+    const campo = `${prefijo}P90`;
+    console.log('🔍 Buscando campo P90:', campo, '=', this.estadisticasEquipo[campo]);
+    return this.estadisticasEquipo[campo] || 0;
   }
 
   calcularPorcentaje(valor: number, total: number): number {
@@ -191,10 +222,11 @@ export class EstadisticasPage implements OnInit {
   }
 
   getCampoOrdenamiento(): string {
-    if (this.eventoSeleccionado === 'pasesClave') return 'pasesClave';
-    if (this.eventoSeleccionado === 'tirosAPuerta') return 'tirosAPuerta';
-    if (this.eventoSeleccionado === 'robos') return 'robos';
-    return 'goles';
+    if (this.eventoSeleccionado === 'pasesClave') return 'totalPasesClave';
+    if (this.eventoSeleccionado === 'tirosAPuerta') return 'totalTirosAPuerta';
+    if (this.eventoSeleccionado === 'robos') return 'totalRobos';
+    if (this.eventoSeleccionado === 'perdidas') return 'totalPerdidas';
+    return 'totalGoles';
   }
 
   getValorJugador(jugador: any): number {
@@ -212,5 +244,30 @@ export class EstadisticasPage implements OnInit {
     const jugadores = this.getJugadoresOrdenados();
     if (jugadores.length === 0) return 1;
     return this.getValorJugador(jugadores[0]) || 1;
+  }
+
+  async actualizarEstadisticas() {
+    if (!this.equipoSeleccionado) {
+      console.log('⚠️ No hay equipo seleccionado');
+      return;
+    }
+
+    const loading = await this.loadingController.create({
+      message: 'Recalculando estadísticas...'
+    });
+    await loading.present();
+
+    this.estadisticasService.actualizarEstadisticasEquipo(this.equipoSeleccionado, '2025-2026')
+      .subscribe({
+        next: (response) => {
+          console.log('✅ Estadísticas actualizadas:', response);
+          loading.dismiss();
+          this.cargarEstadisticas();
+        },
+        error: (error) => {
+          console.error('❌ Error al actualizar:', error);
+          loading.dismiss();
+        }
+      });
   }
 }

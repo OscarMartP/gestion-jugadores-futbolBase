@@ -48,4 +48,12 @@ export class EstadisticasService {
       : `${this.baseURL}/equipo/${equipoId}/resumen`;
     return this.http.get<any>(url);
   }
+
+  // Actualizar estadísticas de equipo
+  actualizarEstadisticasEquipo(equipoId: number, temporada?: string): Observable<string> {
+    const url = temporada
+      ? `${this.baseURL}/equipo/${equipoId}/actualizar?temporada=${temporada}`
+      : `${this.baseURL}/equipo/${equipoId}/actualizar`;
+    return this.http.put(url, {}, { responseType: 'text' });
+  }
 }

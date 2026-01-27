@@ -62,6 +62,9 @@
       <ion-segment-button value="robos">
         <ion-label>Robos</ion-label>
       </ion-segment-button>
+      <ion-segment-button value="perdidas">
+        <ion-label>Pérdidas</ion-label>
+      </ion-segment-button>
     </ion-segment>
 
     <!-- Vista General -->
@@ -102,6 +105,12 @@
                 <h3>🛡️ Robos</h3>
               </ion-label>
               <ion-badge slot="end" color="warning">{{ estadisticas.totalRobos }}</ion-badge>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h3>❌ Pérdidas</h3>
+              </ion-label>
+              <ion-badge slot="end" color="medium">{{ estadisticas.totalPerdidas }}</ion-badge>
             </ion-item>
             <ion-item>
               <ion-label>

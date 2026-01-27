@@ -61,6 +61,18 @@ public class EstadisticasJugadorDTO {
     private Integer robosPerdiendo;
     private Double robosP90;
     
+    private Integer totalPerdidas;
+    private Integer perdidas0_15;
+    private Integer perdidas16_30;
+    private Integer perdidas31_45;
+    private Integer perdidas46_60;
+    private Integer perdidas61_75;
+    private Integer perdidas76_90;
+    private Integer perdidasGanando;
+    private Integer perdidasEmpatando;
+    private Integer perdidasPerdiendo;
+    private Double perdidasP90;
+    
     private Double promedioGoles;
     private Double promedioAsistencias;
     private Double rating;
@@ -485,5 +497,94 @@ public class EstadisticasJugadorDTO {
 
     public void setRating(Double rating) {
         this.rating = rating;
+    }
+    
+    // Getters y setters para pérdidas
+    public Integer getTotalPerdidas() {
+        return totalPerdidas;
+    }
+
+    public void setTotalPerdidas(Integer totalPerdidas) {
+        this.totalPerdidas = totalPerdidas;
+    }
+
+    public Integer getPerdidas0_15() {
+        return perdidas0_15;
+    }
+
+    public void setPerdidas0_15(Integer perdidas0_15) {
+        this.perdidas0_15 = perdidas0_15;
+    }
+
+    public Integer getPerdidas16_30() {
+        return perdidas16_30;
+    }
+
+    public void setPerdidas16_30(Integer perdidas16_30) {
+        this.perdidas16_30 = perdidas16_30;
+    }
+
+    public Integer getPerdidas31_45() {
+        return perdidas31_45;
+    }
+
+    public void setPerdidas31_45(Integer perdidas31_45) {
+        this.perdidas31_45 = perdidas31_45;
+    }
+
+    public Integer getPerdidas46_60() {
+        return perdidas46_60;
+    }
+
+    public void setPerdidas46_60(Integer perdidas46_60) {
+        this.perdidas46_60 = perdidas46_60;
+    }
+
+    public Integer getPerdidas61_75() {
+        return perdidas61_75;
+    }
+
+    public void setPerdidas61_75(Integer perdidas61_75) {
+        this.perdidas61_75 = perdidas61_75;
+    }
+
+    public Integer getPerdidas76_90() {
+        return perdidas76_90;
+    }
+
+    public void setPerdidas76_90(Integer perdidas76_90) {
+        this.perdidas76_90 = perdidas76_90;
+    }
+
+    public Integer getPerdidasGanando() {
+        return perdidasGanando;
+    }
+
+    public void setPerdidasGanando(Integer perdidasGanando) {
+        this.perdidasGanando = perdidasGanando;
+    }
+
+    public Integer getPerdidasEmpatando() {
+        return perdidasEmpatando;
+    }
+
+    public void setPerdidasEmpatando(Integer perdidasEmpatando) {
+        this.perdidasEmpatando = perdidasEmpatando;
+    }
+
+    public Integer getPerdidasPerdiendo() {
+        return perdidasPerdiendo;
+    }
+
+    public void setPerdidasPerdiendo(Integer perdidasPerdiendo) {
+        this.perdidasPerdiendo = perdidasPerdiendo;
+    }
+
+    public Double getPerdidasP90() {
+        return perdidasP90;
+    }
+
+    public void setPerdidasP90(Double perdidasP90) {
+        this.perdidasP90 = perdidasP90;
     }
 }

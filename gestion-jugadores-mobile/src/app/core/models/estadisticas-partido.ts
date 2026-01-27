@@ -23,11 +23,13 @@ export interface EstadisticasPartido {
   totalTarjetasRojas: number;
   totalRobos: number;
   totalTirosAPuerta: number;
+  totalPerdidas: number;
   
   // Distribución temporal de eventos principales
   distribucionPasesClave: DistribucionTemporal;
   distribucionTirosAPuerta: DistribucionTemporal;
   distribucionRobos: DistribucionTemporal;
+  distribucionPerdidas: DistribucionTemporal;
   
   // Por resultado (ganando, empatando, perdiendo)
   pasesClave_ganando: number;
@@ -41,6 +43,10 @@ export interface EstadisticasPartido {
   robos_ganando: number;
   robos_empatando: number;
   robos_perdiendo: number;
+  
+  perdidas_ganando: number;
+  perdidas_empatando: number;
+  perdidas_perdiendo: number;
 }
 
 export interface EventoJugadorResumen {
@@ -53,6 +59,7 @@ export interface EventoJugadorResumen {
   tarjetasRojas: number;
   robos: number;
   tirosAPuerta: number;
+  perdidas: number;
 }
 
 export interface DistribucionTemporal {

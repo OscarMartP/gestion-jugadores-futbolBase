@@ -21,6 +21,16 @@
             {{ equipo.nombre }}
           </ion-select-option>
         </ion-select>
+        <ion-button 
+          *ngIf="equipoSeleccionado" 
+          (click)="actualizarEstadisticas()" 
+          slot="end"
+          fill="outline"
+          size="small" 
+          color="warning">
+          <ion-icon slot="start" name="sync-outline"></ion-icon>
+          Recalcular
+        </ion-button>
       </ion-item>
     </ion-card-content>
   </ion-card>
@@ -111,6 +121,9 @@
             <ion-segment-button value="robos">
               <ion-label>Robos</ion-label>
             </ion-segment-button>
+            <ion-segment-button value="perdidas">
+              <ion-label>Pérdidas</ion-label>
+            </ion-segment-button>
           </ion-segment>
         </ion-card-content>
       </ion-card>
@@ -125,13 +138,13 @@
             <ion-row>
               <ion-col size="6">
                 <div class="stat-highlight">
-                  <h1>{{ estadisticasEquipo['total' + getTituloEvento().replace(' ', '')] || 0 }}</h1>
+                  <h1>{{ getTotalEvento() }}</h1>
                   <p>Total</p>
                 </div>
               </ion-col>
               <ion-col size="6">
                 <div class="stat-highlight">
-                  <h1>{{ (estadisticasEquipo[getPrefijoEvento() + 'P90'] || 0).toFixed(1) }}</h1>
+                  <h1>{{ getP90Evento().toFixed(1) }}</h1>
                   <p>Por 90min</p>
                 </div>
               </ion-col>
@@ -245,6 +258,9 @@
             </ion-segment-button>
             <ion-segment-button value="robos">
               <ion-label>Robos</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="perdidas">
+              <ion-label>Pérdidas</ion-label>
             </ion-segment-button>
           </ion-segment>
         </ion-card-content>

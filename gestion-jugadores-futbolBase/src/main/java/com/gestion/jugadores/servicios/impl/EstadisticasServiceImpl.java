@@ -231,6 +231,19 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         stats.setRobosPerdiendo(0);
         stats.setRobosP90(0.0);
         
+        // Inicializar campos de pérdidas a 0
+        stats.setTotalPerdidas(0);
+        stats.setPerdidas0_15(0);
+        stats.setPerdidas16_30(0);
+        stats.setPerdidas31_45(0);
+        stats.setPerdidas46_60(0);
+        stats.setPerdidas61_75(0);
+        stats.setPerdidas76_90(0);
+        stats.setPerdidasGanando(0);
+        stats.setPerdidasEmpatando(0);
+        stats.setPerdidasPerdiendo(0);
+        stats.setPerdidasP90(0.0);
+        
         // Obtener todos los eventos del jugador en la temporada
         List<EventoJugador> eventos = eventoJugadorRepository.findByJugador_Id(jugadorId);
         
@@ -388,6 +401,41 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setRobosEmpatando((stats.getRobosEmpatando() != null ? stats.getRobosEmpatando() : 0) + 1);
                         } else if ("PERDIENDO".equals(estadoMarcadorRobo)) {
                             stats.setRobosPerdiendo((stats.getRobosPerdiendo() != null ? stats.getRobosPerdiendo() : 0) + 1);
+                        }
+                    }
+                    break;
+                    
+                case "PERDIDA":
+                case "PERDIDAS":
+                    System.out.println("❌ Procesando pérdida - Evento ID: " + evento.getId() + ", Jugador: " + jugador.getNombre());
+                    // Incrementar total de pérdidas (null-safe)
+                    stats.setTotalPerdidas((stats.getTotalPerdidas() != null ? stats.getTotalPerdidas() : 0) + 1);
+                    
+                    // Determinar el intervalo temporal de la pérdida
+                    Integer minutoPerdida = evento.getMinuto();
+                    if (minutoPerdida != null) {
+                        if (minutoPerdida >= 0 && minutoPerdida <= 15) {
+                            stats.setPerdidas0_15((stats.getPerdidas0_15() != null ? stats.getPerdidas0_15() : 0) + 1);
+                        } else if (minutoPerdida >= 16 && minutoPerdida <= 30) {
+                            stats.setPerdidas16_30((stats.getPerdidas16_30() != null ? stats.getPerdidas16_30() : 0) + 1);
+                        } else if (minutoPerdida >= 31 && minutoPerdida <= 45) {
+                            stats.setPerdidas31_45((stats.getPerdidas31_45() != null ? stats.getPerdidas31_45() : 0) + 1);
+                        } else if (minutoPerdida >= 46 && minutoPerdida <= 60) {
+                            stats.setPerdidas46_60((stats.getPerdidas46_60() != null ? stats.getPerdidas46_60() : 0) + 1);
+                        } else if (minutoPerdida >= 61 && minutoPerdida <= 75) {
+                            stats.setPerdidas61_75((stats.getPerdidas61_75() != null ? stats.getPerdidas61_75() : 0) + 1);
+                        } else if (minutoPerdida >= 76 && minutoPerdida <= 90) {
+                            stats.setPerdidas76_90((stats.getPerdidas76_90() != null ? stats.getPerdidas76_90() : 0) + 1);
+                        }
+                        
+                        // Determinar el estado del partido en ese momento
+                        String estadoMarcadorPerdida = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo());
+                        if ("GANANDO".equals(estadoMarcadorPerdida)) {
+                            stats.setPerdidasGanando((stats.getPerdidasGanando() != null ? stats.getPerdidasGanando() : 0) + 1);
+                        } else if ("EMPATANDO".equals(estadoMarcadorPerdida)) {
+                            stats.setPerdidasEmpatando((stats.getPerdidasEmpatando() != null ? stats.getPerdidasEmpatando() : 0) + 1);
+                        } else if ("PERDIENDO".equals(estadoMarcadorPerdida)) {
+                            stats.setPerdidasPerdiendo((stats.getPerdidasPerdiendo() != null ? stats.getPerdidasPerdiendo() : 0) + 1);
                         }
                     }
                     break;
@@ -627,6 +675,37 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setRobosPerdiendo((stats.getRobosPerdiendo() != null ? stats.getRobosPerdiendo() : 0) + 1);
                         }
                     }
+                } else if (tipo.equals("PERDIDA") || tipo.equals("PERDIDAS")) {
+                    // Contar pérdida para el equipo (null-safe)
+                    stats.setTotalPerdidas((stats.getTotalPerdidas() != null ? stats.getTotalPerdidas() : 0) + 1);
+                    
+                    // Agregar distribución temporal
+                    Integer minutoPerdida = evento.getMinuto();
+                    if (minutoPerdida != null) {
+                        if (minutoPerdida >= 0 && minutoPerdida <= 15) {
+                            stats.setPerdidas0_15((stats.getPerdidas0_15() != null ? stats.getPerdidas0_15() : 0) + 1);
+                        } else if (minutoPerdida >= 16 && minutoPerdida <= 30) {
+                            stats.setPerdidas16_30((stats.getPerdidas16_30() != null ? stats.getPerdidas16_30() : 0) + 1);
+                        } else if (minutoPerdida >= 31 && minutoPerdida <= 45) {
+                            stats.setPerdidas31_45((stats.getPerdidas31_45() != null ? stats.getPerdidas31_45() : 0) + 1);
+                        } else if (minutoPerdida >= 46 && minutoPerdida <= 60) {
+                            stats.setPerdidas46_60((stats.getPerdidas46_60() != null ? stats.getPerdidas46_60() : 0) + 1);
+                        } else if (minutoPerdida >= 61 && minutoPerdida <= 75) {
+                            stats.setPerdidas61_75((stats.getPerdidas61_75() != null ? stats.getPerdidas61_75() : 0) + 1);
+                        } else if (minutoPerdida >= 76 && minutoPerdida <= 90) {
+                            stats.setPerdidas76_90((stats.getPerdidas76_90() != null ? stats.getPerdidas76_90() : 0) + 1);
+                        }
+                        
+                        // Determinar estado del marcador en ese minuto
+                        String estadoMarcadorPerdida = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo);
+                        if ("GANANDO".equals(estadoMarcadorPerdida)) {
+                            stats.setPerdidasGanando((stats.getPerdidasGanando() != null ? stats.getPerdidasGanando() : 0) + 1);
+                        } else if ("EMPATANDO".equals(estadoMarcadorPerdida)) {
+                            stats.setPerdidasEmpatando((stats.getPerdidasEmpatando() != null ? stats.getPerdidasEmpatando() : 0) + 1);
+                        } else if ("PERDIENDO".equals(estadoMarcadorPerdida)) {
+                            stats.setPerdidasPerdiendo((stats.getPerdidasPerdiendo() != null ? stats.getPerdidasPerdiendo() : 0) + 1);
+                        }
+                    }
                 }
             }
         }
@@ -762,6 +841,10 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         String mayorRecuperador = calcularMayorRecuperador(equipoId, temporada);
         stats.setMayorRecuperador(mayorRecuperador);
         
+        // Calcular mayor perdedor del equipo
+        String mayorPerdedor = calcularMayorPerdedor(equipoId, temporada);
+        stats.setMayorPerdedor(mayorPerdedor);
+        
         // Guardar estadísticas del equipo
         EstadisticasEquipo savedStats = estadisticasEquipoRepository.save(stats);
         System.out.println("Estadísticas del equipo guardadas: " + savedStats.getId());
@@ -894,6 +977,43 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         Jugador jugador = mejorRecuperador.getJugador();
         String resultado = jugador.getNombre() + " " + jugador.getApellido() + " (" + mejorRecuperador.getTotalRobos() + " robos)";
         System.out.println("🏆 Mayor recuperador: " + resultado);
+        return resultado;
+    }
+    
+    /**
+     * Calcula el jugador con más pérdidas del equipo
+     */
+    private String calcularMayorPerdedor(Long equipoId, String temporada) {
+        System.out.println("❌ Buscando estadísticas de jugadores para pérdidas - Equipo: " + equipoId + ", Temporada: " + temporada);
+        List<EstadisticasJugador> estadisticasJugadores = estadisticasJugadorRepository
+            .findByJugador_Equipo_IdAndTemporada(equipoId, temporada);
+        
+        System.out.println("📊 Jugadores encontrados: " + estadisticasJugadores.size());
+        
+        if (estadisticasJugadores.isEmpty()) {
+            System.out.println("⚠️ No hay jugadores con estadísticas");
+            return "N/A";
+        }
+        
+        // Buscar el jugador con más pérdidas
+        EstadisticasJugador mayorPerdedor = estadisticasJugadores.stream()
+            .filter(e -> e.getTotalPerdidas() != null && e.getTotalPerdidas() > 0)
+            .max((e1, e2) -> {
+                int perdidas1 = e1.getTotalPerdidas() != null ? e1.getTotalPerdidas() : 0;
+                int perdidas2 = e2.getTotalPerdidas() != null ? e2.getTotalPerdidas() : 0;
+                return Integer.compare(perdidas1, perdidas2);
+            })
+            .orElse(null);
+        
+        if (mayorPerdedor == null || mayorPerdedor.getTotalPerdidas() == null || mayorPerdedor.getTotalPerdidas() == 0) {
+            System.out.println("⚠️ No hay jugadores con pérdidas registradas");
+            return "N/A";
+        }
+        
+        // Retornar nombre completo del jugador con cantidad de pérdidas
+        Jugador jugador = mayorPerdedor.getJugador();
+        String resultado = jugador.getNombre() + " " + jugador.getApellido() + " (" + mayorPerdedor.getTotalPerdidas() + " pérdidas)";
+        System.out.println("🏆 Mayor perdedor: " + resultado);
         return resultado;
     }
     
@@ -1050,6 +1170,17 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         dto.setRobosEmpatando(stats.getRobosEmpatando());
         dto.setRobosPerdiendo(stats.getRobosPerdiendo());
         dto.setRobosP90(stats.getRobosP90());
+        dto.setTotalPerdidas(stats.getTotalPerdidas());
+        dto.setPerdidas0_15(stats.getPerdidas0_15());
+        dto.setPerdidas16_30(stats.getPerdidas16_30());
+        dto.setPerdidas31_45(stats.getPerdidas31_45());
+        dto.setPerdidas46_60(stats.getPerdidas46_60());
+        dto.setPerdidas61_75(stats.getPerdidas61_75());
+        dto.setPerdidas76_90(stats.getPerdidas76_90());
+        dto.setPerdidasGanando(stats.getPerdidasGanando());
+        dto.setPerdidasEmpatando(stats.getPerdidasEmpatando());
+        dto.setPerdidasPerdiendo(stats.getPerdidasPerdiendo());
+        dto.setPerdidasP90(stats.getPerdidasP90());
         dto.setPromedioGoles(stats.getPromedioGoles());
         dto.setPromedioAsistencias(stats.getPromedioAsistencias());
         dto.setRating(stats.getRating());
@@ -1118,6 +1249,18 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         dto.setRobosPerdiendo(stats.getRobosPerdiendo());
         dto.setRobosP90(stats.getRobosP90());
         dto.setMayorRecuperador(stats.getMayorRecuperador());
+        dto.setTotalPerdidas(stats.getTotalPerdidas());
+        dto.setPerdidas0_15(stats.getPerdidas0_15());
+        dto.setPerdidas16_30(stats.getPerdidas16_30());
+        dto.setPerdidas31_45(stats.getPerdidas31_45());
+        dto.setPerdidas46_60(stats.getPerdidas46_60());
+        dto.setPerdidas61_75(stats.getPerdidas61_75());
+        dto.setPerdidas76_90(stats.getPerdidas76_90());
+        dto.setPerdidasGanando(stats.getPerdidasGanando());
+        dto.setPerdidasEmpatando(stats.getPerdidasEmpatando());
+        dto.setPerdidasPerdiendo(stats.getPerdidasPerdiendo());
+        dto.setPerdidasP90(stats.getPerdidasP90());
+        dto.setMayorPerdedor(stats.getMayorPerdedor());
         dto.setPromedioGolesFavor(stats.getPromedioGolesFavor());
         dto.setPromedioGolesContra(stats.getPromedioGolesContra());
         dto.setEfectividad(stats.getEfectividad());

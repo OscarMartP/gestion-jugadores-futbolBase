@@ -34,7 +34,7 @@ export class EstadisticasPartidoPage implements OnInit {
   estadisticas: EstadisticasPartido | null = null;
   
   // Vista seleccionada
-  vistaSeleccionada: 'general' | 'pasesClave' | 'tirosAPuerta' | 'robos' = 'general';
+  vistaSeleccionada: 'general' | 'pasesClave' | 'tirosAPuerta' | 'robos' | 'perdidas' = 'general';
   seccionSeleccionada: 'resultado' | 'tiempo' = 'resultado';
 
   constructor(
@@ -86,11 +86,13 @@ export class EstadisticasPartidoPage implements OnInit {
     let pasesClave_ganando = 0, pasesClave_empatando = 0, pasesClave_perdiendo = 0;
     let tirosAPuerta_ganando = 0, tirosAPuerta_empatando = 0, tirosAPuerta_perdiendo = 0;
     let robos_ganando = 0, robos_empatando = 0, robos_perdiendo = 0;
+    let perdidas_ganando = 0, perdidas_empatando = 0, perdidas_perdiendo = 0;
     
     // Distribución temporal
     const distribucionPasesClave = { intervalo0_15: 0, intervalo16_30: 0, intervalo31_45: 0, intervalo46_60: 0, intervalo61_75: 0, intervalo76_90: 0 };
     const distribucionTirosAPuerta = { intervalo0_15: 0, intervalo16_30: 0, intervalo31_45: 0, intervalo46_60: 0, intervalo61_75: 0, intervalo76_90: 0 };
     const distribucionRobos = { intervalo0_15: 0, intervalo16_30: 0, intervalo31_45: 0, intervalo46_60: 0, intervalo61_75: 0, intervalo76_90: 0 };
+    const distribucionPerdidas = { intervalo0_15: 0, intervalo16_30: 0, intervalo31_45: 0, intervalo46_60: 0, intervalo61_75: 0, intervalo76_90: 0 };
     
     // Ordenar eventos por minuto
     const eventosOrdenados = eventos.sort((a, b) => a.minuto - b.minuto);
@@ -111,7 +113,8 @@ export class EstadisticasPartidoPage implements OnInit {
             tarjetasAmarillas: 0,
             tarjetasRojas: 0,
             robos: 0,
-            tirosAPuerta: 0
+            tirosAPuerta: 0,
+            perdidas: 0
           });
         }
         
@@ -123,7 +126,10 @@ export class EstadisticasPartidoPage implements OnInit {
         else if (golesEquipo < golesRival) situacion = 'perdiendo';
         else situacion = 'empatando';
         
-        switch (evento.tipoEvento) {
+        // Normalizar tipo de evento a minúsculas
+        const tipoEvento = evento.tipoEvento.toLowerCase();
+        
+        switch (tipoEvento) {
           case 'gol':
             resumen.goles++;
             golesEquipo++;
@@ -144,6 +150,13 @@ export class EstadisticasPartidoPage implements OnInit {
             if (situacion === 'ganando') robos_ganando++;
             else if (situacion === 'empatando') robos_empatando++;
             else robos_perdiendo++;
+            break;
+          case 'perdida':
+            resumen.perdidas++;
+            this.agregarADistribucion(distribucionPerdidas, evento.minuto);
+            if (situacion === 'ganando') perdidas_ganando++;
+            else if (situacion === 'empatando') perdidas_empatando++;
+            else perdidas_perdiendo++;
             break;
           case 'tiro_puerta':
             resumen.tirosAPuerta++;
@@ -209,9 +222,11 @@ export class EstadisticasPartidoPage implements OnInit {
       totalTarjetasRojas: eventosPorJugadorArray.reduce((sum, j) => sum + j.tarjetasRojas, 0),
       totalRobos: eventosPorJugadorArray.reduce((sum, j) => sum + j.robos, 0),
       totalTirosAPuerta: eventosPorJugadorArray.reduce((sum, j) => sum + j.tirosAPuerta, 0),
+      totalPerdidas: eventosPorJugadorArray.reduce((sum, j) => sum + j.perdidas, 0),
       distribucionPasesClave,
       distribucionTirosAPuerta,
       distribucionRobos,
+      distribucionPerdidas,
       pasesClave_ganando,
       pasesClave_empatando,
       pasesClave_perdiendo,
@@ -220,7 +235,10 @@ export class EstadisticasPartidoPage implements OnInit {
       tirosAPuerta_perdiendo,
       robos_ganando,
       robos_empatando,
-      robos_perdiendo
+      robos_perdiendo,
+      perdidas_ganando,
+      perdidas_empatando,
+      perdidas_perdiendo
     };
   }
 
@@ -233,7 +251,7 @@ export class EstadisticasPartidoPage implements OnInit {
     else distribucion.intervalo76_90++;
   }
 
-  obtenerTopJugador(tipo: 'pasesClave' | 'tirosAPuerta' | 'robos'): TopJugador | null {
+  obtenerTopJugador(tipo: 'pasesClave' | 'tirosAPuerta' | 'robos' | 'perdidas'): TopJugador | null {
     if (!this.estadisticas || this.estadisticas.eventosPorJugador.length === 0) return null;
     
     const jugadorTop = this.estadisticas.eventosPorJugador
@@ -276,6 +294,8 @@ export class EstadisticasPartidoPage implements OnInit {
       distribucion = this.estadisticas.distribucionTirosAPuerta;
     } else if (this.vistaSeleccionada === 'robos') {
       distribucion = this.estadisticas.distribucionRobos;
+    } else if (this.vistaSeleccionada === 'perdidas') {
+      distribucion = this.estadisticas.distribucionPerdidas;
     }
     
     return [
@@ -318,6 +338,12 @@ export class EstadisticasPartidoPage implements OnInit {
         empatando: this.estadisticas.robos_empatando,
         perdiendo: this.estadisticas.robos_perdiendo
       };
+    } else if (this.vistaSeleccionada === 'perdidas') {
+      return {
+        ganando: this.estadisticas.perdidas_ganando,
+        empatando: this.estadisticas.perdidas_empatando,
+        perdiendo: this.estadisticas.perdidas_perdiendo
+      };
     }
     
     return { ganando: 0, empatando: 0, perdiendo: 0 };
@@ -327,6 +353,7 @@ export class EstadisticasPartidoPage implements OnInit {
     if (this.vistaSeleccionada === 'pasesClave') return 'Pases Clave';
     if (this.vistaSeleccionada === 'tirosAPuerta') return 'Tiros a Puerta';
     if (this.vistaSeleccionada === 'robos') return 'Robos';
+    if (this.vistaSeleccionada === 'perdidas') return 'Pérdidas';
     return '';
   }
 
@@ -334,6 +361,7 @@ export class EstadisticasPartidoPage implements OnInit {
     if (this.vistaSeleccionada === 'pasesClave') return 'football-outline';
     if (this.vistaSeleccionada === 'tirosAPuerta') return 'navigate-circle-outline';
     if (this.vistaSeleccionada === 'robos') return 'shield-outline';
+    if (this.vistaSeleccionada === 'perdidas') return 'close-circle-outline';
     return 'stats-chart-outline';
   }
 }
