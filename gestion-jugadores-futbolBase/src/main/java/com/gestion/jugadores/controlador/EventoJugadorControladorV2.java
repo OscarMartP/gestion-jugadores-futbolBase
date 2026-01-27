@@ -3,7 +3,7 @@ package com.gestion.jugadores.controlador;
 import com.gestion.jugadores.controlador.base.BaseController;
 import com.gestion.jugadores.controlador.base.BaseService;
 import com.gestion.jugadores.modelo.EventoJugador;
-import com.gestion.jugadores.modelo.EventoJugadorDTO;
+import com.gestion.jugadores.dto.EventoJugadorDTO;
 import com.gestion.jugadores.modelo.EventoResumenDTO;
 import com.gestion.jugadores.modelo.Jugador;
 import com.gestion.jugadores.modelo.Partido;
@@ -74,28 +74,29 @@ public class EventoJugadorControladorV2 extends BaseController<EventoJugador, Ev
     protected EventoJugadorDTO toDto(EventoJugador entity) {
         // Conversión manual de EventoJugador a EventoJugadorDTO
         EventoJugadorDTO dto = new EventoJugadorDTO();
-        dto.jugadorId = entity.getJugador().getId();
-        dto.partidoId = entity.getPartido().getId();
-        dto.tipoEvento = entity.getTipoEvento();
-        dto.minuto = entity.getMinuto();
-        dto.jugadorSaleId = entity.getJugadorSaleId();
-        dto.jugadorEntraId = entity.getJugadorEntraId();
+        dto.setJugadorId(entity.getJugador() != null ? entity.getJugador().getId() : null);
+        dto.setPartidoId(entity.getPartido().getId());
+        dto.setTipoEvento(entity.getTipoEvento());
+        dto.setMinuto(entity.getMinuto());
+        dto.setEsEventoRival(entity.getEsEventoRival()); // ✅ Incluir campo esEventoRival
+        dto.setJugadorSaleId(entity.getJugadorSaleId());
+        dto.setJugadorEntraId(entity.getJugadorEntraId());
         return dto;
     }
 
     @Override
     protected EventoJugador toEntity(EventoJugadorDTO dto) {
         // Conversión manual de EventoJugadorDTO a EventoJugador
-        Jugador jugador = jugadorService.obtenerJugadorPorId(dto.jugadorId);
-        Partido partido = partidoService.obtenerPartidoPorId(dto.partidoId);
+        Jugador jugador = jugadorService.obtenerJugadorPorId(dto.getJugadorId());
+        Partido partido = partidoService.obtenerPartidoPorId(dto.getPartidoId());
 
         EventoJugador evento = new EventoJugador();
         evento.setJugador(jugador);
         evento.setPartido(partido);
-        evento.setTipoEvento(dto.tipoEvento);
-        evento.setMinuto(dto.minuto);
-        evento.setJugadorSaleId(dto.jugadorSaleId);
-        evento.setJugadorEntraId(dto.jugadorEntraId);
+        evento.setTipoEvento(dto.getTipoEvento());
+        evento.setMinuto(dto.getMinuto());
+        evento.setJugadorSaleId(dto.getJugadorSaleId());
+        evento.setJugadorEntraId(dto.getJugadorEntraId());
         return evento;
     }
 
@@ -109,31 +110,38 @@ public class EventoJugadorControladorV2 extends BaseController<EventoJugador, Ev
     @PostMapping
     @Override
     public ResponseEntity<EventoJugadorDTO> create(@RequestBody EventoJugadorDTO dto) {
-        Partido partido = partidoService.obtenerPartidoPorId(dto.partidoId);
+        Partido partido = partidoService.obtenerPartidoPorId(dto.getPartidoId());
 
         EventoJugador evento = new EventoJugador();
         
-        // Para eventos de gol_rival, usamos cualquier jugador como placeholder
-        // (el tipo de evento "gol_rival" indica que es del rival)
-        if (dto.jugadorId != null) {
-            Jugador jugador = jugadorService.obtenerJugadorPorId(dto.jugadorId);
-            evento.setJugador(jugador);
-        } else {
-            // Para gol_rival sin jugador, usar el primer jugador del equipo como placeholder
-            // El tipoEvento "gol_rival" indica que realmente es del rival
+        // ✅ Determinar si es evento del rival (tipo GOL_RIVAL o esEventoRival=true)
+        boolean esEventoRival = "GOL_RIVAL".equalsIgnoreCase(dto.getTipoEvento()) || 
+                                Boolean.TRUE.equals(dto.getEsEventoRival());
+        
+        if (esEventoRival) {
+            // Para eventos del rival, usar el primer jugador del equipo como referencia
+            // El campo esEventoRival indica claramente que NO es del jugador
             List<Jugador> jugadoresEquipo = jugadorService.obtenerPorEquipo(partido.getEquipo().getId());
-            if (!jugadoresEquipo.isEmpty()) {
-                evento.setJugador(jugadoresEquipo.get(0));
-            } else {
-                throw new RuntimeException("No hay jugadores en el equipo para crear evento");
+            if (jugadoresEquipo.isEmpty()) {
+                throw new RuntimeException("No hay jugadores en el equipo para crear evento del rival");
             }
+            evento.setJugador(jugadoresEquipo.get(0)); // Jugador de referencia
+            evento.setEsEventoRival(true); // ✅ IMPORTANTE: Marca el evento como del rival
+        } else {
+            // Evento del equipo propio - jugadorId es OBLIGATORIO
+            if (dto.getJugadorId() == null) {
+                throw new IllegalArgumentException("jugadorId es obligatorio para eventos del equipo");
+            }
+            Jugador jugador = jugadorService.obtenerJugadorPorId(dto.getJugadorId());
+            evento.setJugador(jugador);
+            evento.setEsEventoRival(false);
         }
         
         evento.setPartido(partido);
-        evento.setTipoEvento(dto.tipoEvento);
-        evento.setMinuto(dto.minuto);
-        evento.setJugadorSaleId(dto.jugadorSaleId);
-        evento.setJugadorEntraId(dto.jugadorEntraId);
+        evento.setTipoEvento(dto.getTipoEvento());
+        evento.setMinuto(dto.getMinuto());
+        evento.setJugadorSaleId(dto.getJugadorSaleId());
+        evento.setJugadorEntraId(dto.getJugadorEntraId());
 
         EventoJugador registrado = eventoJugadorService.registrarEvento(evento);
         return ResponseEntity.status(HttpStatus.CREATED).body(toDto(registrado));

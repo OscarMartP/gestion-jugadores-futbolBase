@@ -1,7 +1,7 @@
 # 📱 Mobile - Ionic/Angular
 
-> **Última actualización:** 26 Enero 2026  
-> **Versión:** VersionMovil - Sistema de estadísticas de equipo completo
+> **Última actualización:** 27 Enero 2026  
+> **Versión:** VersionMovil - Sistema de estadísticas + Validaciones BD
 
 ## 📋 Índice
 
@@ -1348,3 +1348,103 @@ Ranking de jugadores por evento:
 - **Páginas:** 11 principales (incluyendo estadísticas de equipo y partido)
 - **Componentes:** 25+ reutilizables
 - **Servicios:** 7 core services
+---
+
+## 🔄 Cambios Recientes (27 Enero 2026)
+
+### ✅ Validación de Posiciones de Jugadores
+
+**Problema identificado:**
+- Las posiciones estaban hardcodeadas en frontend sin validación en backend
+- Mobile usaba posiciones genéricas (PORTERO, DEFENSA, CENTROCAMPISTA, DELANTERO)
+- Backend requería posiciones específicas (POR, LD, LI, CEN, MC, MCO, EXD, EXIZ, DC)
+
+**Solución implementada:**
+
+1. **Backend - Enum Posicion creado:**
+```java
+public enum Posicion {
+    PORTERO("POR", "Portero"),
+    LATERAL_DERECHO("LD", "Lateral Derecho"),
+    LATERAL_IZQUIERDO("LI", "Lateral Izquierdo"),
+    CENTRAL("CEN", "Central"),
+    MEDIOCENTRO("MC", "Mediocentro"),
+    MEDIOCENTRO_OFENSIVO("MCO", "Mediocentro Ofensivo"),
+    EXTREMO_DERECHO("EXD", "Extremo Derecho"),
+    EXTREMO_IZQUIERDO("EXIZ", "Extremo Izquierdo"),
+    DELANTERO_CENTRO("DC", "Delantero Centro");
+}
+```
+
+2. **Mobile - Posiciones actualizadas:**
+```typescript
+// jugador-form.page.ts
+posiciones = [
+  { value: 'POR', label: 'Portero' },
+  { value: 'LD', label: 'Lateral Derecho' },
+  { value: 'LI', label: 'Lateral Izquierdo' },
+  { value: 'CEN', label: 'Central' },
+  { value: 'MC', label: 'Mediocentro' },
+  { value: 'MCO', label: 'Mediocentro Ofensivo' },
+  { value: 'EXD', label: 'Extremo Derecho' },
+  { value: 'EXIZ', label: 'Extremo Izquierdo' },
+  { value: 'DC', label: 'Delantero Centro' }
+];
+```
+
+**Impacto:**
+- ✅ Validación consistente entre frontend y backend
+- ✅ Posiciones específicas para análisis táctico preciso
+- ✅ Previene errores de inconsistencia de datos
+
+### ✅ Validación de Titulares/Suplentes Duplicados
+
+**Problema identificado:**
+- Un jugador podía estar simultáneamente en titulares y suplentes
+- Causaba inconsistencias en formaciones y estadísticas
+
+**Solución implementada:**
+
+1. **Backend - Validación en modelo Partido:**
+```java
+public void validarJugadoresUnicos() {
+    Set<Long> jugadoresTitulares = titulares.stream()
+        .map(Jugador::getId).collect(Collectors.toSet());
+    Set<Long> jugadoresSuplentes = suplentes.stream()
+        .map(Jugador::getId).collect(Collectors.toSet());
+    
+    jugadoresTitulares.retainAll(jugadoresSuplentes);
+    if (!jugadoresTitulares.isEmpty()) {
+        throw new IllegalStateException(
+            "Jugadores duplicados en titulares y suplentes: " + 
+            jugadoresTitulares);
+    }
+}
+```
+
+2. **Backend - Validación en PartidoControladorV2:**
+```java
+@PostMapping
+public ResponseEntity<?> crearPartido(@RequestBody PartidoDTO dto) {
+    try {
+        partido.validarJugadoresUnicos();
+        // ... resto del código
+    } catch (IllegalStateException e) {
+        return ResponseEntity.badRequest()
+            .body(Map.of("error", e.getMessage()));
+    }
+}
+```
+
+**Impacto:**
+- ✅ Garantiza integridad de alineaciones
+- ✅ Previene duplicados a nivel de aplicación y BD
+- ✅ Error claro al usuario si intenta duplicar jugadores
+
+### 📝 Documentación Actualizada
+
+- **LIMPIEZA_BACK.md:** Eliminación de controladores V1 obsoletos y DTOs duplicados
+- **Sección agregada:** Validación de posiciones y titulares/suplentes
+- **Commits documentados:** Todos los cambios están versionados correctamente
+
+---

@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,12 +25,17 @@ public class Jugador {
 	private Long id;
 
 	@Column(name = "nombre", length = 60, nullable = false)
+	@NotBlank(message = "El nombre es obligatorio")
+	@Size(min = 2, max = 60, message = "El nombre debe tener entre 2 y 60 caracteres")
 	private String nombre;
 
 	@Column(name = "apellido", length = 60, nullable = false)
+	@NotBlank(message = "El apellido es obligatorio")
+	@Size(min = 2, max = 60, message = "El apellido debe tener entre 2 y 60 caracteres")
 	private String apellido;
 
 	@Column(name = "posicion", length = 60, nullable = false)
+	@NotBlank(message = "La posición es obligatoria")
 	private String posicion;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -59,6 +66,11 @@ public class Jugador {
 		return posicion;
 	}
 	public void setPosicion(String posicion) {
+		// Validar que la posición sea válida según el enum Posicion
+		if (posicion != null && !Posicion.esValido(posicion)) {
+			throw new IllegalArgumentException("Posición inválida: " + posicion + 
+				". Valores permitidos: POR, LD, LI, CEN, MC, MCO, EXD, EXIZ, DC");
+		}
 		this.posicion = posicion;
 	}
 	public Equipo getEquipo() {

@@ -18,7 +18,7 @@ public class EventoJugador {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "jugador_id", nullable = true)  // Cambiado a true para permitir goles del rival
+    @JoinColumn(name = "jugador_id", nullable = false)  // ✅ OBLIGATORIO para integridad de datos
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnoreProperties({"eventos", "equipo", "hibernateLazyInitializer", "handler"})
     private Jugador jugador;
@@ -34,6 +34,10 @@ public class EventoJugador {
 
     @Column(nullable = false)
     private Integer minuto;
+
+    // ✅ NUEVO: Campo para distinguir eventos del rival (sin jugador asociado)
+    @Column(name = "es_evento_rival")
+    private Boolean esEventoRival = false; // true para eventos del equipo rival (ej: gol_rival)
 
     // Campos adicionales para estadísticas
     @Column(name = "fue_titular")
@@ -63,6 +67,7 @@ public class EventoJugador {
     public Partido getPartido() { return partido; }
     public String getTipoEvento() { return tipoEvento; }
     public Integer getMinuto() { return minuto; }
+    public Boolean getEsEventoRival() { return esEventoRival; }
     public Boolean getFueTitular() { return fueTitular; }
     public Integer getMinutosJugados() { return minutosJugados; }
 
@@ -71,6 +76,7 @@ public class EventoJugador {
     public void setPartido(Partido partido) { this.partido = partido; }
     public void setTipoEvento(String tipoEvento) { this.tipoEvento = tipoEvento; }
     public void setMinuto(Integer minuto) { this.minuto = minuto; }
+    public void setEsEventoRival(Boolean esEventoRival) { this.esEventoRival = esEventoRival; }
     public void setFueTitular(Boolean fueTitular) { this.fueTitular = fueTitular; }
     public void setMinutosJugados(Integer minutosJugados) { this.minutosJugados = minutosJugados; }
     

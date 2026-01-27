@@ -11,6 +11,7 @@ public class EventoJugadorDTO {
     private Long partidoId;
     private String tipoEvento;
     private Integer minuto;
+    private Boolean esEventoRival; // ✅ NUEVO: Indica si es evento del rival
     private Boolean fueTitular;
     private Integer minutosJugados;
     private Long jugadorSaleId;
@@ -66,6 +67,14 @@ public class EventoJugadorDTO {
 
     public void setMinuto(Integer minuto) {
         this.minuto = minuto;
+    }
+
+    public Boolean getEsEventoRival() {
+        return esEventoRival;
+    }
+
+    public void setEsEventoRival(Boolean esEventoRival) {
+        this.esEventoRival = esEventoRival;
     }
 
     public Boolean getFueTitular() {

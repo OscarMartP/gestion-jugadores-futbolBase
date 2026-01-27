@@ -177,7 +177,7 @@ export class ModoPartidoPage implements OnInit, OnDestroy {
     ];
 
     // Agregar parada solo para porteros
-    if (jugador.posicion === 'PORTERO') {
+    if (jugador.posicion === 'POR') {
       botones.splice(4, 0, {
         text: '🧤 Parada',
         handler: () => this.registrarEvento(jugador, TipoEvento.PARADA)

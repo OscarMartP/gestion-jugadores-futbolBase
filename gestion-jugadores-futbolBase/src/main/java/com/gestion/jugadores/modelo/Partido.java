@@ -91,6 +91,27 @@ public class Partido {
 
 	 public List<Long> getSuplentes() { return suplentes; }
 	 public void setSuplentes(List<Long> suplentes) { this.suplentes = suplentes; }
+
+	 /**
+	  * Valida que no haya jugadores duplicados entre titulares y suplentes
+	  * @throws IllegalArgumentException si hay jugadores duplicados
+	  */
+	 public void validarAlineacion() {
+		 if (titulares == null || suplentes == null) {
+			 return; // No hay alineación que validar
+		 }
+
+		 // Buscar intersección entre titulares y suplentes
+		 List<Long> duplicados = titulares.stream()
+			 .filter(suplentes::contains)
+			 .collect(java.util.stream.Collectors.toList());
+
+		 if (!duplicados.isEmpty()) {
+			 throw new IllegalArgumentException(
+				 "Los siguientes jugadores están duplicados en titulares y suplentes: " + duplicados
+			 );
+		 }
+	 }
 	}
 
 

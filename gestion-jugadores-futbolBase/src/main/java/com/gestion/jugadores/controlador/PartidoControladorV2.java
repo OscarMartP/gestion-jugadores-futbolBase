@@ -49,6 +49,8 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
                 if (entity.getPartidoActivo() == null) {
                     entity.setPartidoActivo(false);
                 }
+                // ✅ VALIDACIÓN: Evitar jugadores duplicados en titulares y suplentes
+                entity.validarAlineacion();
                 return partidoService.crearPartido(entity);
             }
 
@@ -59,6 +61,8 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
                     Partido existente = partidoService.obtenerPartidoPorId(id);
                     entity.setPartidoActivo(existente.getPartidoActivo());
                 }
+                // ✅ VALIDACIÓN: Evitar jugadores duplicados en titulares y suplentes
+                entity.validarAlineacion();
                 return partidoService.actualizarPartido(id, entity);
             }
 
@@ -150,6 +154,7 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
     /**
      * PUT /api/v1/partidos/{id}/alineacion
      * Actualizar alineación (titulares y suplentes) de un partido
+     * Valida que no haya jugadores duplicados entre titulares y suplentes
      */
     @PutMapping("/{id}/alineacion")
     public ResponseEntity<PartidoDTO> actualizarAlineacion(
@@ -158,6 +163,10 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
         Partido partido = partidoService.obtenerPartidoPorId(id);
         partido.setTitulares(alineacion.getTitulares());
         partido.setSuplentes(alineacion.getSuplentes());
+        
+        // ✅ VALIDACIÓN: Evitar jugadores duplicados en titulares y suplentes
+        partido.validarAlineacion();
+        
         Partido actualizado = partidoService.actualizarPartido(id, partido);
         return ResponseEntity.ok(partidoMapper.toDto(actualizado));
     }

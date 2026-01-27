@@ -65,24 +65,49 @@
             placeholder="Selecciona la posición"
             interface="action-sheet"
             [class.ion-invalid]="jugadorForm.get('posicion')?.invalid && jugadorForm.get('posicion')?.touched">
-            <ion-select-option value="PORTERO">
+            <ion-select-option value="POR">
               <div style="display: flex; align-items: center; gap: 8px;">
-                🥅 Portero
+                🥅 Portero (POR)
               </div>
             </ion-select-option>
-            <ion-select-option value="DEFENSA">
+            <ion-select-option value="LD">
               <div style="display: flex; align-items: center; gap: 8px;">
-                🛡️ Defensa
+                🛡️ Lateral Derecho (LD)
               </div>
             </ion-select-option>
-            <ion-select-option value="CENTROCAMPISTA">
+            <ion-select-option value="LI">
               <div style="display: flex; align-items: center; gap: 8px;">
-                ⚽ Centrocampista
+                🛡️ Lateral Izquierdo (LI)
               </div>
             </ion-select-option>
-            <ion-select-option value="DELANTERO">
+            <ion-select-option value="CEN">
               <div style="display: flex; align-items: center; gap: 8px;">
-                🔥 Delantero
+                🛡️ Central (CEN)
+              </div>
+            </ion-select-option>
+            <ion-select-option value="MC">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                ⚽ Mediocentro (MC)
+              </div>
+            </ion-select-option>
+            <ion-select-option value="MCO">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                ⚽ Mediocentro Ofensivo (MCO)
+              </div>
+            </ion-select-option>
+            <ion-select-option value="EXD">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                🔥 Extremo Derecho (EXD)
+              </div>
+            </ion-select-option>
+            <ion-select-option value="EXIZ">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                🔥 Extremo Izquierdo (EXIZ)
+              </div>
+            </ion-select-option>
+            <ion-select-option value="DC">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                🔥 Delantero Centro (DC)
               </div>
             </ion-select-option>
           </ion-select>
