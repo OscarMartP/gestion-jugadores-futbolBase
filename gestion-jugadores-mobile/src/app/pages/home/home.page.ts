@@ -48,7 +48,8 @@ export class HomePage implements OnInit {
           this.router.navigate(['/tabs/jugadores']);
         } else {
           // No tiene equipos, ir a crear equipo
-          this.router.navigate(['/equipo-form/0']);
+          console.log('⚠️ Usuario sin equipos, redirigiendo a crear equipo');
+          this.router.navigate(['/equipo-form']);
         }
       },
       error: (error) => {

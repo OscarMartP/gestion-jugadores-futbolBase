@@ -66,6 +66,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/jugador-form/jugador-form.page').then( m => m.JugadorFormPage)
   },
   {
+    path: 'equipo-form',
+    loadComponent: () => import('./pages/equipo-form/equipo-form.page').then( m => m.EquipoFormPage)
+  },
+  {
     path: 'equipo-form/:id',
     loadComponent: () => import('./pages/equipo-form/equipo-form.page').then( m => m.EquipoFormPage)
   },

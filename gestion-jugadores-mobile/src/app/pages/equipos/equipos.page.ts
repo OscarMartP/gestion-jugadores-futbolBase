@@ -186,7 +186,7 @@ export class EquiposPage implements OnInit {
   }
 
   agregarEquipo() {
-    this.router.navigate(['/equipo-form/0']);
+    this.router.navigate(['/equipo-form']);
   }
 
 }

@@ -7,6 +7,7 @@ import {
   ToastController, LoadingController 
 } from '@ionic/angular/standalone';
 import { AuthService } from '../../core/services/auth.service';
+import { EquipoService } from '../../core/services/equipo.service';
 import { LoginRequest, RegisterRequest } from '../../core/models/auth';
 
 @Component({
@@ -32,6 +33,7 @@ export class LoginPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private equipoService: EquipoService,
     private router: Router,
     private toastController: ToastController,
     private loadingController: LoadingController
@@ -69,17 +71,55 @@ export class LoginPage implements OnInit {
       this.authService.login(credentials).subscribe({
         next: async (response) => {
           console.log('✅ Login exitoso:', response);
-          await loading.dismiss();
-          this.isLoading = false;
           
-          const toast = await this.toastController.create({
-            message: `¡Bienvenido ${response.usuario.nombre}!`,
-            duration: 2000,
-            color: 'success'
+          // Verificar si el usuario tiene equipos
+          this.equipoService.obtenerEquiposMe().subscribe({
+            next: async (equipos) => {
+              await loading.dismiss();
+              this.isLoading = false;
+              
+              if (equipos && equipos.length === 0) {
+                // Usuario sin equipos - redirigir a crear equipo
+                console.log('⚠️ Usuario sin equipos, redirigiendo a crear equipo');
+                
+                const toast = await this.toastController.create({
+                  message: `¡Bienvenido ${response.usuario.nombre}! Crea tu primer equipo`,
+                  duration: 3000,
+                  color: 'warning'
+                });
+                await toast.present();
+                
+                this.router.navigate(['/equipo-form']);
+              } else {
+                // Usuario con equipos - redirigir a home
+                console.log('✅ Usuario con equipos, redirigiendo a home');
+                
+                const toast = await this.toastController.create({
+                  message: `¡Bienvenido ${response.usuario.nombre}!`,
+                  duration: 2000,
+                  color: 'success'
+                });
+                await toast.present();
+                
+                this.router.navigate(['/home']);
+              }
+            },
+            error: async (error) => {
+              console.error('❌ Error al verificar equipos:', error);
+              await loading.dismiss();
+              this.isLoading = false;
+              
+              // En caso de error, redirigir a home por defecto
+              const toast = await this.toastController.create({
+                message: `¡Bienvenido ${response.usuario.nombre}!`,
+                duration: 2000,
+                color: 'success'
+              });
+              await toast.present();
+              
+              this.router.navigate(['/home']);
+            }
           });
-          await toast.present();
-          
-          this.router.navigate(['/home']);
         },
         error: async (error) => {
           console.error('❌ Error en login:', error);
@@ -113,14 +153,15 @@ export class LoginPage implements OnInit {
           await loading.dismiss();
           this.isLoading = false;
           
+          // Usuario nuevo siempre debe crear un equipo primero
           const toast = await this.toastController.create({
-            message: `¡Cuenta creada! Bienvenido ${response.usuario.nombre}`,
-            duration: 2000,
+            message: `¡Cuenta creada! Ahora crea tu primer equipo`,
+            duration: 3000,
             color: 'success'
           });
           await toast.present();
           
-          this.router.navigate(['/home']);
+          this.router.navigate(['/equipo-form']);
         },
         error: async (error) => {
           console.error('❌ Error en registro:', error);

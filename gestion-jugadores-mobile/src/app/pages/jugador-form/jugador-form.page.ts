@@ -72,7 +72,7 @@ export class JugadorFormPage implements OnInit {
             buttons: [{
               text: 'Crear Equipo',
               handler: () => {
-                this.router.navigate(['/equipo-form/0']);
+                this.router.navigate(['/equipo-form']);
               }
             }, {
               text: 'Cancelar',

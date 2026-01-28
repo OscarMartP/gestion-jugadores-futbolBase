@@ -168,7 +168,8 @@ export class EquipoFormPage implements OnInit {
           buttons: [{
             text: 'OK',
             handler: () => {
-              this.router.navigate(['/tabs/equipos']);
+              // Redirigir a jugadores para que pueda empezar a añadir jugadores
+              this.router.navigate(['/tabs/jugadores']);
             }
           }]
         });
