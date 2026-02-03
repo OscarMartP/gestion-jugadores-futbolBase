@@ -9,6 +9,7 @@ import {
   IonNote, IonSpinner, IonButtons, IonBackButton, AlertController
 } from '@ionic/angular/standalone';
 import { EquipoService } from '../../core/services/equipo.service';
+import { RefreshService } from '../../core/services/refresh.service';
 import { Equipo } from '../../core/models/equipo';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -38,6 +39,7 @@ export class EquipoFormPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private equipoService: EquipoService,
+    private refreshService: RefreshService,
     private alertController: AlertController,
     private authService: AuthService
   ) {
@@ -161,6 +163,11 @@ export class EquipoFormPage implements OnInit {
         }
         
         console.log('✅ Equipo guardado exitosamente:', resultado);
+        
+        // Notificar que los equipos deben refrescarse
+        this.refreshService.refreshEquipos();
+        // También refrescar jugadores ya que puede afectar sus equipos
+        this.refreshService.refreshJugadores();
         
         const alert = await this.alertController.create({
           header: '¡Éxito!',

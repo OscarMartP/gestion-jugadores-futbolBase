@@ -98,6 +98,15 @@ export class EstadisticasPartidoPage implements OnInit {
     const eventosOrdenados = eventos.sort((a, b) => a.minuto - b.minuto);
     
     eventosOrdenados.forEach(evento => {
+      // Normalizar tipo de evento (minúsculas y espacios a guiones bajos)
+      const tipoEvento = (evento.tipoEvento || '').toLowerCase().replace(/\s+/g, '_');
+
+      // IMPORTANTE: Procesar goles rivales PRIMERO para actualizar el marcador
+      // antes de calcular la situación para otros eventos
+      if (tipoEvento === 'gol_rival') {
+        golesRival++;
+      }
+      
       // Extraer jugadorId (puede venir como jugadorId o dentro de jugador.id)
       const jugadorId = evento.jugadorId || (evento as any).jugador?.id;
       
@@ -125,9 +134,6 @@ export class EstadisticasPartidoPage implements OnInit {
         if (golesEquipo > golesRival) situacion = 'ganando';
         else if (golesEquipo < golesRival) situacion = 'perdiendo';
         else situacion = 'empatando';
-        
-        // Normalizar tipo de evento a minúsculas
-        const tipoEvento = evento.tipoEvento.toLowerCase();
         
         switch (tipoEvento) {
           case 'gol':
@@ -158,6 +164,7 @@ export class EstadisticasPartidoPage implements OnInit {
             else if (situacion === 'empatando') perdidas_empatando++;
             else perdidas_perdiendo++;
             break;
+          case 'tiro_a_puerta':
           case 'tiro_puerta':
             resumen.tirosAPuerta++;
             this.agregarADistribucion(distribucionTirosAPuerta, evento.minuto);
@@ -172,11 +179,6 @@ export class EstadisticasPartidoPage implements OnInit {
             resumen.tarjetasRojas++;
             break;
         }
-      }
-      
-      // Contar goles rivales
-      if (evento.tipoEvento === 'gol_rival') {
-        golesRival++;
       }
     });
     

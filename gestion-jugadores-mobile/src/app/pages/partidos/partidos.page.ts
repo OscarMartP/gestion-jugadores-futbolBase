@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PartidoService } from '../../core/services/partido.service';
 import { EquipoService } from '../../core/services/equipo.service';
+import { RefreshService } from '../../core/services/refresh.service';
 import { 
   IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, 
   IonFab, IonFabButton, IonRefresher, IonRefresherContent, 
@@ -50,13 +51,20 @@ export class PartidosPage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private partidoService: PartidoService,
-    private equipoService: EquipoService
+    private equipoService: EquipoService,
+    private refreshService: RefreshService
   ) {
     addIcons({ statsChart });
   }
 
   ngOnInit() {
     this.cargarPartidos();
+    
+    // Suscribirse a eventos de refresco
+    this.refreshService.onPartidosRefresh.subscribe(() => {
+      console.log('📢 Evento de refresco recibido en PartidosPage');
+      this.cargarPartidos();
+    });
   }
 
   ionViewWillEnter() {

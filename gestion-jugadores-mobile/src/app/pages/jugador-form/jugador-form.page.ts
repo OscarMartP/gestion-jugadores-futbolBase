@@ -10,6 +10,7 @@ import {
 } from '@ionic/angular/standalone';
 import { JugadorService } from '../../core/services/jugador.service';
 import { EquipoService } from '../../core/services/equipo.service';
+import { RefreshService } from '../../core/services/refresh.service';
 import { Jugador } from '../../core/models/jugador';
 import { Equipo } from '../../core/models/equipo';
 
@@ -40,6 +41,7 @@ export class JugadorFormPage implements OnInit {
     private router: Router,
     private jugadorService: JugadorService,
     private equipoService: EquipoService,
+    private refreshService: RefreshService,
     private alertController: AlertController
   ) {
     this.crearFormulario();
@@ -150,6 +152,9 @@ export class JugadorFormPage implements OnInit {
         }
         
         console.log('✅ Jugador guardado exitosamente:', resultado);
+        
+        // Notificar que los jugadores deben refrescarse
+        this.refreshService.refreshJugadores();
         
         const alert = await this.alertController.create({
           header: '¡Éxito!',

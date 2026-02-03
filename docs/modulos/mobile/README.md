@@ -1,7 +1,7 @@
 # 📱 Mobile - Ionic/Angular
 
-> **Última actualización:** 27 Enero 2026  
-> **Versión:** VersionMovil - Sistema de estadísticas + Evento PERDIDA
+> **Última actualización:** 3 Febrero 2026  
+> **Versión:** VersionMovil - Estadísticas + PERDIDA + Refresh automático
 
 ## 📋 Índice
 
@@ -1348,6 +1348,58 @@ Ranking de jugadores por evento:
 - **Páginas:** 11 principales (incluyendo estadísticas de equipo y partido)
 - **Componentes:** 25+ reutilizables
 - **Servicios:** 7 core services
+---
+
+## 🔄 Cambios Recientes (3 Febrero 2026)
+
+### ✅ Refresco automático de listas (Jugadores, Equipos, Partidos, Estadísticas)
+
+**Problema identificado:**
+- Al crear/editar entidades era necesario cambiar de página para ver los cambios
+- Las tabs mantienen el componente en memoria y no siempre recargan datos
+
+**Solución implementada:**
+
+1. **Nuevo servicio centralizado `RefreshService`:**
+```typescript
+// core/services/refresh.service.ts
+private jugadoresRefresh$ = new Subject<void>();
+private equiposRefresh$ = new Subject<void>();
+private partidosRefresh$ = new Subject<void>();
+private estadisticasRefresh$ = new Subject<void>();
+```
+
+2. **Suscripción en páginas de listado:**
+- `jugadores.page.ts`
+- `equipos.page.ts`
+- `partidos.page.ts`
+- `estadisticas.page.ts`
+
+3. **Emisión de eventos desde formularios:**
+- `jugador-form.page.ts` ➜ `refreshJugadores()`
+- `equipo-form.page.ts` ➜ `refreshEquipos()` + `refreshJugadores()`
+- `modo-partido.page.ts` ➜ `refreshPartidos()` + `refreshEstadisticas()`
+
+**Impacto:**
+- ✅ Actualización inmediata de listas tras crear/editar
+- ✅ No requiere cambiar de tab para ver cambios
+
+### ✅ Corrección de estadísticas por resultado (eventos de partido)
+
+**Problema identificado:**
+- Los eventos se clasificaban con el marcador incorrecto
+- `gol_rival` se procesaba después de calcular la situación
+- `tiro_a_puerta` no se contaba por inconsistencia en el texto del evento
+
+**Solución implementada:**
+- Normalización única de `tipoEvento` (`toLowerCase()` + espacios a `_`)
+- Procesar `gol_rival` **antes** de calcular la situación
+- Soporte para `tiro_a_puerta` y `tiro_puerta` en estadísticas
+
+**Impacto:**
+- ✅ Distribución correcta por resultado para todos los eventos
+- ✅ Tiros a puerta reflejados correctamente
+
 ---
 
 ## 🔄 Cambios Recientes (27 Enero 2026)

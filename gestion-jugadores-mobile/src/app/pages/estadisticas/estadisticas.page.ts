@@ -13,6 +13,7 @@ import { addIcons } from 'ionicons';
 import { statsChart, trophy, football, shield, people, person, syncOutline } from 'ionicons/icons';
 import { EstadisticasService } from '../../core/services/estadisticas.service';
 import { EquipoService } from '../../core/services/equipo.service';
+import { RefreshService } from '../../core/services/refresh.service';
 
 @Component({
   selector: 'app-estadisticas',
@@ -47,6 +48,7 @@ export class EstadisticasPage implements OnInit {
   constructor(
     private estadisticasService: EstadisticasService,
     private equipoService: EquipoService,
+    private refreshService: RefreshService,
     private loadingController: LoadingController
   ) {
     addIcons({ statsChart, trophy, football, shield, people, person, syncOutline });
@@ -54,6 +56,14 @@ export class EstadisticasPage implements OnInit {
 
   ngOnInit() {
     this.cargarEquipos();
+    
+    // Suscribirse a eventos de refresco
+    this.refreshService.onEstadisticasRefresh.subscribe(() => {
+      console.log('📢 Evento de refresco recibido en EstadisticasPage');
+      if (this.equipoSeleccionado) {
+        this.cargarEstadisticas();
+      }
+    });
   }
 
   ionViewWillEnter() {

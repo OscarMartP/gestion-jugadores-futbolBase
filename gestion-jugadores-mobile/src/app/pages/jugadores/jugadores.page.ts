@@ -10,6 +10,7 @@ import {
 } from '@ionic/angular/standalone';
 import { JugadorService } from '../../core/services/jugador.service';
 import { EquipoService } from '../../core/services/equipo.service';
+import { RefreshService } from '../../core/services/refresh.service';
 import { Jugador } from '../../core/models/jugador';
 import { Equipo } from '../../core/models/equipo';
 
@@ -37,6 +38,7 @@ export class JugadoresPage implements OnInit {
   constructor(
     private jugadorService: JugadorService,
     private equipoService: EquipoService,
+    private refreshService: RefreshService,
     private router: Router,
     private alertController: AlertController
   ) { }
@@ -44,6 +46,12 @@ export class JugadoresPage implements OnInit {
   ngOnInit() {
     // Solo carga inicial de equipos
     this.cargarEquipos();
+    
+    // Suscribirse a eventos de refresco
+    this.refreshService.onJugadoresRefresh.subscribe(() => {
+      console.log('📢 Evento de refresco recibido en JugadoresPage');
+      this.cargarJugadores();
+    });
   }
 
   ionViewWillEnter() {

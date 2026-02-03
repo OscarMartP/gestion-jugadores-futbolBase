@@ -13,6 +13,7 @@ import { Jugador } from '../../core/models/jugador';
 import { PartidoService } from '../../core/services/partido.service';
 import { JugadorService } from '../../core/services/jugador.service';
 import { EventoJugadorService } from '../../core/services/evento-jugador.service';
+import { RefreshService } from '../../core/services/refresh.service';
 
 interface JugadorConEventos extends Jugador {
   eventos: EventoJugador[];
@@ -50,6 +51,7 @@ export class ModoPartidoPage implements OnInit, OnDestroy {
     private partidoService: PartidoService,
     private jugadorService: JugadorService,
     private eventoService: EventoJugadorService,
+    private refreshService: RefreshService,
     private router: Router,
     private route: ActivatedRoute,
     private alertController: AlertController,
@@ -388,6 +390,9 @@ export class ModoPartidoPage implements OnInit, OnDestroy {
       this.partidoService.desactivarPartido(this.partido.id).subscribe({
         next: () => {
           console.log('✅ Partido finalizado correctamente');
+          // Notificar que los partidos y estadísticas deben refrescarse
+          this.refreshService.refreshPartidos();
+          this.refreshService.refreshEstadisticas();
         },
         error: (error) => {
           console.error('❌ Error al finalizar partido:', error);
