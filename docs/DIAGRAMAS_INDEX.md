@@ -2,6 +2,12 @@
 
 Esta página contiene un índice de todos los diagramas de flujo y arquitectura disponibles en la documentación.
 
+## 📖 Documentación General
+
+- [Guía de Testing](TESTING.md) - Guía completa de testing para Backend y Frontend Mobile
+- [Quick Start](QUICK_START.md) - Inicio rápido para desarrolladores
+- [Architecture](ARCHITECTURE.md) - Documentación técnica detallada
+
 ## 🏗️ Arquitectura General
 
 ### Sistema Completo
