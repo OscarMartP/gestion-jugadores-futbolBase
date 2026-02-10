@@ -28,6 +28,7 @@ public class EstadisticasPartidoDTO {
     private Integer totalGoles;
     private Integer totalAsistencias;
     private Integer totalPasesClave;
+    private Integer totalTirosAPuerta;  // Incluye goles + tiros a puerta
     private Integer totalTarjetasAmarillas;
     private Integer totalTarjetasRojas;
     
@@ -155,6 +156,9 @@ public class EstadisticasPartidoDTO {
     
     public Integer getTotalPasesClave() { return totalPasesClave; }
     public void setTotalPasesClave(Integer totalPasesClave) { this.totalPasesClave = totalPasesClave; }
+    
+    public Integer getTotalTirosAPuerta() { return totalTirosAPuerta; }
+    public void setTotalTirosAPuerta(Integer totalTirosAPuerta) { this.totalTirosAPuerta = totalTirosAPuerta; }
     
     public Integer getTotalTarjetasAmarillas() { return totalTarjetasAmarillas; }
     public void setTotalTarjetasAmarillas(Integer totalTarjetasAmarillas) { this.totalTarjetasAmarillas = totalTarjetasAmarillas; }
