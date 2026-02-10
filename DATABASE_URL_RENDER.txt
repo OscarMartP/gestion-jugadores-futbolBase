@@ -1,0 +1,13 @@
+CONFIGURACIÓN IMPORTANTE PARA RENDER
+=====================================
+
+En Render, configura DATABASE_URL con ESTOS PARÁMETROS ADICIONALES:
+
+jdbc:postgresql://ep-muddy-sky-agxvuo51.c-2.eu-central-1.aws.neon.tech:5432/neondb?sslmode=require&prepareThreshold=0&preparedStatementCacheQueries=0&preparedStatementCacheSizeMiB=0
+
+PARÁMETROS CLAVE:
+- prepareThreshold=0 → Evita prepared statements que causan error SCRAM
+- preparedStatementCacheQueries=0 → Deshabilita caché de statements
+- preparedStatementCacheSizeMiB=0 → Sin caché en memoria
+
+Estos parámetros resuelven el error "iteration must be >= 4096" con Neon PostgreSQL.
