@@ -1,0 +1,17 @@
+# Ignorar archivos no necesarios en el build de Docker
+gestion-jugadores-futbolBase/target/
+gestion-jugadores-futbolBase/.mvn/
+gestion-jugadores-frontend/
+gestion-jugadores-mobile/
+node_modules/
+.git/
+.github/
+*.md
+*.txt
+.gitignore
+.dockerignore
+docker-compose.yml
+render.yaml
+docs/
+logs/
+*.log
