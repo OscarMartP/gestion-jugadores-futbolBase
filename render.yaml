@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: gestion-jugadores-backend
+    env: java
+    buildCommand: cd gestion-jugadores-futbolBase && mvn clean package -DskipTests
+    startCommand: cd gestion-jugadores-futbolBase && java -Dspring.profiles.active=prod -jar target/gestion-jugadores-futbolBase-1.0.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gestion-jugadores-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION
+        value: 86400000
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://your-frontend-app.vercel.app,https://your-mobile-app.vercel.app
+    healthCheckPath: /actuator/health
+
+databases:
+  - name: gestion-jugadores-db
+    databaseName: gestion_jugadores
+    user: gestion_user

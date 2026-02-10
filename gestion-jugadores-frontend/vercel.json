@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "name": "gestion-jugadores-frontend",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/gestion-jugadores-frontend"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "API_URL": "@api_url"
+  }
+}
