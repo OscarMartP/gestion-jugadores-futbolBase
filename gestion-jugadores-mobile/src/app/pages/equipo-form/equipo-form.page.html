@@ -1,0 +1,145 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="header-custom">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/equipos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ion-icon [name]="esEdicion ? 'create' : 'shield'" size="large"></ion-icon>
+        <span>{{ esEdicion ? 'Editar Equipo' : 'Nuevo Equipo' }}</span>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="esEdicion" color="danger" fill="clear" (click)="eliminarEquipo()">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="fade-in">
+  
+  <form [formGroup]="equipoForm" (ngSubmit)="guardarEquipo()">
+    
+    <!-- Información básica -->
+    <ion-card class="form-card">
+      <ion-card-header>
+        <ion-card-title style="display: flex; align-items: center; gap: 8px; color: var(--ion-color-primary);">
+          <ion-icon name="shield-outline"></ion-icon>
+          Información del Equipo
+        </ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <!-- Nombre del equipo -->
+        <ion-item class="form-item">
+          <ion-label position="stacked">Nombre del Equipo *</ion-label>
+          <ion-input 
+            formControlName="nombre"
+            placeholder="Ingresa el nombre del equipo"
+            [class.ion-invalid]="equipoForm.get('nombre')?.invalid && equipoForm.get('nombre')?.touched">
+          </ion-input>
+          <ion-note *ngIf="equipoForm.get('nombre')?.invalid && equipoForm.get('nombre')?.touched" color="danger">
+            El nombre del equipo es obligatorio
+          </ion-note>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Configuración de juego -->
+    <ion-card class="form-card">
+      <ion-card-header>
+        <ion-card-title style="display: flex; align-items: center; gap: 8px; color: var(--ion-color-primary);">
+          <ion-icon name="settings-outline"></ion-icon>
+          Configuración de Juego
+        </ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <!-- Tipo de fútbol -->
+        <ion-item class="form-item">
+          <ion-label position="stacked">Tipo de Fútbol *</ion-label>
+          <ion-select 
+            formControlName="tipoFutbol"
+            placeholder="Selecciona el tipo de fútbol"
+            interface="action-sheet"
+            (ionChange)="onTipoFutbolChange($event)"
+            [class.ion-invalid]="equipoForm.get('tipoFutbol')?.invalid && equipoForm.get('tipoFutbol')?.touched">
+            <ion-select-option value="FUTBOL_11">
+              <div style="display: flex; flex-direction: column;">
+                <strong>🏆 Fútbol 11</strong>
+                <small style="color: var(--ion-color-medium);">Campo completo - 11 jugadores por equipo</small>
+              </div>
+            </ion-select-option>
+            <ion-select-option value="FUTBOL_7">
+              <div style="display: flex; flex-direction: column;">
+                <strong>⚽ Fútbol 7</strong>
+                <small style="color: var(--ion-color-medium);">Campo pequeño - 7 jugadores por equipo</small>
+              </div>
+            </ion-select-option>
+            <ion-select-option value="FUTBOL_5">
+              <div style="display: flex; flex-direction: column;">
+                <strong>🏅 Fútbol 5</strong>
+                <small style="color: var(--ion-color-medium);">Salón - 5 jugadores por equipo</small>
+              </div>
+            </ion-select-option>
+          </ion-select>
+          <ion-note *ngIf="equipoForm.get('tipoFutbol')?.invalid && equipoForm.get('tipoFutbol')?.touched" color="danger">
+            El tipo de fútbol es obligatorio
+          </ion-note>
+        </ion-item>
+
+        <!-- Duración del partido -->
+        <ion-item class="form-item">
+          <ion-label position="stacked">Duración del Partido (minutos) *</ion-label>
+          <ion-input 
+            formControlName="duracionPartido"
+            type="number"
+            min="30"
+            max="120"
+            placeholder="Duración en minutos"
+            [class.ion-invalid]="equipoForm.get('duracionPartido')?.invalid && equipoForm.get('duracionPartido')?.touched">
+          </ion-input>
+          <ion-note *ngIf="equipoForm.get('duracionPartido')?.invalid && equipoForm.get('duracionPartido')?.touched" color="danger">
+            <span *ngIf="equipoForm.get('duracionPartido')?.errors?.['required']">La duración es obligatoria</span>
+            <span *ngIf="equipoForm.get('duracionPartido')?.errors?.['min']">Mínimo 30 minutos</span>
+            <span *ngIf="equipoForm.get('duracionPartido')?.errors?.['max']">Máximo 120 minutos</span>
+          </ion-note>
+          <ion-note *ngIf="duracionSugerida" color="primary">
+            ℹ️ Duración sugerida para {{ equipoForm.value.tipoFutbol?.replace('_', ' ') }}: {{ duracionSugerida }} minutos
+          </ion-note>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Botones de acción -->
+    <div style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+      
+      <!-- Botón principal -->
+      <ion-button 
+        expand="block" 
+        size="large"
+        type="submit"
+        [disabled]="equipoForm.invalid || guardando"
+        class="action-button primary">
+        <ion-icon [name]="esEdicion ? 'save-outline' : 'add-outline'" slot="start"></ion-icon>
+        <span *ngIf="!guardando">{{ esEdicion ? 'Guardar Cambios' : 'Crear Equipo' }}</span>
+        <ion-spinner *ngIf="guardando" name="crescent"></ion-spinner>
+      </ion-button>
+      
+      <!-- Botón cancelar -->
+      <ion-button 
+        expand="block" 
+        fill="outline" 
+        color="medium"
+        (click)="cancelar()"
+        [disabled]="guardando"
+        class="action-button secondary">
+        <ion-icon name="close-outline" slot="start"></ion-icon>
+        Cancelar
+      </ion-button>
+    </div>
+
+  </form>
+
+</ion-content>

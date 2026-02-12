@@ -1,0 +1,77 @@
+<div class="col-md-6 offset-md-3">
+  <h3 class="text-center">Registro de jugadores</h3>
+  <!-- NOMBRE -->
+  <form (ngSubmit)= "onSubmit()" #jugadorForm = "ngForm">
+    <div class="form-group">
+      <label>Nombre : </label>
+      <input type = "text"
+      class="form-control"
+      id = "nombre"
+      [(ngModel)] = "jugador.nombre"
+      name = "nombre"
+      required
+      minlength="4"
+      maxlength="10"
+      placeholder="Escriba su nombre "
+      #nombre = "ngModel"
+      >
+      <div class="alert alert-danger" *ngIf= "nombre.invalid && (nombre.dirty || nombre.touched)">
+        <div *ngIf = "nombre.errors.required">
+          Escriba su nombre por favor
+        </div>
+        <div *ngIf = "nombre.errors.minlength">
+          El nombre tiene que contener como minimo 4 caracteres
+        </div>
+        <div *ngIf = "nombre.errors.maxlength">
+          El nombre tiene que tener como maximo 10 caracteres
+        </div>
+      </div>
+    </div>
+
+    <!-- APELLIDO -->
+    <div class="form-group">
+      <label>Apellido : </label>
+      <input type = "text"
+      class="form-control"
+      id = "apellido"
+      [(ngModel)] = "jugador.apellido"
+      name = "apellido"
+      required
+      minlength="4"
+      maxlength="10"
+      placeholder="Escriba su apellido "
+      #apellido = "ngModel"
+      >
+      <div class="alert alert-danger" *ngIf= "apellido.invalid && (apellido.dirty || apellido.touched)">
+        <div *ngIf = "apellido.errors.required">
+          Escriba su apellido por favor
+        </div>
+        <div *ngIf = "apellido.errors.minlength">
+          El apellido tiene que contener como minimo 4 caracteres
+        </div>
+        <div *ngIf = "apellido.errors.maxlength">
+          El apellido tiene que tener como maximo 10 caracteres
+        </div>
+      </div>
+    </div>
+
+    <!-- POSICION -->
+    <div class="form-group">
+      <label for="posicion">Posicion : </label><br>
+      <select [(ngModel)]="posicionSeleccionada" name="posicion" class="form-select" aria-label="Default select example">
+        <option *ngFor="let posicion of posiciones" [value]="posicion">{{posicion}}</option>
+      </select>
+    </div>
+
+    <!-- EQUIPO -->
+    <div class="form-group">
+      <label for="equipoId">Equipo:</label>
+      <select [(ngModel)]="equipoSeleccionado" name="equipo" class="form-select" aria-label="Default select example">
+        <option *ngFor="let equipo of equipos" [ngValue]="equipo.id">{{equipo.nombre}}</option>
+      </select>
+    </div>
+    
+    <br>
+    <button type="submit" class="btn btn-primary" [disabled]="!jugadorForm.form.valid">Actualizar</button>
+  </form>
+</div>

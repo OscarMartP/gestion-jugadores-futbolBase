@@ -1,0 +1,89 @@
+<div class="container mt-5">
+  <h2 class="mb-4">📊 Historial de Partidos</h2>
+
+  <!-- Selector de equipo -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <label for="equipoSelect" class="form-label"><strong>Selecciona un equipo:</strong></label>
+      <select 
+        id="equipoSelect" 
+        class="form-select" 
+        [ngModel]="equipoSeleccionado"
+        (ngModelChange)="onEquipoSeleccionado($event)"
+        [disabled]="equipos.length === 0 || cargando">
+        <option *ngFor="let equipo of equipos" [ngValue]="equipo">
+          {{ equipo.nombre }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Mensaje de feedback -->
+  <div *ngIf="mensaje" 
+       class="alert" 
+       [ngClass]="{'alert-success': tipoMensaje === 'success', 'alert-danger': tipoMensaje === 'error', 'alert-info': tipoMensaje === 'info'}"
+       role="alert">
+    {{ mensaje }}
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="cargando" class="text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Tabla de historial de partidos -->
+  <div *ngIf="!cargando && equipoSeleccionado" class="card">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Partidos de {{ equipoSeleccionado.nombre }}</h5>
+    </div>
+    
+    <div class="card-body">
+      <div *ngIf="partidos.length === 0" class="alert alert-warning">
+        No hay partidos registrados para este equipo.
+      </div>
+
+      <div *ngIf="partidos.length > 0" class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Fecha y Hora</th>
+              <th>Estado</th>
+              <th>Duración</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let partido of partidos" 
+                [ngClass]="{'table-success': partido.partidoActivo, 'table-secondary': !partido.partidoActivo}">
+              <td>
+                <strong>{{ partido.fecha | date: 'dd/MM/yyyy HH:mm' }}</strong>
+              </td>
+              <td>
+                <span *ngIf="partido.partidoActivo" class="badge bg-success">
+                  ✓ Activo
+                </span>
+                <span *ngIf="!partido.partidoActivo" class="badge bg-secondary">
+                  ✗ Inactivo
+                </span>
+              </td>
+              <td>
+                {{ partido.duracion }} minutos
+              </td>
+              <td>
+                <button 
+                  class="btn btn-sm btn-danger" 
+                  (click)="eliminarPartido(partido)"
+                  [disabled]="cargando">
+                  🗑️ Eliminar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+

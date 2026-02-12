@@ -1,0 +1,161 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="header-custom">
+    <ion-title>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ion-icon name="people-outline" size="large"></ion-icon>
+        <span>Mis Jugadores</span>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="fade-in">
+  <!-- Estadísticas rápidas -->
+  <ion-card class="stats-card">
+    <ion-card-content>
+      <div style="display: flex; justify-content: space-around; text-align: center;">
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-primary);">{{ jugadoresFiltrados.length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Total</p>
+        </div>
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-danger);">{{ obtenerJugadoresPorPosicion('DELANTERO').length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Delanteros</p>
+        </div>
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-tertiary);">{{ obtenerJugadoresPorPosicion('CENTROCAMPISTA').length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Medios</p>
+        </div>
+        <div>
+          <h2 style="margin: 0; color: var(--ion-color-success);">{{ obtenerJugadoresPorPosicion('DEFENSA').length }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Defensas</p>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Barra de búsqueda mejorada -->
+  <ion-searchbar 
+    class="search-bar-custom"
+    placeholder="Buscar jugador por nombre..." 
+    (ionInput)="buscarJugadores($event)"
+    [debounce]="300"
+    show-clear-button="focus">
+  </ion-searchbar>
+
+  <!-- Filtro por equipo -->
+  <ion-card style="margin: 8px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <ion-item lines="none">
+      <ion-label position="stacked" style="font-weight: 600; color: var(--ion-color-primary); margin-bottom: 8px;">
+        <ion-icon name="shield-outline" style="margin-right: 4px;"></ion-icon>
+        Filtrar por Equipo
+      </ion-label>
+      <ion-select 
+        [(ngModel)]="equipoSeleccionado"
+        (ionChange)="filtrarPorEquipo($event)"
+        placeholder="Todos los equipos"
+        interface="popover">
+        <ion-select-option [value]="null">
+          Todos los equipos
+        </ion-select-option>
+        <ion-select-option *ngFor="let equipo of equipos" [value]="equipo.id">
+          {{ equipo.nombre }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-card>
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="refrescarJugadores($event)">
+    <ion-refresher-content 
+      pullingIcon="chevron-down-circle-outline"
+      pulling-text="Desliza para refrescar"
+      refreshingSpinner="circles"
+      refreshing-text="Actualizando jugadores...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading spinner -->
+  <div *ngIf="cargando" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px;">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p style="margin-top: 16px; color: var(--ion-color-primary);">Cargando jugadores...</p>
+  </div>
+
+  <!-- Lista de jugadores mejorada -->
+  <div *ngIf="!cargando">
+    <ion-card 
+      *ngFor="let jugador of jugadoresFiltrados" 
+      class="player-card">
+      
+      <ion-card-header>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="flex: 1;">
+            <ion-card-title style="font-size: 1.2rem; margin-bottom: 4px;">
+              {{ jugador.nombre }} {{ jugador.apellido }}
+            </ion-card-title>
+            <span class="position-badge" 
+                  [ngClass]="jugador.posicion.toLowerCase()">
+              {{ jugador.posicion }}
+            </span>
+          </div>
+          <ion-icon 
+            name="football-outline" 
+            size="large" 
+            style="color: var(--ion-color-primary); opacity: 0.7;">
+          </ion-icon>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p style="margin: 0 0 12px 0; color: var(--ion-color-medium);">
+          <ion-icon name="shirt-outline" style="margin-right: 4px;"></ion-icon>
+          Equipo ID: {{ jugador.equipoId || 'Sin equipo' }}
+        </p>
+        
+        <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <ion-button fill="outline" size="small" color="tertiary" (click)="verAnalisisJugador(jugador)">
+            <ion-icon name="library-outline" slot="start"></ion-icon>
+            Ver Análisis
+          </ion-button>
+          
+          <ion-button fill="solid" size="small" color="tertiary" (click)="generarAnalisisIA(jugador)">
+            <ion-icon name="sparkles" slot="start"></ion-icon>
+            Generar IA
+          </ion-button>
+          
+          <ion-button fill="outline" size="small" color="primary" (click)="editarJugador(jugador)">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Editar
+          </ion-button>
+          
+          <ion-button fill="clear" color="danger" size="small" (click)="eliminarJugador(jugador)">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
+            Eliminar
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Mensaje cuando no hay jugadores -->
+    <div *ngIf="jugadoresFiltrados.length === 0" 
+         style="text-align: center; padding: 60px 20px;">
+      <ion-icon 
+        name="people-outline" 
+        size="large" 
+        style="color: var(--ion-color-medium); margin-bottom: 16px; font-size: 4rem;">
+      </ion-icon>
+      <h2 style="color: var(--ion-color-medium); margin-bottom: 8px;">No hay jugadores</h2>
+      <p style="color: var(--ion-color-medium); margin-bottom: 24px;">
+        Agrega tu primer jugador presionando el botón +
+      </p>
+    </div>
+  </div>
+
+  <!-- FAB mejorado -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button class="fab-custom" (click)="agregarJugador()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

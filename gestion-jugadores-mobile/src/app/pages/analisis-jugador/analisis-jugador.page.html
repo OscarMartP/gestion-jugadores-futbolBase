@@ -1,0 +1,79 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/jugadores"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <ion-icon name="sparkles"></ion-icon>
+        <span>Análisis con IA</span>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Cargando -->
+  <div *ngIf="cargando" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px;">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p style="margin-top: 16px; color: var(--ion-color-medium);">Cargando análisis...</p>
+  </div>
+
+  <!-- Lista de análisis -->
+  <div *ngIf="!cargando">
+    <!-- Info header -->
+    <ion-card *ngIf="analisis.length > 0" style="background: linear-gradient(135deg, var(--ion-color-primary-tint), var(--ion-color-primary)); color: white;">
+      <ion-card-content>
+        <h2 style="margin: 0 0 4px 0; font-size: 1.3rem;">{{ analisis[0].nombreCompleto }}</h2>
+        <p style="margin: 0; opacity: 0.9;">
+          <ion-icon name="shield" style="vertical-align: middle; margin-right: 4px;"></ion-icon>
+          {{ analisis[0].posicion }}
+        </p>
+        <ion-badge color="light" style="margin-top: 8px;">
+          <ion-icon name="document-text" style="margin-right: 4px;"></ion-icon>
+          {{ analisis.length }} análisis generados
+        </ion-badge>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Lista de análisis -->
+    <ion-list *ngIf="analisis.length > 0" style="margin-top: 16px;">
+      <ion-card *ngFor="let item of analisis" class="analisis-card" (click)="verAnalisis(item)">
+        <ion-card-header>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <ion-card-title style="font-size: 1rem;">
+                <ion-icon name="calendar-outline" style="vertical-align: middle; margin-right: 4px;"></ion-icon>
+                Temporada {{ item.temporada }}
+              </ion-card-title>
+              <ion-card-subtitle style="margin-top: 4px;">
+                {{ formatearFecha(item.fechaGeneracion) }}
+              </ion-card-subtitle>
+            </div>
+            <ion-icon name="chevron-forward" size="small" color="medium"></ion-icon>
+          </div>
+        </ion-card-header>
+        
+        <ion-card-content>
+          <p class="analisis-preview">
+            {{ item.analisisTecnico.substring(0, 150) }}{{ item.analisisTecnico.length > 150 ? '...' : '' }}
+          </p>
+        </ion-card-content>
+      </ion-card>
+    </ion-list>
+
+    <!-- Mensaje cuando no hay análisis -->
+    <div *ngIf="analisis.length === 0" style="text-align: center; padding: 60px 20px;">
+      <ion-icon name="document-text-outline" size="large" style="font-size: 4rem; color: var(--ion-color-medium); margin-bottom: 16px;"></ion-icon>
+      <h2 style="color: var(--ion-color-medium); margin-bottom: 8px;">No hay análisis</h2>
+      <p style="color: var(--ion-color-medium); margin-bottom: 24px;">
+        Genera tu primer análisis desde la lista de jugadores
+      </p>
+    </div>
+  </div>
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="refrescarAnalisis($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+</ion-content>

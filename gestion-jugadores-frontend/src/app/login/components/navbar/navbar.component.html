@@ -1,0 +1,23 @@
+<mat-toolbar color="primary" class="noSubrayado">
+  <!-- Navbar simplificado: solo título y acciones de sesión -->
+  <div class="seccion-izquierda" style="display:flex; align-items:center; gap:12px;">
+    <a mat-button color="accent" class="home-button" [routerLink]="'/admin'" title="Ir al panel">
+      <span class="material-icons">home</span>
+    </a>
+    <span class="app-title">Gestion Jugadores</span>
+  </div>
+  <div class="seccion-derecha">
+    <span class="example-spacer"></span>
+    <span *ngIf="!isLoggedIn">
+      <a mat-button [routerLink]="'/registro'">Iniciar sesión</a>
+      <a mat-button [routerLink]="'/signup'">Registrar</a>
+    </span>
+    <span *ngIf="isLoggedIn">
+      <button mat-button (click)="logout()">Cerrar sesión</button>
+      <button *ngIf="isLoggedIn && user" mat-button style="margin-right: 10px" class="example-icon favorite-icon"
+        aria-label="user-profile" [routerLink]="'/admin/profile'">
+        {{ user.username }}
+      </button>
+    </span>
+  </div>
+</mat-toolbar>

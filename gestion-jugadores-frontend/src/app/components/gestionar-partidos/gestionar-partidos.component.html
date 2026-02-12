@@ -1,0 +1,356 @@
+<div class="container mt-5">
+  <h2 class="mb-4">⚽ Gestionar Partidos Activos</h2>
+
+  <!-- Selector de equipo -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <label for="equipoSelect" class="form-label"><strong>Selecciona un equipo:</strong></label>
+      <select
+        id="equipoSelect"
+        class="form-select"
+        [(ngModel)]="equipoSeleccionado"
+        (ngModelChange)="onEquipoSeleccionado($event)"
+        [disabled]="equipos.length === 0">
+        <option *ngFor="let equipo of equipos" [ngValue]="equipo">{{ equipo.nombre }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Mensaje de feedback -->
+  <div *ngIf="mensaje" 
+       class="alert" 
+       [ngClass]="{'alert-success': tipoMensaje === 'success', 'alert-danger': tipoMensaje === 'error', 'alert-info': tipoMensaje === 'info'}"
+       role="alert">
+    {{ mensaje }}
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="cargando" class="text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Lista de partidos -->
+  <div *ngIf="!cargando && equipoSeleccionado" class="card">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Partidos de {{ equipoSeleccionado.nombre }}</h5>
+    </div>
+    
+    <div class="card-body">
+      <div *ngIf="partidos.length === 0" class="alert alert-warning">
+        No hay partidos registrados para este equipo.
+      </div>
+
+      <div *ngIf="partidos.length > 0" class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Título</th>
+              <th>Fecha y Hora</th>
+              <th>Resultado</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let partido of partidos" [ngClass]="{'table-success': !partido.partidoActivo && partido.resultado === 'VICTORIA', 'table-warning': !partido.partidoActivo && partido.resultado === 'EMPATE', 'table-danger': !partido.partidoActivo && partido.resultado === 'DERROTA', 'table-secondary': !partido.partidoActivo && !partido.resultado, 'table-primary': partido.partidoActivo}">
+              <td>
+                <strong>{{ partido.titulo || 'Sin título' }}</strong>
+              </td>
+              <td>
+                <strong>{{ partido.fecha | date: 'dd/MM/yyyy HH:mm' }}</strong>
+              </td>
+              <td>
+                <strong>{{ obtenerTextoResultado(partido) }}</strong>
+                <span *ngIf="partido.resultado" class="badge ms-2" 
+                      [ngClass]="{'bg-success': partido.resultado === 'VICTORIA', 'bg-warning text-dark': partido.resultado === 'EMPATE', 'bg-danger': partido.resultado === 'DERROTA'}">
+                  {{ partido.resultado }}
+                </span>
+              </td>
+              <td>
+                <span *ngIf="partido.partidoActivo" class="badge bg-success">
+                  ✓ Activo
+                </span>
+                <span *ngIf="!partido.partidoActivo" class="badge bg-secondary">
+                  ✗ Inactivo
+                </span>
+              </td>
+              <td>
+                <button 
+                  *ngIf="!partido.partidoActivo"
+                  class="btn btn-sm btn-success me-2" 
+                  (click)="activarPartido(partido)"
+                  [disabled]="cargando">
+                  🟢 Activar
+                </button>
+                <button 
+                  *ngIf="partido.partidoActivo"
+                  class="btn btn-sm btn-warning me-2" 
+                  (click)="desactivarPartido(partido)"
+                  [disabled]="cargando">
+                  🔴 Desactivar
+                </button>
+                <button 
+                  *ngIf="!partido.partidoActivo"
+                  class="btn btn-sm btn-info me-2" 
+                  (click)="abrirEstadisticas(partido)"
+                  [disabled]="cargando">
+                  📊 Estadísticas
+                </button>
+                <button 
+                  class="btn btn-sm btn-danger" 
+                  (click)="eliminarPartido(partido)"
+                  [disabled]="cargando">
+                  🗑️ Eliminar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Estadísticas del Partido -->
+<div *ngIf="mostrarModal && estadisticasPartido" class="modal fade show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">📊 Estadísticas del Partido - {{ estadisticasPartido.titulo }}</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Información del partido -->
+        <div class="row mb-4">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header bg-secondary text-white">
+                <h6 class="mb-0">Información General</h6>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-3">
+                    <strong>Fecha:</strong> {{ estadisticasPartido.fecha | date: 'dd/MM/yyyy HH:mm' }}
+                  </div>
+                  <div class="col-md-3">
+                    <strong>Duración:</strong> {{ estadisticasPartido.duracion }} min
+                  </div>
+                  <div class="col-md-3">
+                    <strong>Resultado:</strong> 
+                    <span class="badge ms-2" 
+                          [ngClass]="{'bg-success': estadisticasPartido.resultado === 'VICTORIA', 'bg-warning text-dark': estadisticasPartido.resultado === 'EMPATE', 'bg-danger': estadisticasPartido.resultado === 'DERROTA'}">
+                      {{ estadisticasPartido.golesEquipo }} - {{ estadisticasPartido.golesRival }}
+                    </span>
+                  </div>
+                  <div class="col-md-3">
+                    <strong>Estado:</strong> 
+                    <span class="badge" 
+                          [ngClass]="{'bg-success': estadisticasPartido.resultado === 'VICTORIA', 'bg-warning text-dark': estadisticasPartido.resultado === 'EMPATE', 'bg-danger': estadisticasPartido.resultado === 'DERROTA'}">
+                      {{ estadisticasPartido.resultado || 'Sin resultado' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Totales del partido -->
+        <div class="row mb-4">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header bg-info text-white">
+                <h6 class="mb-0">Resumen del Partido</h6>
+              </div>
+              <div class="card-body">
+                <div class="row text-center">
+                  <div class="col-md-2">
+                    <div class="stat-box">
+                      <h3 class="text-success">{{ estadisticasPartido.totalGoles }}</h3>
+                      <p class="mb-0">Goles</p>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="stat-box">
+                      <h3 class="text-primary">{{ estadisticasPartido.totalAsistencias }}</h3>
+                      <p class="mb-0">Asistencias</p>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="stat-box">
+                      <h3 class="text-info">{{ estadisticasPartido.totalPasesClave }}</h3>
+                      <p class="mb-0">Pases Clave</p>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="stat-box">
+                      <h3 class="text-warning">{{ estadisticasPartido.totalTarjetasAmarillas }}</h3>
+                      <p class="mb-0">T. Amarillas</p>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="stat-box">
+                      <h3 class="text-danger">{{ estadisticasPartido.totalTarjetasRojas }}</h3>
+                      <p class="mb-0">T. Rojas</p>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="stat-box">
+                      <h3 class="text-secondary">{{ estadisticasPartido.tirosRecibidos }}</h3>
+                      <p class="mb-0">Tiros Recibidos</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Eventos por jugador -->
+        <div class="row mb-4" *ngIf="estadisticasPartido.eventosPorJugador && estadisticasPartido.eventosPorJugador.length > 0">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header bg-success text-white">
+                <h6 class="mb-0">Estadísticas por Jugador</h6>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-sm table-striped">
+                    <thead>
+                      <tr>
+                        <th>Jugador</th>
+                        <th class="text-center">⚽ Goles</th>
+                        <th class="text-center">🎯 Asistencias</th>
+                        <th class="text-center">🔑 Pases Clave</th>
+                        <th class="text-center">�️ Robos</th>
+                        <th class="text-center">🥅 Tiros</th>
+                        <th class="text-center">🟨 T. Amarillas</th>
+                        <th class="text-center">🟥 T. Rojas</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let evento of estadisticasPartido.eventosPorJugador">
+                        <td><strong>{{ evento.jugadorNombre }}</strong></td>
+                        <td class="text-center">{{ evento.goles }}</td>
+                        <td class="text-center">{{ evento.asistencias }}</td>
+                        <td class="text-center">{{ evento.pasesClave }}</td>
+                        <td class="text-center">{{ evento.robos }}</td>
+                        <td class="text-center">{{ evento.tirosAPuerta }}</td>
+                        <td class="text-center">{{ evento.tarjetasAmarillas }}</td>
+                        <td class="text-center">{{ evento.tarjetasRojas }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Distribuciones temporales -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-header bg-primary text-white">
+                <h6 class="mb-0">⚽ Distribución Temporal de Goles</h6>
+              </div>
+              <div class="card-body">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Intervalo</th>
+                      <th class="text-center">Cantidad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let intervalo of obtenerIntervalos()">
+                      <td>{{ intervalo }} min</td>
+                      <td class="text-center">{{ obtenerValorIntervalo(estadisticasPartido.distribucionGoles, intervalo) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-header bg-success text-white">
+                <h6 class="mb-0">🎯 Distribución Temporal de Asistencias</h6>
+              </div>
+              <div class="card-body">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Intervalo</th>
+                      <th class="text-center">Cantidad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let intervalo of obtenerIntervalos()">
+                      <td>{{ intervalo }} min</td>
+                      <td class="text-center">{{ obtenerValorIntervalo(estadisticasPartido.distribucionAsistencias, intervalo) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0">🟨 Distribución Temporal de Tarjetas</h6>
+              </div>
+              <div class="card-body">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Intervalo</th>
+                      <th class="text-center">Cantidad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let intervalo of obtenerIntervalos()">
+                      <td>{{ intervalo }} min</td>
+                      <td class="text-center">{{ obtenerValorIntervalo(estadisticasPartido.distribucionTarjetas, intervalo) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-header bg-danger text-white">
+                <h6 class="mb-0">🥅 Distribución Temporal de Tiros Recibidos</h6>
+              </div>
+              <div class="card-body">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Intervalo</th>
+                      <th class="text-center">Cantidad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let intervalo of obtenerIntervalos()">
+                      <td>{{ intervalo }} min</td>
+                      <td class="text-center">{{ obtenerValorIntervalo(estadisticasPartido.distribucionTirosRecibidos, intervalo) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

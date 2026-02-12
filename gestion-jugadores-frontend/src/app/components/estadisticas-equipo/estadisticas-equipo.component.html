@@ -1,0 +1,359 @@
+<div class="estadisticas-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>📊 Estadísticas del Equipo</h1>
+    <h2 *ngIf="equipo">{{ equipo.nombre }}</h2>
+  </div>
+
+  <!-- Controles -->
+  <div class="controles">
+    <div class="temporada-selector">
+      <label for="temporada">Temporada:</label>
+      <select id="temporada" [(ngModel)]="temporadaSeleccionada" (change)="cambiarTemporada()">
+        <option [value]="temporadaActual">{{ temporadaActual }} (Actual)</option>
+        <option value="2023-2024">2023-2024</option>
+        <option value="2022-2023">2022-2023</option>
+        <option value="2021-2022">2021-2022</option>
+      </select>
+    </div>
+
+    <button class="btn-actualizar" (click)="actualizarEstadisticas()" [disabled]="actualizando">
+      {{ actualizando ? '⏳ Actualizando...' : '🔄 Actualizar Estadísticas' }}
+    </button>
+  </div>
+
+  <!-- Navegación de vistas -->
+  <div class="tabs">
+    <button 
+      [class.active]="vistaActual === 'resumen'" 
+      (click)="cambiarVista('resumen')">
+      📈 Resumen General
+    </button>
+    <button 
+      [class.active]="vistaActual === 'jugadores'" 
+      (click)="cambiarVista('jugadores')">
+      👥 Estadísticas de Jugadores
+    </button>
+    <button 
+      [class.active]="vistaActual === 'tops'" 
+      (click)="cambiarVista('tops')">
+      🏆 Top Rendimiento
+    </button>
+  </div>
+
+  <!-- Indicador de carga -->
+  <div *ngIf="cargando" class="loading">
+    <p>⏳ Cargando estadísticas...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="error-message">
+    <p>❌ {{ error }}</p>
+  </div>
+
+  <!-- VISTA: RESUMEN GENERAL -->
+  <div *ngIf="vistaActual === 'resumen' && !cargando && estadisticasEquipo" class="vista-resumen">
+    
+    <!-- Estadísticas del Equipo -->
+    <div class="seccion">
+      <h3>📋 Estadísticas del Equipo</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Partidos Jugados</div>
+          <div class="stat-value">{{ estadisticasEquipo.partidosJugados }}</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-label">Victorias</div>
+          <div class="stat-value">{{ estadisticasEquipo.partidosGanados }}</div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-label">Empates</div>
+          <div class="stat-value">{{ estadisticasEquipo.partidosEmpatados }}</div>
+        </div>
+        <div class="stat-card danger">
+          <div class="stat-label">Derrotas</div>
+          <div class="stat-value">{{ estadisticasEquipo.partidosPerdidos }}</div>
+        </div>
+        <div class="stat-card primary">
+          <div class="stat-label">Puntos</div>
+          <div class="stat-value">{{ estadisticasEquipo.puntos }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">% Victorias</div>
+          <div class="stat-value">{{ calcularPorcentajeVictorias() | number:'1.1-1' }}%</div>
+        </div>
+      </div>
+
+      <!-- Goles -->
+      <div class="stats-grid goles-section">
+        <div class="stat-card success">
+          <div class="stat-label">⚽ Goles a Favor</div>
+          <div class="stat-value">{{ estadisticasEquipo.golesFavor }}</div>
+          <div class="stat-detail">Promedio: {{ estadisticasEquipo.promedioGolesFavor | number:'1.2-2' }}</div>
+        </div>
+        <div class="stat-card danger">
+          <div class="stat-label">🥅 Goles en Contra</div>
+          <div class="stat-value">{{ estadisticasEquipo.golesContra }}</div>
+          <div class="stat-detail">Promedio: {{ estadisticasEquipo.promedioGolesContra | number:'1.2-2' }}</div>
+        </div>
+        <div class="stat-card" [class.success]="estadisticasEquipo.diferenciaGoles > 0" [class.danger]="estadisticasEquipo.diferenciaGoles < 0">
+          <div class="stat-label">📊 Diferencia de Goles</div>
+          <div class="stat-value">{{ estadisticasEquipo.diferenciaGoles > 0 ? '+' : '' }}{{ estadisticasEquipo.diferenciaGoles }}</div>
+        </div>
+      </div>
+
+      <!-- Disciplina -->
+      <div class="stats-grid">
+        <div class="stat-card warning">
+          <div class="stat-label">🟨 Tarjetas Amarillas</div>
+          <div class="stat-value">{{ estadisticasEquipo.tarjetasAmarillas }}</div>
+        </div>
+        <div class="stat-card danger">
+          <div class="stat-label">🟥 Tarjetas Rojas</div>
+          <div class="stat-value">{{ estadisticasEquipo.tarjetasRojas }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">📈 Efectividad</div>
+          <div class="stat-value">{{ estadisticasEquipo.efectividad | number:'1.1-1' }}%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 5 Goleadores -->
+    <div class="seccion">
+      <h3>⚽ Top 5 Goleadores</h3>
+      <table class="tabla-estadisticas">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Jugador</th>
+            <th>Posición</th>
+            <th>Goles</th>
+            <th>Asistencias</th>
+            <th>Partidos</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let jugador of topGoleadores; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td><strong>{{ obtenerNombreCompleto(jugador) }}</strong></td>
+            <td>{{ jugador.posicion }}</td>
+            <td class="highlight-goles">{{ jugador.totalGoles }}</td>
+            <td>{{ jugador.totalAsistencias }}</td>
+            <td>{{ jugador.partidosJugados }}</td>
+            <td>
+              <span class="rating" [style.backgroundColor]="obtenerColorRating(jugador.rating)">
+                {{ jugador.rating | number:'1.1-1' }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="topGoleadores.length === 0">
+            <td colspan="7" class="no-data">No hay datos de goleadores</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Top 5 Asistentes -->
+    <div class="seccion">
+      <h3>🎯 Top 5 Asistentes</h3>
+      <table class="tabla-estadisticas">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Jugador</th>
+            <th>Posición</th>
+            <th>Asistencias</th>
+            <th>Goles</th>
+            <th>Partidos</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let jugador of topAsistentes; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td><strong>{{ obtenerNombreCompleto(jugador) }}</strong></td>
+            <td>{{ jugador.posicion }}</td>
+            <td class="highlight-asistencias">{{ jugador.totalAsistencias }}</td>
+            <td>{{ jugador.totalGoles }}</td>
+            <td>{{ jugador.partidosJugados }}</td>
+            <td>
+              <span class="rating" [style.backgroundColor]="obtenerColorRating(jugador.rating)">
+                {{ jugador.rating | number:'1.1-1' }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="topAsistentes.length === 0">
+            <td colspan="7" class="no-data">No hay datos de asistentes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Jugadores más disciplinados -->
+    <div class="seccion">
+      <h3>✅ Jugadores Más Disciplinados</h3>
+      <table class="tabla-estadisticas">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Jugador</th>
+            <th>Posición</th>
+            <th>🟨 Amarillas</th>
+            <th>🟥 Rojas</th>
+            <th>Partidos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let jugador of menosTargetas; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td><strong>{{ obtenerNombreCompleto(jugador) }}</strong></td>
+            <td>{{ jugador.posicion }}</td>
+            <td>{{ jugador.tarjetasAmarillas }}</td>
+            <td>{{ jugador.tarjetasRojas }}</td>
+            <td>{{ jugador.partidosJugados }}</td>
+          </tr>
+          <tr *ngIf="menosTargetas.length === 0">
+            <td colspan="6" class="no-data">No hay datos disponibles</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- VISTA: ESTADÍSTICAS DE JUGADORES -->
+  <div *ngIf="vistaActual === 'jugadores' && !cargando" class="vista-jugadores">
+    <div class="seccion">
+      <h3>👥 Estadísticas Detalladas de Jugadores</h3>
+      <table class="tabla-estadisticas tabla-completa">
+        <thead>
+          <tr>
+            <th>Jugador</th>
+            <th>Pos</th>
+            <th>PJ</th>
+            <th>PT</th>
+            <th>Min</th>
+            <th>⚽ G</th>
+            <th>🏠 GC</th>
+            <th>✈️ GF</th>
+            <th>🎯 A</th>
+            <th>🟨</th>
+            <th>🟥</th>
+            <th>Prom G</th>
+            <th>Prom A</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let jugador of estadisticasJugadores">
+            <td><strong>{{ obtenerNombreCompleto(jugador) }}</strong></td>
+            <td>{{ jugador.posicion }}</td>
+            <td>{{ jugador.partidosJugados }}</td>
+            <td>{{ jugador.partidosTitular }}</td>
+            <td>{{ jugador.minutosJugados }}</td>
+            <td class="highlight-goles">{{ jugador.totalGoles }}</td>
+            <td>{{ jugador.golesEnCasa }}</td>
+            <td>{{ jugador.golesFuera }}</td>
+            <td class="highlight-asistencias">{{ jugador.totalAsistencias }}</td>
+            <td>{{ jugador.tarjetasAmarillas }}</td>
+            <td>{{ jugador.tarjetasRojas }}</td>
+            <td>{{ jugador.promedioGoles | number:'1.2-2' }}</td>
+            <td>{{ jugador.promedioAsistencias | number:'1.2-2' }}</td>
+            <td>
+              <span class="rating" [style.backgroundColor]="obtenerColorRating(jugador.rating)">
+                {{ jugador.rating | number:'1.1-1' }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="estadisticasJugadores.length === 0">
+            <td colspan="14" class="no-data">No hay estadísticas de jugadores disponibles</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- VISTA: TOP RENDIMIENTO -->
+  <div *ngIf="vistaActual === 'tops' && !cargando" class="vista-tops">
+    
+    <!-- Mejor Rating -->
+    <div class="seccion">
+      <h3>⭐ Top 10 - Mejor Rating</h3>
+      <table class="tabla-estadisticas">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Jugador</th>
+            <th>Posición</th>
+            <th>Rating</th>
+            <th>Goles</th>
+            <th>Asistencias</th>
+            <th>Partidos</th>
+            <th>Minutos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let jugador of mejorRating; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td><strong>{{ obtenerNombreCompleto(jugador) }}</strong></td>
+            <td>{{ jugador.posicion }}</td>
+            <td>
+              <span class="rating-big" [style.backgroundColor]="obtenerColorRating(jugador.rating)">
+                {{ jugador.rating | number:'1.2-2' }}
+              </span>
+            </td>
+            <td>{{ jugador.totalGoles }}</td>
+            <td>{{ jugador.totalAsistencias }}</td>
+            <td>{{ jugador.partidosJugados }}</td>
+            <td>{{ jugador.minutosJugados }}</td>
+          </tr>
+          <tr *ngIf="mejorRating.length === 0">
+            <td colspan="8" class="no-data">No hay datos disponibles</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Estadísticas combinadas -->
+    <div class="stats-cards-container">
+      <div class="card-estadistica">
+        <h4>⚽ Máximo Goleador</h4>
+        <div *ngIf="topGoleadores.length > 0" class="jugador-destacado">
+          <div class="nombre">{{ obtenerNombreCompleto(topGoleadores[0]) }}</div>
+          <div class="valor">{{ topGoleadores[0].totalGoles }} goles</div>
+          <div class="detalle">
+            en {{ topGoleadores[0].partidosJugados }} partidos
+            ({{ topGoleadores[0].promedioGoles | number:'1.2-2' }} promedio)
+          </div>
+        </div>
+      </div>
+
+      <div class="card-estadistica">
+        <h4>🎯 Máximo Asistente</h4>
+        <div *ngIf="topAsistentes.length > 0" class="jugador-destacado">
+          <div class="nombre">{{ obtenerNombreCompleto(topAsistentes[0]) }}</div>
+          <div class="valor">{{ topAsistentes[0].totalAsistencias }} asistencias</div>
+          <div class="detalle">
+            en {{ topAsistentes[0].partidosJugados }} partidos
+            ({{ topAsistentes[0].promedioAsistencias | number:'1.2-2' }} promedio)
+          </div>
+        </div>
+      </div>
+
+      <div class="card-estadistica">
+        <h4>⭐ Mejor Rating</h4>
+        <div *ngIf="mejorRating.length > 0" class="jugador-destacado">
+          <div class="nombre">{{ obtenerNombreCompleto(mejorRating[0]) }}</div>
+          <div class="valor" [style.color]="obtenerColorRating(mejorRating[0].rating)">
+            {{ mejorRating[0].rating | number:'1.2-2' }}
+          </div>
+          <div class="detalle">
+            {{ mejorRating[0].totalGoles }}G + {{ mejorRating[0].totalAsistencias }}A 
+            en {{ mejorRating[0].partidosJugados }} partidos
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

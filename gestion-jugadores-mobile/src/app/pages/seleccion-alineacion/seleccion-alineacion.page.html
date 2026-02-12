@@ -1,0 +1,161 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Selección de Alineación</ion-title>
+    <ion-button slot="start" fill="clear" (click)="volver()">
+      <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+    </ion-button>
+    <ion-button slot="end" fill="solid" color="danger" (click)="cancelar()">
+      <ion-icon name="close" slot="start"></ion-icon>
+      Cancelar
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Nombre del Partido -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>1. Nombre del Partido</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Nombre del partido (ej: Helios vs Real Madrid)</ion-label>
+        <ion-input
+          [(ngModel)]="nombrePartido"
+          placeholder="Ingresa el nombre del partido"
+          type="text"
+          clearInput="true">
+        </ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Selección de Equipo -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>2. Selecciona tu Equipo</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-select
+        placeholder="Elige un equipo"
+        (ionChange)="onEquipoSeleccionado($event)"
+        interface="action-sheet">
+        <ion-select-option *ngFor="let equipo of equipos" [value]="equipo.id">
+          {{ equipo.nombre }} - {{ equipo.tipoFutbol.replace('_', ' ') }}
+        </ion-select-option>
+      </ion-select>
+
+      <div *ngIf="equipoSeleccionado" style="margin-top: 16px;">
+        <p><strong>Equipo:</strong> {{ equipoSeleccionado.nombre }}</p>
+        <p><strong>Tipo:</strong> {{ equipoSeleccionado.tipoFutbol.replace('_', ' ') }}</p>
+        <p><strong>Duración:</strong> {{ equipoSeleccionado.duracionPartido }} minutos</p>
+        <p><strong>Titulares requeridos:</strong> {{ maxTitulares }}</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de Jugadores Disponibles -->
+  <ion-card *ngIf="equipoSeleccionado && jugadores.length > 0">
+    <ion-card-header>
+      <ion-card-title>3. Selecciona Jugadores</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let jugador of jugadores">
+          <ion-checkbox
+            slot="start"
+            [checked]="isJugadorSeleccionado(jugador)"
+            (ionChange)="onJugadorSeleccionado(jugador, $event)">
+          </ion-checkbox>
+          <ion-label>
+            <h3>{{ jugador.nombre }} {{ jugador.apellido }}</h3>
+            <p>{{ jugador.posicion }}</p>
+          </ion-label>
+          <ion-label slot="end" *ngIf="esTitular(jugador)">
+            <ion-icon name="star" color="warning"></ion-icon>
+            Titular
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Titulares -->
+  <ion-card *ngIf="titulares.length > 0">
+    <ion-card-header>
+      <ion-card-title>
+        Titulares ({{ titulares.length }}/{{ maxTitulares }})
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let jugador of titulares">
+          <ion-icon name="star" color="warning" slot="start"></ion-icon>
+          <ion-label>
+            <h3>{{ jugador.nombre }} {{ jugador.apellido }}</h3>
+            <p>{{ jugador.posicion }}</p>
+          </ion-label>
+          <ion-button fill="clear" size="small" color="medium" (click)="moverASuplentes(jugador)">
+            <ion-icon name="arrow-down" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Suplentes -->
+  <ion-card *ngIf="suplentes.length > 0">
+    <ion-card-header>
+      <ion-card-title>Suplentes ({{ suplentes.length }})</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let suplente of suplentes">
+          <ion-icon name="person" color="medium" slot="start"></ion-icon>
+          <ion-label>
+            <h3>{{ suplente.nombre }} {{ suplente.apellido }}</h3>
+            <p>{{ suplente.posicion }}</p>
+          </ion-label>
+          <ion-button 
+            fill="clear" 
+            size="small" 
+            color="warning" 
+            (click)="moverATitulares(suplente)"
+            [disabled]="titulares.length >= maxTitulares">
+            <ion-icon name="arrow-up" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Botón Iniciar Partido -->
+  <ion-button
+    expand="block"
+    color="success"
+    size="large"
+    (click)="iniciarPartido()"
+    [disabled]="!equipoSeleccionado || titulares.length !== maxTitulares"
+    style="margin-top: 24px;">
+    <ion-icon name="play" slot="start"></ion-icon>
+    Iniciar Partido
+  </ion-button>
+
+  <!-- Mensaje de validación -->
+  <div *ngIf="equipoSeleccionado && titulares.length !== maxTitulares" 
+       style="text-align: center; margin-top: 12px; padding: 0 16px;">
+    <p style="color: var(--ion-color-warning); font-size: 0.9rem;">
+      <ion-icon name="warning" style="vertical-align: middle;"></ion-icon>
+      Necesitas {{ maxTitulares - titulares.length }} titular{{ (maxTitulares - titulares.length) !== 1 ? 'es' : '' }} más para iniciar
+    </p>
+  </div>
+
+  <!-- Mensaje si no hay jugadores -->
+  <div *ngIf="equipoSeleccionado && jugadores.length === 0" 
+       style="text-align: center; padding: 40px;">
+    <ion-icon name="people-outline" style="font-size: 64px; color: var(--ion-color-medium);"></ion-icon>
+    <p style="color: var(--ion-color-medium); margin-top: 16px;">
+      No hay jugadores en este equipo
+    </p>
+  </div>
+</ion-content>

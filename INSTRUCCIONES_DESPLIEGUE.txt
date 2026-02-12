@@ -1,0 +1,1090 @@
+=====================================================================
+INSTRUCCIONES COMPLETAS PARA DESPLEGAR EL PROYECTO
+SISTEMA DE GESTIÓN DE JUGADORES DE FÚTBOL BASE
+=====================================================================
+
+Este documento contiene las instrucciones paso a paso para instalar y 
+desplegar el proyecto en un dispositivo nuevo sin ninguna instalación previa.
+
+=====================================================================
+TABLA DE CONTENIDOS
+=====================================================================
+1. Requisitos del Sistema
+2. Instalación de Prerequisitos
+3. Clonación del Repositorio
+4. Configuración de Base de Datos
+5. Configuración del Backend (Spring Boot)
+6. Configuración del Frontend (Angular)
+7. Configuración de la Aplicación Móvil (Ionic)
+8. Ejecución del Proyecto
+9. Verificación del Despliegue
+10. Solución de Problemas Comunes
+
+=====================================================================
+1. REQUISITOS DEL SISTEMA
+=====================================================================
+
+Sistema Operativo: Windows 10/11, macOS, o Linux
+Conexión a Internet: Requerida para descargar dependencias
+Espacio en Disco: Mínimo 5 GB libres
+RAM: Mínimo 8 GB recomendados
+
+=====================================================================
+2. INSTALACIÓN DE PREREQUISITOS
+=====================================================================
+
+PASO 2.1: INSTALAR GIT
+-----------------------
+Windows:
+1. Descargar Git desde: https://git-scm.com/download/win
+2. Ejecutar el instalador descargado
+3. Durante la instalación, mantener las opciones por defecto
+4. Verificar instalación: Abrir PowerShell/CMD y ejecutar:
+   git --version
+
+macOS:
+1. Abrir Terminal
+2. Ejecutar: xcode-select --install
+   O instalar desde: https://git-scm.com/download/mac
+
+Linux (Ubuntu/Debian):
+sudo apt update
+sudo apt install git
+
+
+PASO 2.2: INSTALAR JAVA JDK 17
+-------------------------------
+Windows:
+1. Descargar OpenJDK 17 desde: https://adoptium.net/
+2. Seleccionar: Version 17 (LTS), HotSpot, Windows x64
+3. Ejecutar el instalador
+4. IMPORTANTE: Marcar la opción "Add to PATH"
+5. Verificar instalación: Abrir PowerShell/CMD y ejecutar:
+   java -version
+   javac -version
+   (Debe mostrar versión 17.x.x)
+
+macOS:
+brew install openjdk@17
+
+Linux (Ubuntu/Debian):
+sudo apt update
+sudo apt install openjdk-17-jdk
+
+
+PASO 2.3: INSTALAR APACHE MAVEN
+--------------------------------
+Windows:
+1. Descargar Maven desde: https://maven.apache.org/download.cgi
+2. Descargar el archivo "Binary zip archive"
+3. Extraer en C:\Program Files\Apache\Maven (crear carpetas si no existen)
+4. Configurar Variable de Entorno:
+   - Buscar "Variables de entorno" en el menú inicio
+   - En "Variables del sistema", hacer clic en "Nueva"
+   - Nombre: MAVEN_HOME
+   - Valor: C:\Program Files\Apache\Maven\apache-maven-3.9.x
+   - Editar la variable "Path" y agregar: %MAVEN_HOME%\bin
+5. Reiniciar PowerShell/CMD
+6. Verificar instalación:
+   mvn -version
+
+macOS:
+brew install maven
+
+Linux (Ubuntu/Debian):
+sudo apt update
+sudo apt install maven
+
+
+PASO 2.4: INSTALAR NODE.JS Y NPM
+---------------------------------
+Windows/macOS/Linux:
+1. Descargar Node.js LTS desde: https://nodejs.org/
+2. Ejecutar el instalador (incluye npm automáticamente)
+3. Durante instalación, marcar: "Automatically install necessary tools"
+4. Verificar instalación: Abrir nueva terminal y ejecutar:
+   node --version
+   npm --version
+   (Node debe ser v18.x.x o superior, npm debe ser 9.x.x o superior)
+
+
+PASO 2.5: INSTALAR ANGULAR CLI
+-------------------------------
+En PowerShell/Terminal/CMD:
+npm install -g @angular/cli@17
+
+Verificar instalación:
+ng version
+
+
+PASO 2.6: INSTALAR IONIC CLI (PARA APLICACIÓN MÓVIL)
+-----------------------------------------------------
+En PowerShell/Terminal/CMD:
+npm install -g @ionic/cli
+
+Verificar instalación:
+ionic --version
+
+NOTA: La aplicación móvil funciona con Ionic 7 + Angular + Capacitor
+
+
+PASO 2.7: INSTALAR ANDROID STUDIO (PARA DESARROLLO ANDROID)
+------------------------------------------------------------
+Si deseas ejecutar la app en dispositivo Android o emulador:
+
+Windows/macOS/Linux:
+1. Descargar Android Studio desde: https://developer.android.com/studio
+2. Ejecutar el instalador
+3. Durante la instalación, asegurarse de instalar:
+   - Android SDK
+   - Android SDK Platform
+   - Android Virtual Device (para emulador)
+4. Abrir Android Studio y completar la configuración inicial
+5. Instalar SDK Platform 33 (Android 13) desde SDK Manager
+6. Configurar variables de entorno (Windows):
+   - Buscar "Variables de entorno" en el menú inicio
+   - Ag10egar nueva variable del sistema:
+     * ANDROID_HOME: C:\Users\TuUsuario\AppData\Local\Android\Sdk
+   - Editar PATH y agregar:
+     * %ANDROID_HOME%\platform-tools
+     * %ANDROID_HOME%\tools
+7. Verificar instalación:
+   adb --version
+
+macOS (configuración adicional):
+echo 'export ANDROID_HOME=$HOME/Library/Android/sdk' >> ~/.bash_profile
+echo 'export PATH=$PATH:$ANDROID_HOME/platform-tools' >> ~/.bash_profile
+source ~/.bash_profile
+
+Linux (configuración adicional):
+echo 'export ANDROID_HOME=$HOME/Android/Sdk' >> ~/.bashrc
+echo 'export PATH=$PATH:$ANDROID_HOME/platform-tools' >> ~/.bashrc
+source ~/.bashrc
+
+
+PASO 2.8: INSTALAR XCODE (PARA DESARROLLO iOS - SOLO macOS)
+------------------------------------------------------------
+Si deseas ejecutar la app en dispositivo iOS o simulador:
+
+1. Abrir App Store en Mac
+2. Buscar "Xcode"
+3. Descargar e instalar (puede tomar bastante tiempo, >10 GB)
+4. Abrir Xcode una vez instalado
+5. Aceptar los términos y condiciones
+6. Instalar componentes adicionales cuando se solicite
+7. Instalar Command Line Tools:
+   xcode-select --install
+8. Instalar CocoaPods (gestor de dependencias iOS):
+   sudo gem install cocoapods
+9. Verificar instalación:
+   pod --version
+
+
+PASO 2.9: INSTALAR DOCKER DESKTOP (RECOMENDADO)
+------------------------------------------------
+Windows:
+1. Descargar Docker Desktop desde: https://www.docker.com/products/docker-desktop/
+2. Ejecutar el instalador
+3. Durante instalación, habilitar WSL 2 si se solicita
+4. Reiniciar el sistema
+5. Abrir Docker Desktop y completar la configuración inicial
+6. Verificar instalación:
+   docker --version
+   docker compose version
+
+macOS:
+1. Descargar Docker Desktop para Mac desde el sitio oficial
+2. Instalar arrastrando a Applications
+3. Abrir Docker Desktop desde Applications
+
+Linux (Ubuntu/Debian):
+sudo apt update
+sudo apt install docker.io docker-compose
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+(Cerrar sesión y volver a iniciar para aplicar cambios)
+
+
+PASO 2.7 (ALTERNATIVA): INSTALAR MySQL MANUALMENTE
+---------------------------------------------------
+Si NO deseas usar Docker, instala MySQL directamente:
+
+Windows:
+1. Descargar MySQL Installer desde: https://dev.mysql.com/downloads/installer/
+2. Ejecutar el instalador
+3. Seleccionar "Developer Default"
+4. Configurar durante instalación:
+   - Root Password: 1234
+   - Puerto: 3306
+5. Completar instalación
+
+macOS:
+brew install mysql
+brew services start mysql
+mysql_secure_installation
+
+Linux (Ubuntu/Debian):
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl start mysql
+sudo systemctl enable mysql
+sudo mysql_secure_installation
+
+
+=====================================================================
+3. CLONACIÓN DEL REPOSITORIO
+=====================================================================
+
+PASO 3.1: CLONAR EL PROYECTO
+-----------------------------
+1. Abrir PowerShell/Terminal/CMD
+2. Navegar a la carpeta donde deseas clonar el proyecto:
+   cd C:\Users\TuUsuario\Documents
+   (o la ruta que prefieras)
+
+3. Clonar el repositorio:
+   git clone https://github.com/OscarMartP/gestion-jugadores-futbolBase.git
+
+4. Entrar al directorio del proyecto:
+   cd gestion-jugadores-futbolBase
+
+
+=====================================================================
+4. CONFIGURACIÓN DE BASE DE DATOS
+=====================================================================
+
+OPCIÓN A: USANDO DOCKER (RECOMENDADO)
+--------------------------------------
+1. Asegurarse de que Docker Desktop esté ejecutándose
+
+2. En la raíz del proyecto, ejecutar:
+   docker compose up -d
+
+3. Verificar que el contenedor esté corriendo:
+   docker ps
+   (Debe aparecer "mysql_control_jugadores")
+
+4. La base de datos se creará automáticamente con:
+   - Nombre: control_jugadores
+   - Usuario: root
+   - Contraseña: 1234
+   - Puerto: 3306
+
+
+OPCIÓN B: USANDO MySQL INSTALADO LOCALMENTE
+--------------------------------------------
+1. Abrir MySQL Workbench o línea de comandos MySQL:
+   mysql -u root -p
+
+2. Crear la base de datos:
+   CREATE DATABASE control_jugadores;
+
+3. Verificar que la base de datos existe:
+   SHOW DATABASES;
+
+4. Salir de MySQL:
+   exit;
+
+
+=====================================================================
+5. CONFIGURACIÓN DEL BACKEND (Spring Boot)
+=====================================================================
+
+PASO 5.1: VERIFICAR CONFIGURACIÓN
+----------------------------------
+1. Navegar a la carpeta del backend:
+   cd gestion-jugadores-futbolBase
+
+2. Abrir el archivo: src/main/resources/application.properties
+
+3. Verificar que la configuración sea correcta:
+   spring.datasource.url=jdbc:mysql://localhost:3306/control_jugadores
+   spring.datasource.username=root
+   spring.datasource.password=1234
+
+4. CONFIGURACIÓN DE LA APLICACIÓN MÓVIL (Ionic)
+=====================================================================
+
+PASO 7.1: NAVEGAR A LA CARPETA MÓVIL
+-------------------------------------
+1. Abrir una NUEVA terminal (dejar backend y frontend corriendo)
+
+2. Navegar a la carpeta del proyecto móvil:
+   cd gestion-jugadores-mobile
+
+
+PASO 7.2: INSTALAR DEPENDENCIAS
+--------------------------------
+Desde la carpeta gestion-jugadores-mobile:
+
+npm install
+
+Este proceso puede tomar varios minutos la primera vez
+
+
+PASO 7.3: CONFIGURAR URL DEL BACKEND
+-------------------------------------
+1. Abrir el archivo: src/environments/environment.ts
+
+2. Verificar la configuración:
+   export const environment = {
+     production: false,
+     apiUrl: 'http://localhost:8080/api'
+   };
+
+3. Si ejecutas en dispositivo físico (no emulador), cambiar localhost 
+   por la IP de tu computadora:
+   
+   Windows (obtener IP):
+   ipconfig
+   (Buscar "Dirección IPv4" de tu adaptador de red)
+   
+   macOS/Linux:
+   ifconfig
+   (Buscar "inet" en tu interfaz activa, ej: en0)
+   
+   Ejemplo de configuración para dispositivo físico:
+   apiUrl: 'http://192.168.1.100:8080/api'
+
+
+PASO 7.4: EJECUTAR EN NAVEGADOR (MÁS RÁPIDO PARA DESARROLLO)
+-------------------------------------------------------------
+Desde la carpeta gestion-jugadores-mobile:
+
+ionic serve
+
+O alternativamente:
+npm start
+
+La aplicación móvil estará disponible en: http://localhost:8100
+
+NOTA: Esta opción simula la app móvil en el navegador con herramientas
+      de desarrollo móvil. Es la forma más rápida de probar cambios.
+
+
+PASO 7.5: PREPARAR PARA ANDROID (OPCIONAL)
+-------------------------------------------
+Solo si deseas ejecutar en emulador o dispositivo Android:
+
+1. Agregar plataforma Android:
+   ionic capacitor add android
+
+2. Este comando creará la carpeta "android" con el proyecto nativo
+
+3. Sincronizar código con la plataforma nativa:
+   ionic capacitor sync android
+
+4. Compilar el proyecto:
+   ionic build
+
+
+PASO 7.6: EJECUTAR EN EMULADOR ANDROID (OPCIONAL)
+--------------------------------------------------
+Desde la carpeta gestion-jugadores-mobile:
+
+Opción 1 - Con Ionic CLI (recomendado):
+ionic capacitor run android
+
+Opción 2 - Abrir en Android Studio:
+ionic capacitor open android
+(Luego presionar el botón "Run" en Android Studio)
+
+NOTAS:
+- Asegurarse de tener un emulador creado en Android Studio (AVD Manager)
+- La primera compilación puede tomar varios minutos
+- Si aparece error de Gradle, permitir que descargue dependencias
+
+
+PASO 7.7: EJECUTAR EN DISPOSITIVO ANDROID FÍSICO (OPCIONAL)
+------------------------------------------------------------
+1. Habilitar "Opciones de desarrollador" en el dispositivo:
+   - Ir a Ajustes > Acerca del teléfono
+   - Tocar 7 veces en "Número de compilación"
+   - Volver a Ajustes > Opciones de desarrollador
+   - Habilitar "Depuración USB"
+
+2. Conectar el dispositivo con cable USB a la computadora
+
+3. Verificar que el dispositivo esté conectado:
+   adb devices
+   (Debe aparecer el número de serie del dispositivo)
+
+4. Ejecutar la app:
+   ionic capacitor run android --target=<device_id>
+   
+   O simplemente:
+   ionic capacitor run android
+   (Ionic detectará el dispositivo automáticamente)
+
+5. IMPORTANTE: Si usas dispositivo físico, cambiar localhost por tu IP
+   en environment.ts (ver PASO 7.3)
+
+
+PASO 8.4: VERIFICAR INTEGRACIÓN COMPLETA WEB
+--------------------------------------------
+1. Desde la interfaz de Angular (http://localhost:4200)
+2. Intentar registrar un usuario nuevo
+3. Intentar hacer login
+4. Intentar crear un equipo o jugador
+5. Verificar que las operaciones funcionen correctamente
+
+
+PASO 8.5: VERIFICAR APLICACIÓN MÓVIL (SI LA EJECUTASTE)
+--------------------------------------------------------
+Si ejecutaste la app móvil:
+
+En navegador (ionic serve - http://localhost:8100):
+1. Debe cargar la interfaz de la aplicación móvil
+2. Verificar que los componentes Ionic se vean correctamente
+3. Probar login y funcionalidades básicas
+
+En emulador/dispositivo:
+1. La app debe instalarse sin errores
+2. Probar conectividad con el backend
+3. Si hay error de conexión, verificar:
+   - Backend está corriendo
+   - URL en environment.ts es correcta
+   - Si es dispositivo físico, la IP es la correcta
+2. Sincronizar código:
+   ionic capacitor sync ios
+
+3. Instalar dependencias CocoaPods:
+   cd ios/App
+   pod install
+   cd ../..
+
+4. Compilar el proyecto:
+   ionic build
+
+
+PASO 7.9: EJECUTAR EN SIMULADOR iOS (OPCIONAL - SOLO macOS)
+------------------------------------------------------------
+Desde la carpeta gestion-jugadores-mobile:
+
+Opción 1 - Con Ionic CLI:
+ionic capacitor run ios
+
+Opción 2 - Abrir en Xcode:
+ionic capacitor open ios
+(Luego seleccionar simulador y presionar el botón "Run" en Xcode)
+
+
+PASO 7.10: EJECUTAR EN DISPOSITIVO iOS FÍSICO (OPCIONAL - SOLO macOS)
+----------------------------------------------------------------------
+1. Conectar el dispositivo iOS con cable a la Mac
+
+2. Abrir el proyecto en Xcode:
+   ionic capacitor open ios
+
+3. En Xcode:
+   - Seleccionar tu dispositivo en la lista de dispositivos
+   - Configurar "Signing & Capabilities" con tu Apple ID
+   - Presionar el botón "Run"
+
+4. En el dispositivo iOS:
+   - Ir a Ajustes > General > Gestión de dispositivos
+   - Confiar en el certificado de desarrollador
+
+5. IMPORTANTE: Cambiar localhost por tu IP en environment.ts (ver PASO 7.3)
+
+
+PASO 7.11: LIVE RELOAD PARA DESARROLLO (AVANZADO)
+--------------------------------------------------
+Para ver cambios en tiempo real en dispositivo/emulador:
+
+1. Obtener tu IP local (ver PASO 7.3)
+ionic no se reconoce como comando"
+SOLUCIÓN:
+   npm install -g @ionic/cli
+   Reiniciar terminal
+
+
+PROBLEMA: "Error al conectar desde dispositivo móvil"
+SOLUCIÓN:
+   1. Verificar que el dispositivo esté en la misma red WiFi
+   2. Cambiar localhost por la IP de tu PC en environment.ts
+   3. En Windows, verificar firewall (permitir puerto 8080)
+   4. Asegurarse de que el backend esté corriendo
+
+
+PROBLEMA: "Capacitor: Unable to launch android"
+SOLUCIÓN:
+   1. Verificar que Android Studio esté instalado
+   2. Verificar variable (WEB):
+--------------------------------
+# Terminal 1 (Base de Datos)
+docker compose up -d
+
+# Terminal 2 (Backend)
+cd gestion-jugadores-futbolBase
+mvn spring-boot:run
+
+# Terminal 3 (Frontend Web)
+cd gestion-jugadores-frontend
+ng serve
+
+
+INICIAR PROYECTO CON MOBILE:
+-----------------------------
+# Terminal 1 (Base de Datos)
+docker compose up -d
+
+# Terminal 2 (Backend)
+cd gestion-jugadores-futbolBase
+mvn spring-boot:run
+
+# Terminal 3 (Mobile en navegador)
+cd gestion-jugadores-mobile
+ionic serve
+
+# O para dispositivo/emulador Android:
+cd gestion-jugadores-mobile
+ionic capacitor run android
+
+# O para dispositivo/simulador iOS (macOS):
+cd gestion-jugadores-mobile
+ionic capacitor run ios
+
+
+DETENER TODO:
+------------- WEB:
+-------------------------------------
+cd gestion-jugadores-frontend
+rm -rf node_modules package-lock.json
+npm install
+
+
+REINSTALAR DEPENDENCIAS MOBILE:
+--------------------------------
+cd gestion-jugadores-mobile
+rm -rf node_modules package-lock.json
+npm install
+
+
+RECONSTRUIR PLATAFORMAS NATIVAS (MOBILE):
+------------------------------------------
+# Para Android
+cd gestion-jugadores-mobile
+rm -rf android
+ionic capacitor add android
+ionic capacitor sync android
+
+# Para iOS (macOS)
+cd gestion-jugadores-mobile
+rm -rf ios
+ionic capacitor add ios
+cd ios/App && pod install && cd ../..
+ionic capacit Web: gestion-jugadores-frontend/src/environments/
+   - Mobile: gestion-jugadores-mobile/src/environments/
+   - Docker: docker-compose.yml
+   - Capacitor: gestion-jugadores-mobile/capacitor.config.ts
+
+ACTUALIZAR CAPACITOR (MOBILE):
+-------------------------------
+cd gestion-jugadores-mobile
+npm install @capacitor/core@latest @capacitor/cli@latest
+ionic capacitor sync
+
+
+=====================================================================
+NOTAS ADICIONALES
+=====================================================================
+
+1. PUERTOS UTILIZADOS:
+   - 3306: MySQL (Base de Datos)
+   - 8080: Backend (Spring Boot API REST)
+   - 4200: Frontend Web (Angular)
+   - 8100: Mobile en navegador (Ionice hacer login"
+SOLUCIÓN:
+   1. Verificar en DevTools del navegador/emulador (F12 o Chrome Remote Debugging)
+   2. Verificar URL en environment.ts
+   3. Verificar que el backend esté respondiendo
+   4. En dispositivo físico, verificar que la IP sea correcta
+
+
+PROBLEMA: "
+2. Ejecutar con live reload:
+   
+   Para Android:
+   ionic capacitor run android -l --external --host=0.0.0.0
+   
+   Para iOS:
+   ionic capacitor run ios -l --external --host=0.0.0.0
+
+3. Cada vez que guardes cambios en el código, la app se recargará
+   automáticamente en el dispositivo/emulador
+
+
+=====================================================================
+8. Si usas credenciales diferentes, modificar username y password
+
+
+PASO 5.2: COMPILAR EL BACKEND
+------------------------------
+Desde la carpeta gestion-jugadores-futbolBase:
+
+1. Limpiar y compilar el proyecto:
+   mvn clean package -DskipTests
+
+2. Este proceso puede tomar varios minutos la primera vez
+   (Maven descargará todas las dependencias)
+
+3. Al finalizar, debe mostrar: BUILD SUCCESS
+     * Para mobile: Generar APK/IPA firmado para distribución
+     * Publicar en Google Play Store / Apple App Store
+
+10. APLICACIÓN MÓVIL - CARACTERÍSTICAS:
+   - Basada en Ionic 7 + Angular + Capacitor
+   - Compatible con Android 8.0+ e iOS 13.0+
+   - Soporte offline con Capacitor Storage
+   - Acceso a características nativas (cámara, geolocalización, etc.)
+   - UI optimizada para dispositivos móviles con gestos táctiles
+   - Navegación con tabs inferior (4 secciones principales)
+   - Live reload para desarrollo rápido
+   - PWA (Progressive Web App) cuando se ejecuta en navegador
+
+11. DEBUGGING MÓVIL:
+   - Android: Chrome Remote Debugging (chrome://inspect)
+   - iOS: Safari Web Inspector (Develop > Simulator)
+   - Ionic DevApp: Para testing rápido sin compilar
+   - Logs nativos: 
+     * Android: adb logcat
+     * iOS: Xcode Console
+
+12. REQUISITOS MÍNIMOS DISPOSITIVOS:
+   - Android: Versión 8.0 (API 26) o superior
+   - iOS: Versión 13.0 o superior
+   - RAM: 2 GB mínimo
+   - Almacenamiento: 100 MB para la app
+   - Conexión a internet para comunicarse con el backend
+
+13. ESTRUCTURA PROYECTO MÓVIL:
+   gestion-jugadores-mobile/
+   ├── src/
+   │   ├── app/
+   │   │   ├── core/              # Servicios, guards, interceptores
+   │   │   ├── pages/             # Páginas de la aplicación
+   │   │   └── home/              # Página de inicio
+   │   ├── assets/                # Recursos estáticos
+   │   ├── environments/          # Configuración de entornos
+   │   └── theme/                 # Estilos globales
+   ├── android/                   # Proyecto Android nativo (generado)
+   ├── ios/                       # Proyecto iOS nativo (generado)
+   ├── capacitor.config.ts        # Configuración de Capacitor
+   ├── ionic.config.json          # Configuración de Ionic
+   └── package.json               # Dependencias npm
+
+14. PLUGINS CAPACITOR UTILIZADOS:
+   - @capacitor/storage: Almacenamiento persistente
+   - @capacitor/network: Estado de conectividad
+   - @capacitor/splash-screen: Pantalla de splash
+   - @capacitor/status-bar: Personalización de barra de estado
+   - (Extensible con más plugins según necesidades)
+
+
+=====================================================================
+CONTACTO Y SOPORTE
+=====================================================================
+
+Repositorio GitHub: https://github.com/OscarMartP/gestion-jugadores-futbolBase
+
+Para reportar problemas:
+1. Crear un Issue en GitHub
+2. Incluir logs de error completos
+3. Especificar sistema operativo y versiones instaladas
+
+Logs importantes:
+- Backend: Salida de consola donde ejecutas mvn spring-boot:run
+- Frontend Web: Consola del navegador (F12 -> Console)
+- Mobile (navegador): Consola del navegador (F12 -> Console)
+- Mobile (Android): adb logcat o Chrome Remote Debugging (chrome://inspect)
+- Mobile (iOS): Safari Web Inspector o Xcode Console
+- Docker: docker logs mysql_control_jugadores
+
+
+=====================================================================
+FIN DE LAS INSTRUCCIONES
+=====================================================================
+
+Última actualización: Enero 19, 2026
+Versión del documento: 3.0
+
+NUEVAS FUNCIONALIDADES EN v3.0:
+- Instrucciones completas para aplicación móvil (Ionic)
+- Configuración para Android e iOS
+- Debugging móvil
+- Live reload para desarrollo móvil
+- Ejecución en emuladores y dispositivos físicos
+- Integración con Capacitor para acceso a APIs nativas
+   - Almacenamiento: 100 MB para la app
+   - Conexión a internet para comunicarse con el backend
+
+13. ESTRUCTURA PROYECTO MÓVIL:
+   gestion-jugadores-mobile/
+   ├── src/
+   │   ├── app/
+   │   │   ├── core/              # Servicios, guards, interceptores
+   │   │   ├── pages/             # Páginas de la aplicación
+   │   │   └── home/              # Página de inicio
+   │   ├── assets/                # Recursos estáticos
+   │   ├── environments/          # Configuración de entornos
+   │   └── theme/                 # Estilos globales
+   ├── android/                   # Proyecto Android nativo (generado)
+   ├── ios/                       # Proyecto iOS nativo (generado)
+   ├── capacitor.config.ts        # Configuración de Capacitor
+   ├── ionic.config.json          # Configuración de Ionic
+   └── package.json               # Dependencias npm
+
+14. PLUGINS CAPACITOR UTILIZADOS:
+   - @capacitor/storage: Almacenamiento persistente
+   - @capacitor/network: Estado de conectividad
+   - @capacitor/splash-screen: Pantalla de splash
+   - @capacitor/status-bar: Personalización de barra de estado
+   - (Extensible con más plugins según necesidades)
+
+
+PASO 5.3: EJECUTAR EL BACKEND
+------------------------------
+Desde la carpeta gestion-jugadores-futbolBase:
+
+Opción 1 - Ejecutar con Maven:
+mvn spring-boot:run
+
+Opción 2 - Ejecutar el JAR generado:
+java -jar target/gestion-jugadores-futbolBase-1.0.jar
+
+El backend estará disponible en: http://localhost:8080
+
+NOTA: Dejar esta terminal abierta con el backend ejecutándose
+
+
+=====================================================================
+6. CONFIGURACIÓN DEL FRONTEND (Angular)
+=====================================================================
+
+PASO 6.1: INSTALAR DEPENDENCIAS
+--------------------------------
+1. Abrir una NUEVA terminal (dejar el backend corriendo)
+
+2. Navegar a la carpeta del frontend:
+   cd gestion-jugadores-frontend
+
+3. Instalar dependencias de Node.js:
+   npm install
+
+4. Este proceso puede tomar varios minutos la primera vez
+
+
+PASO 6.2: EJECUTAR EL FRONTEND
+-------------------------------
+Desde la carpeta gestion-jugadores-frontend:
+
+ng serve
+
+O alternativamente:
+npm start
+
+El frontend estará disponible en: http://localhost:4200
+
+NOTA: Dejar esta terminal abierta con el frontend ejecutándose
+
+
+=====================================================================
+7. EJECUCIÓN DEL PROYECTO
+=====================================================================
+
+RESUMEN DE SERVICIOS EN EJECUCIÓN:
+-----------------------------------
+Terminal 1: Base de Datos
+   - Docker: docker compose up -d (puerto 3306)
+   - O MySQL corriendo como servicio
+
+Terminal 2: Backend (Spring Boot)
+   - Carpeta: gestion-jugadores-futbolBase
+   - Comando: mvn spring-boot:run
+   - URL: http://localhost:8080
+   - API REST: http://localhost:8080/api/v1/
+
+Terminal 3: Frontend (Angular)
+   - Carpeta: gestion-jugadores-frontend
+   - Comando: ng serve
+   - URL: http://localhost:4200
+
+
+ORDEN DE INICIO:
+----------------
+1. Iniciar Base de Datos (Docker o MySQL)
+2. Iniciar Backend (esperar a que inicie completamente)
+3. Iniciar Frontend
+
+
+=====================================================================
+8. VERIFICACIÓN DEL DESPLIEGUE
+=====================================================================
+
+PASO 8.1: VERIFICAR BASE DE DATOS
+----------------------------------
+docker ps
+(Debe mostrar contenedor mysql_control_jugadores corriendo)
+
+
+PASO 8.2: VERIFICAR BACKEND
+----------------------------
+Abrir navegador y visitar:
+http://localhost:8080/api/v1/jugadores
+
+Si está funcionando correctamente, debe devolver una respuesta JSON
+(puede estar vacía [] si no hay datos aún)
+
+
+PASO 8.3: VERIFICAR FRONTEND
+-----------------------------
+Abrir navegador y visitar:
+http://localhost:4200
+
+Debe cargar la aplicación Angular sin errores
+
+
+PASO 8.4: VERIFICAR INTEGRACIÓN COMPLETA
+-----------------------------------------
+1. Desde la interfaz de Angular (http://localhost:4200)
+2. Intentar registrar un usuario nuevo
+3. Intentar hacer login
+4. Intentar crear un equipo o jugador
+5. Verificar que las operaciones funcionen correctamente
+
+
+=====================================================================
+9. SOLUCIÓN DE PROBLEMAS COMUNES
+=====================================================================
+
+PROBLEMA: "Puerto 8080 ya está en uso"
+SOLUCIÓN:
+Windows:
+   netstat -ano | findstr :8080
+   taskkill /PID <número_proceso> /F
+
+macOS/Linux:
+   lsof -ti:8080 | xargs kill -9
+
+
+PROBLEMA: "Puerto 3306 ya está en uso"
+SOLUCIÓN:
+   - Detener otros servicios MySQL
+   - O cambiar puerto en docker-compose.yml y application.properties
+
+
+PROBLEMA: "Cannot connect to database"
+SOLUCIÓN:
+   1. Verificar que MySQL/Docker esté corriendo
+   2. Verificar credenciales en application.properties
+   3. Verificar que la base de datos "control_jugadores" exista
+
+
+PROBLEMA: "mvn no se reconoce como comando"
+SOLUCIÓN:
+   1. Verificar que MAVEN_HOME esté en variables de entorno
+   2. Verificar que %MAVEN_HOME%\bin esté en PATH
+   3. Reiniciar terminal
+
+
+PROBLEMA: "ng no se reconoce como comando"
+SOLUCIÓN:
+   npm install -g @angular/cli@17
+   Reiniciar terminal
+
+
+PROBLEMA: "Error de compilación en Backend"
+SOLUCIÓN:
+   1. Verificar versión de Java: java -version (debe ser 17)
+   2. Limpiar cache de Maven:
+      mvn clean
+      Eliminar carpeta .m2/repository (opcional)
+   3. Recompilar: mvn clean install
+
+
+PROBLEMA: "Error de dependencias en Frontend"
+SOLUCIÓN:
+   1. Eliminar carpeta node_modules
+   2. Eliminar archivo package-lock.json
+   3. Ejecutar: npm install
+   4. Si persiste: npm cache clean --force
+
+
+PROBLEMA: "CORS errors en navegador"
+SOLUCIÓN:
+   - El backend ya tiene configuración CORS
+   - Verificar que frontend use http://localhost:8080 en las peticiones
+   - Verificar que ambos servicios estén corriendo
+
+
+PROBLEMA: "Error de MapStruct en compilación"
+SOLUCIÓN:
+   1. mvn clean
+   2. Eliminar carpeta target/
+   3. mvn clean package -DskipTests
+
+
+PROBLEMA: "StackOverflowError en el backend"
+SOLUCIÓN:
+   - Ya está corregido en la rama main
+   - Asegurarse de tener la última versión: git pull origin main
+
+
+=====================================================================
+COMANDOS RÁPIDOS DE REFERENCIA
+=====================================================================
+
+INICIAR TODO EL PROYECTO:
+--------------------------
+# Terminal 1 (Base de Datos)
+docker compose up -d
+
+# Terminal 2 (Backend)
+cd gestion-jugadores-futbolBase
+mvn spring-boot:run
+
+# Terminal 3 (Frontend)
+cd gestion-jugadores-frontend
+ng serve
+
+
+DETENER TODO:
+-------------
+# Detener Frontend: Ctrl+C en su terminal
+# Detener Backend: Ctrl+C en su terminal
+# Detener Docker:
+docker compose down
+
+
+ACTUALIZAR PROYECTO:
+--------------------
+git pull origin main
+cd gestion-jugadores-futbolBase
+mvn clean package -DskipTests
+cd ../gestion-jugadores-frontend
+npm install
+
+
+RECOMPILAR SOLO BACKEND:
+------------------------
+cd gestion-jugadores-futbolBase
+mvn clean package -DskipTests
+
+
+REINSTALAR DEPENDENCIAS FRONTEND:
+----------------------------------
+cd gestion-jugadores-frontend
+rm -rf node_modules package-lock.json
+npm install
+
+
+=====================================================================
+NOTAS ADICIONALES
+=====================================================================
+
+1. PUERTOS UTILIZADOS:
+   - 3306: MySQL (Base de Datos)
+   - 8080: Backend (Spring Boot API REST)
+   - 4200: Frontend (Angular)
+
+2. CREDENCIALES POR DEFECTO:
+   - MySQL root: 1234
+   - (Los usuarios de la aplicación se crean desde el frontend)
+
+3. VARIABLES DE ENTORNO IMPORTANTES:
+   - JAVA_HOME: Ruta de instalación de Java JDK
+   - MAVEN_HOME: Ruta de instalación de Maven
+   - PATH: Debe incluir rutas a Java, Maven, Node, Angular CLI
+
+4. ARCHIVOS DE CONFIGURACIÓN CLAVE:
+   - Backend: gestion-jugadores-futbolBase/src/main/resources/application.properties
+   - Frontend: gestion-jugadores-frontend/src/environments/
+   - Docker: docker-compose.yml
+
+5. FUNCIONALIDADES IMPLEMENTADAS:
+   - Gestión de equipos y jugadores
+   - Creación y seguimiento de partidos en tiempo real
+   - Registro de eventos durante partidos (7 tipos):
+     * ⚽ Gol (actualiza marcador automáticamente)
+     * 🎯 Asistencia
+     * 🟨 Tarjeta Amarilla
+     * 🟥 Tarjeta Roja
+     * 🔑 Pase Clave
+     * 🛡️ Robo
+     * 🥅 Tiro a Puerta
+   - Sistema de estadísticas completo:
+     * Estadísticas individuales de jugadores (18 métricas)
+     * Estadísticas de equipos (15 métricas)
+     * Actualización automática al finalizar partidos
+     * Dashboard visual con rankings y top performers
+     * Análisis por temporada
+   - Marcador en tiempo real con resultado automático
+   - Documentación API interactiva con Swagger UI
+   - Arquitectura modular con BaseController/BaseService
+   - Tests unitarios para controladores
+
+6. COMANDOS ÚTILES DOCKER:
+   - Ver contenedores: docker ps
+   - Ver logs: docker logs mysql_control_jugadores
+   - Entrar al contenedor: docker exec -it mysql_control_jugadores bash
+   - Conectar a MySQL: docker exec -it mysql_control_jugadores mysql -uroot -p1234
+
+7. ACCESO A DOCUMENTACIÓN API:
+   - Swagger UI: http://localhost:8080/swagger-ui.html
+   - OpenAPI JSON: http://localhost:8080/v3/api-docs
+   - Requiere autenticación JWT (obtener token desde /api/v1/auth/login)
+
+8. ESTRUCTURA DE BASE DE DATOS:
+   Tablas principales:
+   - usuarios: Gestión de usuarios y autenticación
+   - equipos: Equipos registrados por usuario
+   - jugadores: Jugadores asociados a equipos
+   - partidos: Partidos con resultado y marcador
+   - eventos_jugador: Eventos registrados durante partidos
+   - estadisticas_jugadores: Métricas individuales por temporada
+   - estadisticas_equipos: Métricas de equipo por temporada
+
+9. DESARROLLO VS PRODUCCIÓN:
+   - Estas instrucciones son para desarrollo local
+   - Para producción, considerar:
+     * Cambiar credenciales de base de datos
+     * Configurar HTTPS
+     * Usar servidor web (Nginx/Apache) para Angular
+     * Desplegar en servidor/cloud
+     * Configurar backup automático de base de datos
+     * Implementar logs centralizados
+     * Activar Spring Boot Actuator para monitoring
+
+
+=====================================================================
+CONTACTO Y SOPORTE
+=====================================================================
+
+Repositorio GitHub: https://github.com/OscarMartP/gestion-jugadores-futbolBase
+
+Para reportar problemas:
+1. Crear un Issue en GitHub
+2. Incluir logs de error completos
+3. Especificar sistema operativo y versiones instaladas
+
+Logs importantes:
+- Backend: Salida de consola donde ejecutas mvn spring-boot:run
+- Frontend: Consola del navegador (F12 -> Console)
+- Docker: docker logs mysql_control_jugadores
+
+
+=====================================================================
+FIN DE LAS INSTRUCCIONES
+=====================================================================
+
+Última actualización: Diciembre 28, 2025
+Versión del documento: 2.0
+
+NUEVAS FUNCIONALIDADES EN v2.0:
+- Sistema de estadísticas completo (jugadores y equipos)
+- Marcador en tiempo real con 7 tipos de eventos
+- Dashboard visual de estadísticas con rankings
+- Actualización automática de métricas al finalizar partidos
+- Análisis histórico por temporada

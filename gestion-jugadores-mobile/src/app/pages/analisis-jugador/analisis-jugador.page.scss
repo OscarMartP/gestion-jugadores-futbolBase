@@ -1,0 +1,33 @@
+.analisis-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.analisis-preview {
+  color: var(--ion-color-dark);
+  line-height: 1.5;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+ion-badge {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+}
+
+ion-card-header {
+  padding-bottom: 8px;
+}
+
+ion-card-content {
+  padding-top: 8px;
+}

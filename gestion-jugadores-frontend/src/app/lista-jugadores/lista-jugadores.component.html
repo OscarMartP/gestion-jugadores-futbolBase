@@ -1,0 +1,31 @@
+<h2>Lista jugadores</h2>
+<div class="mb-3">
+  <label for="equipoSelect"><strong>Filtrar por equipo:</strong></label>
+  <select id="equipoSelect" class="form-select" [(ngModel)]="equipoId" (ngModelChange)="obtenerJugadores()">
+    <option *ngFor="let equipo of equipos" [ngValue]="equipo.id">{{ equipo.nombre }}</option>
+  </select>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Nombre</th>
+      <th scope="col">Apellido</th>
+      <th scope="col">Posicion</th>
+      <th scope="col">Equipo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Recorrer mi lista de jugadores -->
+    <tr *ngFor= "let jugador of jugadores">
+      <td>{{jugador.nombre}}</td>
+      <td>{{jugador.apellido}}</td>
+      <td>{{jugador.posicion}}</td>
+      <td>{{ getEquipoNombre(jugador.equipoId) }}</td>
+      <td>
+        <button (click)= "actualizarJugador(jugador.id)" class="btn btn-info">Editar</button>
+        <button (click)= "eliminarJugador(jugador.id)" class="btn btn-danger" style="margin-left : 10px">Eliminar</button>
+        <button (click)= "verDetallesDelJugador(jugador.id)" class="btn btn-primary" style="margin-left : 10px">Detalles</button>
+      </td>
+    </tr>
+  </tbody>
+</table>

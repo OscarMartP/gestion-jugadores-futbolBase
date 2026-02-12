@@ -1,0 +1,302 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-button slot="start" fill="clear" (click)="volver()">
+      <ion-icon name="arrowBack"></ion-icon>
+    </ion-button>
+    <ion-title>Estadísticas de Equipo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  
+  <!-- Selector de Equipo -->
+  <ion-card>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Seleccionar Equipo:</ion-label>
+        <ion-select [(ngModel)]="equipoSeleccionado" (ionChange)="onEquipoChange()" interface="popover">
+          <ion-select-option *ngFor="let equipo of equipos" [value]="equipo.id">
+            {{ equipo.nombre }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="cargando" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando estadísticas...</p>
+  </div>
+
+  <!-- Contenido principal -->
+  <div *ngIf="!cargando && estadisticasEquipo">
+    
+    <!-- Tarjeta de resumen del equipo -->
+    <ion-card class="resumen-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="statsChart"></ion-icon>
+          {{ estadisticasEquipo.equipoNombre }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <div class="stat-box">
+                <h2>{{ estadisticasEquipo.partidosJugados || 0 }}</h2>
+                <p>Partidos</p>
+              </div>
+            </ion-col>
+            <ion-col size="6">
+              <div class="stat-box">
+                <h2>{{ estadisticasEquipo.golesFavor || 0 }}</h2>
+                <p>Goles</p>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="4">
+              <ion-chip color="success">
+                <ion-label>{{ estadisticasEquipo.partidosGanados || 0 }} G</ion-label>
+              </ion-chip>
+            </ion-col>
+            <ion-col size="4">
+              <ion-chip color="warning">
+                <ion-label>{{ estadisticasEquipo.partidosEmpatados || 0 }} E</ion-label>
+              </ion-chip>
+            </ion-col>
+            <ion-col size="4">
+              <ion-chip color="danger">
+                <ion-label>{{ estadisticasEquipo.partidosPerdidos || 0 }} P</ion-label>
+              </ion-chip>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Segmento de vistas principales -->
+    <ion-segment [(ngModel)]="vistaSeleccionada" mode="md">
+      <ion-segment-button value="generales">
+        <ion-label>Generales</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="individuales">
+        <ion-label>Individuales</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- VISTA GENERALES -->
+    <div *ngIf="vistaSeleccionada === 'generales'">
+      
+      <!-- Selector de evento -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon [name]="getIconoEvento()"></ion-icon>
+            {{ getTituloEvento() }}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-segment [(ngModel)]="eventoSeleccionado" mode="md">
+            <ion-segment-button value="pasesClave">
+              <ion-label>Pases Clave</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="tirosAPuerta">
+              <ion-label>Tiros</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="robos">
+              <ion-label>Robos</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Estadísticas totales -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>📊 Totales</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="6">
+                <div class="stat-highlight">
+                  <h1>{{ estadisticasEquipo['total' + getTituloEvento().replace(' ', '')] || 0 }}</h1>
+                  <p>Total</p>
+                </div>
+              </ion-col>
+              <ion-col size="6">
+                <div class="stat-highlight">
+                  <h1>{{ (estadisticasEquipo[getPrefijoEvento() + 'P90'] || 0).toFixed(1) }}</h1>
+                  <p>Por 90min</p>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Sub-segmento de análisis -->
+      <ion-segment [(ngModel)]="seccionSeleccionada" mode="md">
+        <ion-segment-button value="resultado">
+          <ion-label>Por Resultado</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="tiempo">
+          <ion-label>Por Tiempo</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <!-- Por Resultado -->
+      <ion-card *ngIf="seccionSeleccionada === 'resultado'">
+        <ion-card-header>
+          <ion-card-title>Distribución por Resultado</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-label>
+                <h3>🟢 Ganando</h3>
+                <ion-progress-bar 
+                  [value]="calcularPorcentaje(getValoresResultado().ganando, getTotalResultado()) / 100"
+                  color="success">
+                </ion-progress-bar>
+              </ion-label>
+              <ion-badge slot="end" color="success">
+                {{ getValoresResultado().ganando }} ({{ calcularPorcentaje(getValoresResultado().ganando, getTotalResultado()) }}%)
+              </ion-badge>
+            </ion-item>
+
+            <ion-item>
+              <ion-label>
+                <h3>🟡 Empatando</h3>
+                <ion-progress-bar 
+                  [value]="calcularPorcentaje(getValoresResultado().empatando, getTotalResultado()) / 100"
+                  color="warning">
+                </ion-progress-bar>
+              </ion-label>
+              <ion-badge slot="end" color="warning">
+                {{ getValoresResultado().empatando }} ({{ calcularPorcentaje(getValoresResultado().empatando, getTotalResultado()) }}%)
+              </ion-badge>
+            </ion-item>
+
+            <ion-item>
+              <ion-label>
+                <h3>🔴 Perdiendo</h3>
+                <ion-progress-bar 
+                  [value]="calcularPorcentaje(getValoresResultado().perdiendo, getTotalResultado()) / 100"
+                  color="danger">
+                </ion-progress-bar>
+              </ion-label>
+              <ion-badge slot="end" color="danger">
+                {{ getValoresResultado().perdiendo }} ({{ calcularPorcentaje(getValoresResultado().perdiendo, getTotalResultado()) }}%)
+              </ion-badge>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Por Tiempo -->
+      <ion-card *ngIf="seccionSeleccionada === 'tiempo'">
+        <ion-card-header>
+          <ion-card-title>Distribución por Tiempo</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item *ngFor="let intervalo of getLabelsIntervalosTiempo(); let i = index">
+              <ion-label>
+                <h3>⏱️ Min {{ intervalo }}</h3>
+                <ion-progress-bar 
+                  [value]="calcularPorcentaje(getArrayIntervalosTiempo()[i], getTotalIntervalosTiempo()) / 100"
+                  color="primary">
+                </ion-progress-bar>
+              </ion-label>
+              <ion-badge slot="end" color="primary">
+                {{ getArrayIntervalosTiempo()[i] }} ({{ calcularPorcentaje(getArrayIntervalosTiempo()[i], getTotalIntervalosTiempo()) }}%)
+              </ion-badge>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+
+    <!-- VISTA INDIVIDUALES -->
+    <div *ngIf="vistaSeleccionada === 'individuales'">
+      
+      <!-- Selector de evento para individuales -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="person"></ion-icon>
+            Estadísticas por Jugador
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-segment [(ngModel)]="eventoSeleccionado" mode="md">
+            <ion-segment-button value="pasesClave">
+              <ion-label>Pases Clave</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="tirosAPuerta">
+              <ion-label>Tiros</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="robos">
+              <ion-label>Robos</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Lista de jugadores -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon [name]="getIconoEvento()"></ion-icon>
+            {{ getTituloEvento() }} - Ranking
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item *ngFor="let jugador of getJugadoresOrdenados(); let i = index">
+              <ion-badge slot="start" [color]="i === 0 ? 'warning' : i < 3 ? 'medium' : 'light'">
+                {{ i + 1 }}
+              </ion-badge>
+              <ion-label>
+                <h2>{{ jugador.jugadorNombre }} {{ jugador.jugadorApellido }}</h2>
+                <p>{{ jugador.posicion }} | #{{ jugador.numeroCamiseta }}</p>
+                <p class="stat-detail">
+                  <strong>{{ getValorJugador(jugador) }}</strong> {{ getTituloEvento().toLowerCase() }} 
+                  en <strong>{{ jugador.partidosJugados }}</strong> partidos
+                  <span class="promedio">({{ getPromedioJugador(jugador) }} por partido)</span>
+                </p>
+                <ion-progress-bar 
+                  [value]="getValorJugador(jugador) / getMaxValorJugadores()"
+                  [color]="i === 0 ? 'warning' : 'primary'">
+                </ion-progress-bar>
+              </ion-label>
+              <ion-badge slot="end" [color]="i === 0 ? 'warning' : 'primary'">
+                {{ getValorJugador(jugador) }}
+              </ion-badge>
+            </ion-item>
+          </ion-list>
+
+          <!-- Mensaje si no hay datos -->
+          <div *ngIf="getJugadoresOrdenados().length === 0" class="no-data">
+            <ion-icon name="people"></ion-icon>
+            <p>No hay estadísticas disponibles</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+
+  </div>
+
+  <!-- Mensaje si no hay equipo seleccionado -->
+  <div *ngIf="!cargando && !estadisticasEquipo" class="no-data">
+    <ion-icon name="statsChart"></ion-icon>
+    <p>Selecciona un equipo para ver las estadísticas</p>
+  </div>
+
+</ion-content>

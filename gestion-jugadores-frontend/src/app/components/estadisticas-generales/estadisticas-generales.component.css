@@ -1,0 +1,394 @@
+.stat-box {
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 5px 0 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Botones de selección de estadísticas */
+.btn-estadistica {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid #1976d2;
+  background-color: white;
+  color: #1976d2;
+  transition: all 0.3s ease;
+  border-radius: 0;
+}
+
+.btn-estadistica:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.btn-estadistica:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+.btn-estadistica:hover {
+  background-color: #e3f2fd;
+  transform: translateY(-2px);
+}
+
+.btn-estadistica.active {
+  background-color: #1976d2;
+  color: white;
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+}
+
+.btn-group {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+.stat-box-small {
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #e3f2fd;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.stat-box-small:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  background-color: #bbdefb;
+}
+
+.stat-number-small {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 5px 0;
+  color: #1976d2;
+}
+
+.stat-label-small {
+  color: #555;
+  font-size: 0.75rem;
+  margin: 0;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Estilos específicos para tiros a puerta */
+.stat-box-recibidos {
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+}
+
+.stat-box-recibidos:hover {
+  background-color: #ffcdd2;
+}
+
+.stat-box-recibidos .stat-number-small {
+  color: #c62828;
+}
+
+.stat-box-realizados {
+  background-color: #e8f5e9;
+  border-left: 4px solid #4caf50;
+}
+
+.stat-box-realizados:hover {
+  background-color: #c8e6c9;
+}
+
+.stat-box-realizados .stat-number-small {
+  color: #2e7d32;
+}
+
+.stat-box-estado {
+  padding: 15px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-align: center;
+  border: 2px solid;
+}
+
+.stat-box-estado:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.stat-box-estado.ganando {
+  background-color: #e8f5e9;
+  border-color: #4caf50;
+}
+
+.stat-box-estado.ganando:hover {
+  background-color: #c8e6c9;
+}
+
+.stat-box-estado.empatando {
+  background-color: #fff3e0;
+  border-color: #ff9800;
+}
+
+.stat-box-estado.empatando:hover {
+  background-color: #ffe0b2;
+}
+
+.stat-box-estado.perdiendo {
+  background-color: #ffebee;
+  border-color: #f44336;
+}
+
+.stat-box-estado.perdiendo:hover {
+  background-color: #ffcdd2;
+}
+
+.stat-number-estado {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.stat-box-estado.ganando .stat-number-estado {
+  color: #2e7d32;
+}
+
+.stat-box-estado.empatando .stat-number-estado {
+  color: #f57c00;
+}
+
+.stat-box-estado.perdiendo .stat-number-estado {
+  color: #c62828;
+}
+
+.stat-label-estado {
+  color: #555;
+  font-size: 0.9rem;
+  margin: 5px 0;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.stat-percentage {
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin: 5px 0 0 0;
+}
+
+.perfil-card {
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border-left: 4px solid;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+}
+
+.perfil-card:hover {
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.perfil-remontada {
+  border-left-color: #e53935;
+  background: linear-gradient(to right, #ffebee, #f9f9f9);
+}
+
+.perfil-inconsistente {
+  border-left-color: #ff9800;
+  background: linear-gradient(to right, #fff3e0, #f9f9f9);
+}
+
+.perfil-lider {
+  border-left-color: #4caf50;
+  background: linear-gradient(to right, #e8f5e9, #f9f9f9);
+}
+
+.perfil-equilibrado {
+  border-left-color: #2196f3;
+  background: linear-gradient(to right, #e3f2fd, #f9f9f9);
+}
+
+.perfil-regular {
+  border-left-color: #9e9e9e;
+  background: linear-gradient(to right, #f5f5f5, #f9f9f9);
+}
+
+.perfil-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.perfil-icono {
+  font-size: 1.5rem;
+  margin-right: 8px;
+}
+
+.perfil-nombre {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.perfil-tipo {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.perfil-descripcion {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.perfil-stats {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.perfil-stats .badge {
+  font-size: 0.7rem;
+  padding: 3px 6px;
+}
+
+.position-badge {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  background-color: #3f51b5;
+  color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.large-icon {
+  font-size: 100px;
+  width: 100px;
+  height: 100px;
+  color: #ccc;
+}
+
+mat-card {
+  margin-bottom: 20px;
+}
+
+mat-card-header {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  font-weight: 600;
+  text-align: center;
+}
+
+.table tbody td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+@media (max-width: 768px) {
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .table-responsive {
+    font-size: 0.85rem;
+  }
+}
+
+/* Estilos para intervalos temporales */
+.stat-interval {
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #e3f2fd;
+  transition: all 0.3s ease;
+  margin: 5px;
+}
+
+.stat-interval:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.interval-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1976d2;
+  margin: 0 0 5px 0;
+}
+
+.interval-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #0d47a1;
+  margin: 0;
+}
+
+/* Estilos específicos para robos */
+.stat-box.robos {
+  background-color: #e8f5e9;
+  border-left: 4px solid #4caf50;
+}
+
+.stat-box.robos:hover {
+  background-color: #c8e6c9;
+}
+
+.stat-box.robos .stat-number {
+  color: #2e7d32;
+}
+
+.robos-interval {
+  background-color: #e8f5e9;
+}
+
+.robos-interval:hover {
+  background-color: #c8e6c9;
+}
+
+.robos-interval .interval-label {
+  color: #2e7d32;
+}
+
+.robos-interval .interval-value {
+  color: #1b5e20;
+}
+
+.mayor-recuperador {
+  font-size: 1.2rem !important;
+}

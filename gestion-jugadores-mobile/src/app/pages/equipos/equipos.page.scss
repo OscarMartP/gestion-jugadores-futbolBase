@@ -1,0 +1,103 @@
+// Estilos específicos para la página de equipos
+
+.team-card {
+  margin: 8px 16px;
+  --border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+  transition: all 0.3s ease;
+  
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(30, 58, 138, 0.15);
+  }
+  
+  ion-card-header {
+    padding: 16px 16px 8px 16px;
+  }
+  
+  ion-card-content {
+    padding: 8px 16px 16px 16px;
+  }
+}
+
+.team-type-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  
+  &.futbol-11 {
+    background: var(--ion-color-primary);
+    color: var(--ion-color-primary-contrast);
+  }
+  
+  &.futbol-7 {
+    background: var(--ion-color-secondary);
+    color: var(--ion-color-secondary-contrast);
+  }
+  
+  &.futbol-5 {
+    background: var(--ion-color-tertiary);
+    color: var(--ion-color-tertiary-contrast);
+  }
+}
+
+.duration-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(var(--ion-color-medium-rgb), 0.2);
+  color: var(--ion-color-medium-shade);
+}
+
+.stats-card {
+  margin: 16px;
+  --background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(30, 58, 138, 0.05));
+  border-left: 4px solid var(--ion-color-primary);
+  
+  ion-card-content {
+    padding: 16px;
+  }
+}
+
+.search-bar-custom {
+  --background: #ffffff;
+  --border-radius: 12px;
+  --box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
+  margin: 16px;
+}
+
+.header-custom {
+  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  --color: white;
+  
+  ion-title {
+    font-weight: 600;
+  }
+}
+
+.fab-custom {
+  --background: var(--ion-color-secondary);
+  --color: white;
+  --box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
