@@ -22,7 +22,6 @@ public class AnalisisJugador {
     @Column(name = "temporada", length = 20, nullable = false)
     private String temporada;
     
-    @Lob
     @Column(name = "analisis_tecnico", nullable = false, columnDefinition = "TEXT")
     private String analisisTecnico;
     
