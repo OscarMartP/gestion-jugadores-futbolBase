@@ -1,6 +1,6 @@
 // Archivo de configuración para DESARROLLO
-// Este archivo puede ser reemplazado durante el build.
+// Configurado para usar el backend en Railway (producción)
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api/v1'
+  apiUrl: 'https://gestion-jugadores-futbolbase-production.up.railway.app/api/v1'
 };

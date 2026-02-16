@@ -1,6 +1,5 @@
-// Archivo de configuración para PRODUCCIÓN
-// Reemplazar 'https://api.tudominio.com' con la URL real de tu backend en producción
+// Archivo de configuración para PRODUCCIÓN - Railway
 export const environment = {
   production: true,
-  apiUrl: 'https://api.tudominio.com/api/v1'
+  apiUrl: 'https://gestion-jugadores-futbolbase-production.up.railway.app/api/v1'
 };

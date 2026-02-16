@@ -392,36 +392,44 @@ export class ModoPartidoPage implements OnInit, OnDestroy {
         golesRival: this.golesRival
       };
 
-      // Actualizar partido en el backend
-      this.partidoService.desactivarPartido(this.partido.id).subscribe({
-        next: () => {
-          console.log('✅ Partido finalizado correctamente');
-          // Notificar que los partidos y estadísticas deben refrescarse
-          this.refreshService.refreshPartidos();
-          this.refreshService.refreshEstadisticas();
-        },
-        error: (error) => {
-          console.error('❌ Error al finalizar partido:', error);
-        }
-      });
+      // Actualizar partido en el backend - ESPERAR a que se complete usando Promise
+      try {
+        await this.partidoService.desactivarPartido(this.partido.id).toPromise();
+        console.log('✅ Partido finalizado correctamente en el backend');
+        
+        // Notificar que los partidos y estadísticas deben refrescarse
+        this.refreshService.refreshPartidos();
+        this.refreshService.refreshEstadisticas();
+        
+        // Mostrar resultado final SOLO después de que se completó la actualización
+        const alertFinal = await this.alertController.create({
+          header: '🏁 Partido Finalizado',
+          message: `Resultado Final: ${this.golesEquipo} - ${this.golesRival}`,
+          buttons: [
+            {
+              text: 'Volver a Partidos',
+              handler: () => {
+                this.router.navigate(['/tabs/partidos']);
+              }
+            }
+          ],
+          backdropDismiss: false
+        });
+
+        await alertFinal.present();
+        
+      } catch (error) {
+        console.error('❌ Error al finalizar partido:', error);
+        
+        // Mostrar error al usuario
+        const alertError = await this.alertController.create({
+          header: '❌ Error',
+          message: 'No se pudo finalizar el partido. Verifica tu conexión e intenta de nuevo.',
+          buttons: ['OK']
+        });
+        await alertError.present();
+      }
     }
-
-    // Mostrar resultado final
-    const alertFinal = await this.alertController.create({
-      header: '🏁 Partido Finalizado',
-      message: `Resultado Final: ${this.golesEquipo} - ${this.golesRival}`,
-      buttons: [
-        {
-          text: 'Volver a Partidos',
-          handler: () => {
-            this.router.navigate(['/tabs/partidos']);
-          }
-        }
-      ],
-      backdropDismiss: false
-    });
-
-    await alertFinal.present();
   }
 
   async cancelarPartido() {

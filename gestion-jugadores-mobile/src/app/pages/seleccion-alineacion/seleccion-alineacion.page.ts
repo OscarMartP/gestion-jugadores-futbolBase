@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -42,7 +42,8 @@ export class SeleccionAlineacionPage implements OnInit {
     private partidoService: PartidoService,
     private router: Router,
     private route: ActivatedRoute,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -96,6 +97,9 @@ export class SeleccionAlineacionPage implements OnInit {
         console.log(`✅ ${this.jugadores.length} jugadores cargados y ordenados`);
         this.titulares = [];
         this.suplentes = [];
+        
+        // Forzar detección de cambios
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('❌ Error al cargar jugadores:', error);
@@ -119,6 +123,9 @@ export class SeleccionAlineacionPage implements OnInit {
       this.titulares = this.titulares.filter(j => j.id !== jugador.id);
       this.suplentes = this.suplentes.filter(j => j.id !== jugador.id);
     }
+    
+    // Forzar detección de cambios
+    this.cdr.detectChanges();
   }
 
   isJugadorSeleccionado(jugador: Jugador): boolean {
@@ -143,11 +150,17 @@ export class SeleccionAlineacionPage implements OnInit {
 
     this.suplentes = this.suplentes.filter(j => j.id !== jugador.id);
     this.titulares.push(jugador);
+    
+    // Forzar detección de cambios
+    this.cdr.detectChanges();
   }
 
   moverASuplentes(jugador: Jugador) {
     this.titulares = this.titulares.filter(j => j.id !== jugador.id);
     this.suplentes.push(jugador);
+    
+    // Forzar detección de cambios
+    this.cdr.detectChanges();
   }
 
   async iniciarPartido() {
