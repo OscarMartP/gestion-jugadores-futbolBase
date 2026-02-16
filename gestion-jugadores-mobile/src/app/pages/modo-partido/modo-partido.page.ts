@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { lastValueFrom } from 'rxjs';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon,
   IonList, IonItem, IonLabel, IonBadge, IonFab, IonFabButton,
@@ -380,11 +381,15 @@ export class ModoPartidoPage implements OnInit, OnDestroy {
   }
 
   async confirmarFinalizacion() {
+    console.log('🏁 Iniciando finalización de partido...');
+    
     // Detener el timer si está activo
     this.detenerTimer();
 
     // Actualizar el partido con el resultado final antes de desactivarlo
     if (this.partido) {
+      console.log('📊 Partido ID:', this.partido.id, 'Goles:', this.golesEquipo, '-', this.golesRival);
+      
       // Primero actualizar el partido con los goles
       const partidoActualizado = {
         ...this.partido,
@@ -392,14 +397,19 @@ export class ModoPartidoPage implements OnInit, OnDestroy {
         golesRival: this.golesRival
       };
 
-      // Actualizar partido en el backend - ESPERAR a que se complete usando Promise
+      // Actualizar partido en el backend - ESPERAR a que se complete usando lastValueFrom
       try {
-        await this.partidoService.desactivarPartido(this.partido.id).toPromise();
-        console.log('✅ Partido finalizado correctamente en el backend');
+        console.log('⏳ Llamando a desactivarPartido...');
+        const resultado = await lastValueFrom(this.partidoService.desactivarPartido(this.partido.id));
+        console.log('✅ Partido finalizado correctamente en el backend:', resultado);
         
         // Notificar que los partidos y estadísticas deben refrescarse
+        console.log('🔄 Refrescando partidos y estadísticas...');
         this.refreshService.refreshPartidos();
         this.refreshService.refreshEstadisticas();
+        
+        // Pequeño delay para asegurar que el backend procesó todo
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         // Mostrar resultado final SOLO después de que se completó la actualización
         const alertFinal = await this.alertController.create({
@@ -409,6 +419,7 @@ export class ModoPartidoPage implements OnInit, OnDestroy {
             {
               text: 'Volver a Partidos',
               handler: () => {
+                console.log('👉 Navegando a partidos...');
                 this.router.navigate(['/tabs/partidos']);
               }
             }
@@ -429,6 +440,8 @@ export class ModoPartidoPage implements OnInit, OnDestroy {
         });
         await alertError.present();
       }
+    } else {
+      console.error('❌ No hay partido para finalizar');
     }
   }
 
