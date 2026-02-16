@@ -212,4 +212,66 @@ export class PartidosPage implements OnInit {
   verEstadisticasEquipo() {
     this.router.navigate(['/estadisticas-equipo']);
   }
+
+  async confirmarEliminarPartido(partidoId: number) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro de que quieres eliminar este partido? Se eliminarán todas sus estadísticas y no podrán recuperarse.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Eliminar',
+          cssClass: 'danger',
+          handler: () => {
+            this.eliminarPartido(partidoId);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  eliminarPartido(partidoId: number) {
+    console.log('🗑️ Eliminando partido:', partidoId);
+    
+    this.partidoService.eliminarPartido(partidoId).subscribe({
+      next: () => {
+        console.log('✅ Partido eliminado correctamente');
+        
+        // Eliminar de la lista local
+        this.partidos = this.partidos.filter(p => p.id !== partidoId);
+        this.aplicarFiltro();
+        
+        // Mostrar mensaje de éxito
+        this.mostrarMensajeExito();
+      },
+      error: (error) => {
+        console.error('❌ Error al eliminar partido:', error);
+        this.mostrarMensajeError();
+      }
+    });
+  }
+
+  async mostrarMensajeExito() {
+    const alert = await this.alertController.create({
+      header: 'Éxito',
+      message: 'El partido y sus estadísticas han sido eliminados correctamente.',
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
+  async mostrarMensajeError() {
+    const alert = await this.alertController.create({
+      header: 'Error',
+      message: 'No se pudo eliminar el partido. Por favor, inténtalo de nuevo.',
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
 }

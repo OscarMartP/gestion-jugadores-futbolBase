@@ -201,6 +201,15 @@
             <ion-icon name="eye-outline" slot="start"></ion-icon>
             Ver Detalles
           </ion-button>
+          
+          <ion-button 
+            fill="outline" 
+            size="small" 
+            color="danger"
+            (click)="confirmarEliminarPartido(partido.id)">
+            <ion-icon name="trash-outline" slot="start"></ion-icon>
+            Eliminar
+          </ion-button>
         </div>
       </ion-card-content>
     </ion-card>
