@@ -74,6 +74,12 @@ export class JugadoresPage implements OnInit {
       next: (jugadores) => {
         console.log('✅ Jugadores cargados desde backend:', jugadores);
         this.jugadores = jugadores;
+        
+        // DEBUG: Ver posiciones reales
+        console.log('🔍 Posiciones de jugadores:', 
+          jugadores.map(j => ({ nombre: j.nombre, posicion: j.posicion }))
+        );
+        
         this.aplicarFiltros();
         this.cargando = false;
       },
@@ -143,7 +149,24 @@ export class JugadoresPage implements OnInit {
   }
 
   obtenerJugadoresPorPosicion(posicion: string): Jugador[] {
-    return this.jugadores.filter(jugador => jugador.posicion === posicion);
+    // Agrupar posiciones según sus abreviaciones en la base de datos
+    const gruposDefensas = ['DEF', 'LD', 'LI', 'CEN', 'DEFENSA', 'LATERAL_DERECHO', 'LATERAL_IZQUIERDO', 'CENTRAL'];
+    const gruposMedios = ['MC', 'MCO', 'MCD', 'CENTROCAMPISTA', 'MEDIO_CENTRO', 'MEDIOCENTRO_DEFENSIVO', 'MEDIOCENTRO_OFENSIVO'];
+    const gruposDelanteros = ['DC', 'DEL', 'EXD', 'EXI', 'EXIZ', 'DELANTERO', 'DELANTERO_CENTRO', 'EXTREMO_DERECHO', 'EXTREMO_IZQUIERDO'];
+    
+    return this.jugadores.filter(jugador => {
+      const posicionJugador = jugador.posicion.toUpperCase();
+      
+      if (posicion === 'DELANTERO') {
+        return gruposDelanteros.includes(posicionJugador);
+      } else if (posicion === 'CENTROCAMPISTA') {
+        return gruposMedios.includes(posicionJugador);
+      } else if (posicion === 'DEFENSA') {
+        return gruposDefensas.includes(posicionJugador);
+      } else {
+        return posicionJugador === posicion;
+      }
+    });
   }
 
   agregarJugador() {
@@ -270,6 +293,28 @@ export class JugadoresPage implements OnInit {
    */
   verAnalisisJugador(jugador: Jugador) {
     this.router.navigate(['/analisis-jugador', jugador.id]);
+  }
+
+  /**
+   * Obtiene las iniciales de la posición para mostrar en el badge.
+   */
+  obtenerInicialPosicion(posicion: string): string {
+    const iniciales: { [key: string]: string } = {
+      'PORTERO': 'POR',
+      'DEFENSA': 'DEF',
+      'LATERAL_DERECHO': 'LD',
+      'LATERAL_IZQUIERDO': 'LI',
+      'CENTRAL': 'DFC',
+      'CENTROCAMPISTA': 'MC',
+      'MEDIO_CENTRO': 'MC',
+      'MEDIOCENTRO_DEFENSIVO': 'MCD',
+      'MEDIOCENTRO_OFENSIVO': 'MCO',
+      'EXTREMO_DERECHO': 'ED',
+      'EXTREMO_IZQUIERDO': 'EI',
+      'DELANTERO': 'DC',
+      'DELANTERO_CENTRO': 'DC'
+    };
+    return iniciales[posicion] || posicion.substring(0, 3).toUpperCase();
   }
 
 }

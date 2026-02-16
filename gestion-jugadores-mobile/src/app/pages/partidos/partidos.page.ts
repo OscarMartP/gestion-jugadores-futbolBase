@@ -158,11 +158,21 @@ export class PartidosPage implements OnInit {
   aplicarFiltro() {
     if (this.filtroActivo === 'TODOS') {
       this.partidosFiltrados = [...this.partidos];
+    } else if (this.filtroActivo === 'GANADOS') {
+      this.partidosFiltrados = this.partidos.filter(partido => partido.resultado === 'victoria');
+    } else if (this.filtroActivo === 'EMPATADOS') {
+      this.partidosFiltrados = this.partidos.filter(partido => partido.resultado === 'empate');
+    } else if (this.filtroActivo === 'PERDIDOS') {
+      this.partidosFiltrados = this.partidos.filter(partido => partido.resultado === 'derrota');
     } else if (this.filtroActivo === 'EN_CURSO') {
       this.partidosFiltrados = this.partidos.filter(partido => partido.partidoActivo === true);
     } else if (this.filtroActivo === 'COMPLETADO') {
       this.partidosFiltrados = this.partidos.filter(partido => partido.partidoActivo === false);
     }
+  }
+
+  contarPartidosPorResultado(resultado: 'victoria' | 'empate' | 'derrota'): number {
+    return this.partidos.filter(partido => partido.resultado === resultado).length;
   }
 
   refrescarPartidos(event: any) {

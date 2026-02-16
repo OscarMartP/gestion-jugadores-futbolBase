@@ -18,8 +18,51 @@ ion-tab-bar {
   margin-right: 8px;
   font-weight: 500;
   text-transform: none;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   
   ion-icon {
-    margin-right: 4px;
+    font-size: 1.2rem;
+  }
+}
+
+// En móvil: mostrar icono + "Salir"
+.logout-text-mobile {
+  display: inline;
+  font-size: 0.9rem;
+}
+
+.logout-text-desktop {
+  display: none;
+}
+
+// Ajustar título en móvil
+.toolbar-title {
+  font-size: 1rem;
+  padding-left: 8px;
+  padding-right: 4px;
+}
+
+// En desktop (tablets y pantallas grandes): mostrar icono + "Cerrar sesión"
+@media (min-width: 768px) {
+  .logout-text-mobile {
+    display: none;
+  }
+  
+  .logout-text-desktop {
+    display: inline;
+  }
+  
+  .logout-button {
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+  
+  .toolbar-title {
+    font-size: 1.25rem;
+    padding-left: 16px;
   }
 }

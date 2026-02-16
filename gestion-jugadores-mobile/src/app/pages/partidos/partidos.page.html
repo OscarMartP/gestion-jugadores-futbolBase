@@ -22,16 +22,16 @@
           <p style="margin: 0; font-size: 0.9rem;">Total</p>
         </div>
         <div>
-          <h2 style="margin: 0; color: var(--ion-color-success);">{{ obtenerPartidosPorEstado('COMPLETADO').length }}</h2>
-          <p style="margin: 0; font-size: 0.9rem;">Jugados</p>
+          <h2 style="margin: 0; color: var(--ion-color-success);">{{ contarPartidosPorResultado('victoria') }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Ganados</p>
         </div>
         <div>
-          <h2 style="margin: 0; color: var(--ion-color-warning);">{{ obtenerPartidosPorEstado('PROGRAMADO').length }}</h2>
-          <p style="margin: 0; font-size: 0.9rem;">Programados</p>
+          <h2 style="margin: 0; color: var(--ion-color-warning);">{{ contarPartidosPorResultado('empate') }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Empatados</p>
         </div>
         <div>
-          <h2 style="margin: 0; color: var(--ion-color-tertiary);">{{ obtenerPartidosPorEstado('EN_CURSO').length }}</h2>
-          <p style="margin: 0; font-size: 0.9rem;">En Curso</p>
+          <h2 style="margin: 0; color: var(--ion-color-danger);">{{ contarPartidosPorResultado('derrota') }}</h2>
+          <p style="margin: 0; font-size: 0.9rem;">Perdidos</p>
         </div>
       </div>
     </ion-card-content>
@@ -48,22 +48,22 @@
           <ion-label>Todos</ion-label>
         </ion-chip>
         <ion-chip 
-          [color]="filtroActivo === 'PROGRAMADO' ? 'warning' : 'medium'"
-          (click)="filtrarPartidos('PROGRAMADO')"
+          [color]="filtroActivo === 'GANADOS' ? 'success' : 'medium'"
+          (click)="filtrarPartidos('GANADOS')"
           style="cursor: pointer;">
-          <ion-label>Programados</ion-label>
+          <ion-label>Ganados</ion-label>
         </ion-chip>
         <ion-chip 
-          [color]="filtroActivo === 'EN_CURSO' ? 'tertiary' : 'medium'"
-          (click)="filtrarPartidos('EN_CURSO')"
+          [color]="filtroActivo === 'EMPATADOS' ? 'warning' : 'medium'"
+          (click)="filtrarPartidos('EMPATADOS')"
           style="cursor: pointer;">
-          <ion-label>En Curso</ion-label>
+          <ion-label>Empatados</ion-label>
         </ion-chip>
         <ion-chip 
-          [color]="filtroActivo === 'COMPLETADO' ? 'success' : 'medium'"
-          (click)="filtrarPartidos('COMPLETADO')"
+          [color]="filtroActivo === 'PERDIDOS' ? 'danger' : 'medium'"
+          (click)="filtrarPartidos('PERDIDOS')"
           style="cursor: pointer;">
-          <ion-label>Terminados</ion-label>
+          <ion-label>Perdidos</ion-label>
         </ion-chip>
       </div>
     </ion-card-content>

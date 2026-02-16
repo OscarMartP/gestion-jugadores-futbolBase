@@ -87,48 +87,43 @@
       *ngFor="let jugador of jugadoresFiltrados" 
       class="player-card">
       
-      <ion-card-header>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="flex: 1;">
-            <ion-card-title style="font-size: 1.2rem; margin-bottom: 4px;">
-              {{ jugador.nombre }} {{ jugador.apellido }}
-            </ion-card-title>
-            <span class="position-badge" 
+      <ion-card-content style="padding-top: 16px;">
+        <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;">
+          <div style="flex-shrink: 0;">
+            <div class="position-badge-large" 
                   [ngClass]="jugador.posicion.toLowerCase()">
-              {{ jugador.posicion }}
-            </span>
+              {{ obtenerInicialPosicion(jugador.posicion) }}
+            </div>
           </div>
-          <ion-icon 
-            name="football-outline" 
-            size="large" 
-            style="color: var(--ion-color-primary); opacity: 0.7;">
-          </ion-icon>
+          <div style="flex: 1; min-width: 0;">
+            <h2 style="margin: 0 0 4px 0; font-size: 1.3rem; font-weight: 700; color: #1a1a1a;">
+              {{ jugador.nombre }} {{ jugador.apellido }}
+            </h2>
+            <p style="margin: 0; color: var(--ion-color-medium); font-size: 0.9rem;">
+              {{ jugador.posicion }}
+            </p>
+          </div>
         </div>
-      </ion-card-header>
-
-      <ion-card-content>
-        <p style="margin: 0 0 12px 0; color: var(--ion-color-medium);">
-          <ion-icon name="shirt-outline" style="margin-right: 4px;"></ion-icon>
-          Equipo ID: {{ jugador.equipoId || 'Sin equipo' }}
-        </p>
         
-        <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
-          <ion-button fill="outline" size="small" color="tertiary" (click)="verAnalisisJugador(jugador)">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <ion-button fill="outline" size="small" color="tertiary" (click)="verAnalisisJugador(jugador)" style="flex: 1; min-width: 120px;">
             <ion-icon name="library-outline" slot="start"></ion-icon>
             Ver Análisis
           </ion-button>
           
-          <ion-button fill="solid" size="small" color="tertiary" (click)="generarAnalisisIA(jugador)">
+          <ion-button fill="solid" size="small" color="tertiary" (click)="generarAnalisisIA(jugador)" style="flex: 1; min-width: 120px;">
             <ion-icon name="sparkles" slot="start"></ion-icon>
             Generar IA
           </ion-button>
-          
-          <ion-button fill="outline" size="small" color="primary" (click)="editarJugador(jugador)">
+        </div>
+        
+        <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+          <ion-button fill="outline" size="small" color="primary" (click)="editarJugador(jugador)" style="flex: 1;">
             <ion-icon name="create-outline" slot="start"></ion-icon>
             Editar
           </ion-button>
           
-          <ion-button fill="clear" color="danger" size="small" (click)="eliminarJugador(jugador)">
+          <ion-button fill="clear" color="danger" size="small" (click)="eliminarJugador(jugador)" style="flex: 1;">
             <ion-icon name="trash-outline" slot="start"></ion-icon>
             Eliminar
           </ion-button>

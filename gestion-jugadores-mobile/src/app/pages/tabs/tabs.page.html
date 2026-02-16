@@ -1,10 +1,11 @@
 <ion-header>
   <ion-toolbar class="football-gradient">
-    <ion-title>Gestión Fútbol Base</ion-title>
+    <ion-title class="toolbar-title">Gestión Fútbol Base</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="cerrarSesion()" color="light" fill="solid" class="logout-button">
-        <ion-icon slot="start" name="log-out-outline"></ion-icon>
-        Cerrar sesión
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span class="logout-text-mobile">Salir</span>
+        <span class="logout-text-desktop">Cerrar sesión</span>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

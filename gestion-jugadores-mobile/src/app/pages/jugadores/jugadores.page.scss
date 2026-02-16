@@ -60,6 +60,40 @@
   }
 }
 
+.position-badge-large {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  
+  &.portero {
+    background: var(--ion-color-warning);
+    color: var(--ion-color-warning-contrast);
+  }
+  
+  &.defensa, &.lateral_derecho, &.lateral_izquierdo, &.central {
+    background: var(--ion-color-primary);
+    color: var(--ion-color-primary-contrast);
+  }
+  
+  &.centrocampista, &.medio_centro, &.mediocentro_defensivo, &.mediocentro_ofensivo, &.extremo_derecho, &.extremo_izquierdo {
+    background: var(--ion-color-tertiary);
+    color: var(--ion-color-tertiary-contrast);
+  }
+  
+  &.delantero, &.delantero_centro {
+    background: var(--ion-color-danger);
+    color: var(--ion-color-danger-contrast);
+  }
+}
+
 .search-bar-custom {
   --background: #ffffff;
   --border-radius: 12px;
