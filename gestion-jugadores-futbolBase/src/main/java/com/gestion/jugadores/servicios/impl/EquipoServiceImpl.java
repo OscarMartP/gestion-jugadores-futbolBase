@@ -12,6 +12,7 @@ import com.gestion.jugadores.modelo.Jugador;
 import com.gestion.jugadores.modelo.Usuario;
 import com.gestion.jugadores.repositorio.AnalisisJugadorRepository;
 import com.gestion.jugadores.repositorio.EquipoRepository;
+import com.gestion.jugadores.repositorio.EstadisticasEquipoRepository;
 import com.gestion.jugadores.repositorio.UsuarioRepository;
 import com.gestion.jugadores.servicios.EquipoService;
 
@@ -21,14 +22,17 @@ public class EquipoServiceImpl implements EquipoService {
     private final EquipoRepository equipoRepository;
     private final UsuarioRepository usuarioRepository;
     private final AnalisisJugadorRepository analisisJugadorRepository;
+    private final EstadisticasEquipoRepository estadisticasEquipoRepository;
 
     @Autowired
     public EquipoServiceImpl(EquipoRepository equipoRepository, 
                               UsuarioRepository usuarioRepository,
-                              AnalisisJugadorRepository analisisJugadorRepository) {
+                              AnalisisJugadorRepository analisisJugadorRepository,
+                              EstadisticasEquipoRepository estadisticasEquipoRepository) {
         this.equipoRepository = equipoRepository;
         this.usuarioRepository = usuarioRepository;
         this.analisisJugadorRepository = analisisJugadorRepository;
+        this.estadisticasEquipoRepository = estadisticasEquipoRepository;
     }
 
     @Override
@@ -155,7 +159,12 @@ public class EquipoServiceImpl implements EquipoService {
         Equipo equipo = equipoRepository.findById(equipoId)
             .orElseThrow(() -> new ValidacionException("Equipo no encontrado"));
         
-        // 1. Eliminar primero todos los análisis de IA de los jugadores del equipo
+        // 1. Eliminar estadísticas del equipo (todas las temporadas)
+        estadisticasEquipoRepository.deleteAll(
+            estadisticasEquipoRepository.findByEquipo_Id(equipoId)
+        );
+        
+        // 2. Eliminar análisis de IA de los jugadores del equipo
         if (equipo.getJugadores() != null && !equipo.getJugadores().isEmpty()) {
             for (Jugador jugador : equipo.getJugadores()) {
                 analisisJugadorRepository.deleteAll(
@@ -164,7 +173,7 @@ public class EquipoServiceImpl implements EquipoService {
             }
         }
         
-        // 2. Al eliminar el equipo, los jugadores asociados se eliminan en cascada
+        // 3. Al eliminar el equipo, los jugadores asociados se eliminan en cascada
         // gracias a la configuración CascadeType.ALL en la entidad Equipo
         equipoRepository.delete(equipo);
     }
