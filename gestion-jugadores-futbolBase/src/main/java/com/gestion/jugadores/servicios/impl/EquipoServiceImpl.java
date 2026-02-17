@@ -8,7 +8,9 @@ import org.springframework.util.StringUtils;
 
 import com.gestion.jugadores.excepciones.ValidacionException;
 import com.gestion.jugadores.modelo.Equipo;
+import com.gestion.jugadores.modelo.Jugador;
 import com.gestion.jugadores.modelo.Usuario;
+import com.gestion.jugadores.repositorio.AnalisisJugadorRepository;
 import com.gestion.jugadores.repositorio.EquipoRepository;
 import com.gestion.jugadores.repositorio.UsuarioRepository;
 import com.gestion.jugadores.servicios.EquipoService;
@@ -18,12 +20,15 @@ public class EquipoServiceImpl implements EquipoService {
 
     private final EquipoRepository equipoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final AnalisisJugadorRepository analisisJugadorRepository;
 
     @Autowired
     public EquipoServiceImpl(EquipoRepository equipoRepository, 
-                              UsuarioRepository usuarioRepository) {
+                              UsuarioRepository usuarioRepository,
+                              AnalisisJugadorRepository analisisJugadorRepository) {
         this.equipoRepository = equipoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.analisisJugadorRepository = analisisJugadorRepository;
     }
 
     @Override
@@ -150,7 +155,16 @@ public class EquipoServiceImpl implements EquipoService {
         Equipo equipo = equipoRepository.findById(equipoId)
             .orElseThrow(() -> new ValidacionException("Equipo no encontrado"));
         
-        // Al eliminar el equipo, los jugadores asociados se eliminan en cascada
+        // 1. Eliminar primero todos los análisis de IA de los jugadores del equipo
+        if (equipo.getJugadores() != null && !equipo.getJugadores().isEmpty()) {
+            for (Jugador jugador : equipo.getJugadores()) {
+                analisisJugadorRepository.deleteAll(
+                    analisisJugadorRepository.findByJugadorIdOrderByFechaGeneracionDesc(jugador.getId())
+                );
+            }
+        }
+        
+        // 2. Al eliminar el equipo, los jugadores asociados se eliminan en cascada
         // gracias a la configuración CascadeType.ALL en la entidad Equipo
         equipoRepository.delete(equipo);
     }
