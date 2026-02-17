@@ -9,10 +9,13 @@ import org.springframework.util.StringUtils;
 import com.gestion.jugadores.excepciones.ValidacionException;
 import com.gestion.jugadores.modelo.Equipo;
 import com.gestion.jugadores.modelo.Jugador;
+import com.gestion.jugadores.modelo.Partido;
 import com.gestion.jugadores.modelo.Usuario;
 import com.gestion.jugadores.repositorio.AnalisisJugadorRepository;
 import com.gestion.jugadores.repositorio.EquipoRepository;
 import com.gestion.jugadores.repositorio.EstadisticasEquipoRepository;
+import com.gestion.jugadores.repositorio.EventoJugadorRepository;
+import com.gestion.jugadores.repositorio.PartidoRepository;
 import com.gestion.jugadores.repositorio.UsuarioRepository;
 import com.gestion.jugadores.servicios.EquipoService;
 
@@ -23,16 +26,22 @@ public class EquipoServiceImpl implements EquipoService {
     private final UsuarioRepository usuarioRepository;
     private final AnalisisJugadorRepository analisisJugadorRepository;
     private final EstadisticasEquipoRepository estadisticasEquipoRepository;
+    private final PartidoRepository partidoRepository;
+    private final EventoJugadorRepository eventoJugadorRepository;
 
     @Autowired
     public EquipoServiceImpl(EquipoRepository equipoRepository, 
                               UsuarioRepository usuarioRepository,
                               AnalisisJugadorRepository analisisJugadorRepository,
-                              EstadisticasEquipoRepository estadisticasEquipoRepository) {
+                              EstadisticasEquipoRepository estadisticasEquipoRepository,
+                              PartidoRepository partidoRepository,
+                              EventoJugadorRepository eventoJugadorRepository) {
         this.equipoRepository = equipoRepository;
         this.usuarioRepository = usuarioRepository;
         this.analisisJugadorRepository = analisisJugadorRepository;
         this.estadisticasEquipoRepository = estadisticasEquipoRepository;
+        this.partidoRepository = partidoRepository;
+        this.eventoJugadorRepository = eventoJugadorRepository;
     }
 
     @Override
@@ -159,12 +168,23 @@ public class EquipoServiceImpl implements EquipoService {
         Equipo equipo = equipoRepository.findById(equipoId)
             .orElseThrow(() -> new ValidacionException("Equipo no encontrado"));
         
-        // 1. Eliminar estadísticas del equipo (todas las temporadas)
+        // 1. Eliminar eventos de los partidos del equipo
+        List<Partido> partidos = partidoRepository.findByEquipo_Id(equipoId);
+        for (Partido partido : partidos) {
+            eventoJugadorRepository.deleteAll(
+                eventoJugadorRepository.findByPartido_Id(partido.getId())
+            );
+        }
+        
+        // 2. Eliminar todos los partidos del equipo
+        partidoRepository.deleteAll(partidos);
+        
+        // 3. Eliminar estadísticas del equipo (todas las temporadas)
         estadisticasEquipoRepository.deleteAll(
             estadisticasEquipoRepository.findByEquipo_Id(equipoId)
         );
         
-        // 2. Eliminar análisis de IA de los jugadores del equipo
+        // 4. Eliminar análisis de IA de los jugadores del equipo
         if (equipo.getJugadores() != null && !equipo.getJugadores().isEmpty()) {
             for (Jugador jugador : equipo.getJugadores()) {
                 analisisJugadorRepository.deleteAll(
@@ -173,7 +193,7 @@ public class EquipoServiceImpl implements EquipoService {
             }
         }
         
-        // 3. Al eliminar el equipo, los jugadores asociados se eliminan en cascada
+        // 5. Al eliminar el equipo, los jugadores asociados se eliminan en cascada
         // gracias a la configuración CascadeType.ALL en la entidad Equipo
         equipoRepository.delete(equipo);
     }
