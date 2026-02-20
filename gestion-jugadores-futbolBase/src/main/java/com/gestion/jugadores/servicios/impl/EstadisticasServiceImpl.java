@@ -244,8 +244,21 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         stats.setPerdidasPerdiendo(0);
         stats.setPerdidasP90(0.0);
         
-        // Obtener todos los eventos del jugador en la temporada
-        List<EventoJugador> eventos = eventoJugadorRepository.findByJugador_Id(jugadorId);
+        // ✅ OPTIMIZACIÓN: Calcular rango de fechas de la temporada (ej: "2025-2026")
+        String[] añosTemporada = temporada.split("-");
+        int añoInicio = Integer.parseInt(añosTemporada[0]);
+        int añoFin = Integer.parseInt(añosTemporada[1]);
+        LocalDateTime fechaInicio = LocalDateTime.of(añoInicio, 7, 1, 0, 0); // 1 julio del primer año
+        LocalDateTime fechaFin = LocalDateTime.of(añoFin, 6, 30, 23, 59); // 30 junio del segundo año
+        
+        // ✅ OPTIMIZACIÓN: Filtrar eventos solo de esta temporada (en lugar de TODOS los eventos históricos)
+        List<EventoJugador> eventos = eventoJugadorRepository.findByJugadorIdAndFechaPartidoBetween(
+            jugadorId, fechaInicio, fechaFin
+        );
+        
+        // ✅ OPTIMIZACIÓN: Cachear eventos agrupados por partido para evitar findAll() repetidos
+        Map<Long, List<EventoJugador>> eventosPorPartido = eventos.stream()
+            .collect(Collectors.groupingBy(e -> e.getPartido().getId()));
         
         for (EventoJugador evento : eventos) {
             String tipoEvento = evento.getTipoEvento().toUpperCase();
@@ -275,7 +288,9 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setTirosAPuerta76_90(stats.getTirosAPuerta76_90() + 1);
                         }
                         
-                        String estadoMarcadorGol = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo());
+                        // ✅ OPTIMIZACIÓN: Pasar cache de eventos del partido
+                        List<EventoJugador> eventosCache = eventosPorPartido.get(evento.getPartido().getId());
+                        String estadoMarcadorGol = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo(), eventosCache);
                         if ("GANANDO".equals(estadoMarcadorGol)) {
                             stats.setTirosAPuertaGanando(stats.getTirosAPuertaGanando() + 1);
                         } else if ("EMPATANDO".equals(estadoMarcadorGol)) {
@@ -324,8 +339,9 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setPasesClave76_90(stats.getPasesClave76_90() + 1);
                         }
                         
-                        // Determinar el estado del partido en ese momento usando el ID del evento
-                        String estadoMarcador = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo());
+                        // ✅ OPTIMIZACIÓN: Pasar cache de eventos del partido
+                        List<EventoJugador> eventosCache = eventosPorPartido.get(evento.getPartido().getId());
+                        String estadoMarcador = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo(), eventosCache);
                         if ("GANANDO".equals(estadoMarcador)) {
                             stats.setPasesClaveGanando(stats.getPasesClaveGanando() + 1);
                         } else if ("EMPATANDO".equals(estadoMarcador)) {
@@ -358,8 +374,9 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setTirosAPuerta76_90(stats.getTirosAPuerta76_90() + 1);
                         }
                         
-                        // Determinar el estado del partido en ese momento
-                        String estadoMarcadorTiro = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo());
+                        // ✅ OPTIMIZACIÓN: Pasar cache de eventos del partido
+                        List<EventoJugador> eventosCache = eventosPorPartido.get(evento.getPartido().getId());
+                        String estadoMarcadorTiro = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo(), eventosCache);
                         if ("GANANDO".equals(estadoMarcadorTiro)) {
                             stats.setTirosAPuertaGanando(stats.getTirosAPuertaGanando() + 1);
                         } else if ("EMPATANDO".equals(estadoMarcadorTiro)) {
@@ -393,8 +410,9 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setRobos76_90((stats.getRobos76_90() != null ? stats.getRobos76_90() : 0) + 1);
                         }
                         
-                        // Determinar el estado del partido en ese momento
-                        String estadoMarcadorRobo = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo());
+                        // ✅ OPTIMIZACIÓN: Pasar cache de eventos del partido
+                        List<EventoJugador> eventosCache = eventosPorPartido.get(evento.getPartido().getId());
+                        String estadoMarcadorRobo = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo(), eventosCache);
                         if ("GANANDO".equals(estadoMarcadorRobo)) {
                             stats.setRobosGanando((stats.getRobosGanando() != null ? stats.getRobosGanando() : 0) + 1);
                         } else if ("EMPATANDO".equals(estadoMarcadorRobo)) {
@@ -428,8 +446,9 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setPerdidas76_90((stats.getPerdidas76_90() != null ? stats.getPerdidas76_90() : 0) + 1);
                         }
                         
-                        // Determinar el estado del partido en ese momento
-                        String estadoMarcadorPerdida = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo());
+                        // ✅ OPTIMIZACIÓN: Pasar cache de eventos del partido
+                        List<EventoJugador> eventosCache = eventosPorPartido.get(evento.getPartido().getId());
+                        String estadoMarcadorPerdida = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), jugador.getEquipo(), eventosCache);
                         if ("GANANDO".equals(estadoMarcadorPerdida)) {
                             stats.setPerdidasGanando((stats.getPerdidasGanando() != null ? stats.getPerdidasGanando() : 0) + 1);
                         } else if ("EMPATANDO".equals(estadoMarcadorPerdida)) {
@@ -570,13 +589,30 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         
         System.out.println("Partidos finalizados contados: " + partidosContados);
         
-        // Contar tarjetas de todos los eventos del equipo
+        // ✅ OPTIMIZACIÓN: Calcular rango de fechas de la temporada
+        String[] añosTemporada = temporada.split("-");
+        int añoInicio = Integer.parseInt(añosTemporada[0]);
+        int añoFin = Integer.parseInt(añosTemporada[1]);
+        LocalDateTime fechaInicio = LocalDateTime.of(añoInicio, 7, 1, 0, 0);
+        LocalDateTime fechaFin = LocalDateTime.of(añoFin, 6, 30, 23, 59);
+        
+        // ✅ OPTIMIZACIÓN: Obtener eventos del equipo filtrados por temporada (en lugar de TODOS los históricos)
+        List<EventoJugador> todosEventosEquipo = eventoJugadorRepository.findByEquipoIdAndFechaPartidoBetween(
+            equipoId, fechaInicio, fechaFin
+        );
+        
+        // ✅ OPTIMIZACIÓN: Cachear eventos agrupados por partido
+        Map<Long, List<EventoJugador>> eventosPorPartido = todosEventosEquipo.stream()
+            .collect(Collectors.groupingBy(e -> e.getPartido().getId()));
+        
+        System.out.println("Total de eventos del equipo en temporada: " + todosEventosEquipo.size());
+        
+        // Contar tarjetas y eventos de todos los jugadores del equipo
         List<Jugador> jugadores = jugadorRepositorio.findByEquipo_Id(equipoId);
         System.out.println("Total de jugadores del equipo: " + jugadores.size());
         
-        for (Jugador jugador : jugadores) {
-            List<EventoJugador> eventos = eventoJugadorRepository.findByJugador_Id(jugador.getId());
-            for (EventoJugador evento : eventos) {
+        // ✅ OPTIMIZACIÓN: Procesar eventos ya filtrados en lugar de hacer queries por cada jugador
+        for (EventoJugador evento : todosEventosEquipo) {
                 String tipo = evento.getTipoEvento().toUpperCase();
                 if (tipo.contains("AMARILLA")) {
                     stats.setTarjetasAmarillas(stats.getTarjetasAmarillas() + 1);
@@ -603,8 +639,9 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setPasesClave76_90(stats.getPasesClave76_90() + 1);
                         }
                         
-                        // Determinar estado del marcador en ese minuto
-                        String estadoMarcador = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo);
+                        // ✅ OPTIMIZACIÓN: Pasar cache de eventos del partido
+                        List<EventoJugador> eventosCache = eventosPorPartido.get(evento.getPartido().getId());
+                        String estadoMarcador = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo, eventosCache);
                         if ("GANANDO".equals(estadoMarcador)) {
                             stats.setPasesClaveGanando(stats.getPasesClaveGanando() + 1);
                         } else if ("EMPATANDO".equals(estadoMarcador)) {
@@ -634,8 +671,9 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setTirosAPuerta76_90(stats.getTirosAPuerta76_90() + 1);
                         }
                         
-                        // Determinar estado del marcador en ese minuto
-                        String estadoMarcadorTiro = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo);
+                        // ✅ OPTIMIZACIÓN: Pasar cache de eventos del partido
+                        List<EventoJugador> eventosCache = eventosPorPartido.get(evento.getPartido().getId());
+                        String estadoMarcadorTiro = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo, eventosCache);
                         if ("GANANDO".equals(estadoMarcadorTiro)) {
                             stats.setTirosAPuertaGanando(stats.getTirosAPuertaGanando() + 1);
                         } else if ("EMPATANDO".equals(estadoMarcadorTiro)) {
@@ -665,8 +703,9 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setRobos76_90((stats.getRobos76_90() != null ? stats.getRobos76_90() : 0) + 1);
                         }
                         
-                        // Determinar estado del marcador en ese minuto
-                        String estadoMarcadorRobo = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo);
+                        // ✅ OPTIMIZACIÓN: Pasar cache de eventos del partido
+                        List<EventoJugador> eventosCache = eventosPorPartido.get(evento.getPartido().getId());
+                        String estadoMarcadorRobo = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo, eventosCache);
                         if ("GANANDO".equals(estadoMarcadorRobo)) {
                             stats.setRobosGanando((stats.getRobosGanando() != null ? stats.getRobosGanando() : 0) + 1);
                         } else if ("EMPATANDO".equals(estadoMarcadorRobo)) {
@@ -696,8 +735,9 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                             stats.setPerdidas76_90((stats.getPerdidas76_90() != null ? stats.getPerdidas76_90() : 0) + 1);
                         }
                         
-                        // Determinar estado del marcador en ese minuto
-                        String estadoMarcadorPerdida = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo);
+                        // ✅ OPTIMIZACIÓN: Pasar cache de eventos del partido
+                        List<EventoJugador> eventosCache = eventosPorPartido.get(evento.getPartido().getId());
+                        String estadoMarcadorPerdida = determinarEstadoMarcadorEnMinuto(evento.getPartido(), evento.getId(), equipo, eventosCache);
                         if ("GANANDO".equals(estadoMarcadorPerdida)) {
                             stats.setPerdidasGanando((stats.getPerdidasGanando() != null ? stats.getPerdidasGanando() : 0) + 1);
                         } else if ("EMPATANDO".equals(estadoMarcadorPerdida)) {
@@ -708,7 +748,6 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                     }
                 }
             }
-        }
         
         // Calcular tiros recibidos del rival (PARADAS + GOLES_RIVAL)
         // Inicializar contadores de tiros recibidos
@@ -1021,16 +1060,16 @@ public class EstadisticasServiceImpl implements EstadisticasService {
      * Determina el estado del marcador en un minuto específico del partido
      * reconstruyendo el marcador cronológicamente desde los eventos de gol
      * Usa el ID del evento para determinar el orden exacto dentro del mismo minuto
+     * ✅ OPTIMIZADO: Recibe eventos cacheados en lugar de hacer findAll()
      */
-    private String determinarEstadoMarcadorEnMinuto(Partido partido, Long eventoId, Equipo equipoJugador) {
+    private String determinarEstadoMarcadorEnMinuto(Partido partido, Long eventoId, Equipo equipoJugador, List<EventoJugador> eventosPartidoCache) {
         if (partido == null || eventoId == null) {
             return "EMPATANDO"; // Por defecto si no hay datos
         }
         
-        // Obtener todos los eventos de gol del partido que ocurrieron ANTES de este evento
-        // Usando el ID del evento (auto-incremental) para determinar el orden cronológico exacto
-        List<EventoJugador> eventosPartido = eventoJugadorRepository.findAll().stream()
-            .filter(e -> e.getPartido().getId().equals(partido.getId()))
+        // ✅ OPTIMIZACIÓN: Usar eventos cacheados (ya filtrados por partido) en lugar de findAll()
+        List<EventoJugador> eventosBase = (eventosPartidoCache != null ? eventosPartidoCache : new ArrayList<EventoJugador>());
+        List<EventoJugador> eventosPartido = eventosBase.stream()
             .filter(e -> {
                 String tipo = e.getTipoEvento().toUpperCase();
                 return tipo.equals("GOL") || tipo.equals("GOLES") || tipo.equals("GOL_RIVAL");
