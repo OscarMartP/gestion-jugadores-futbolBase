@@ -177,8 +177,18 @@ ion-chip {
   }
   
   .alert-message {
-    padding: 12px 16px;
-    font-size: 1rem;
+    padding: 16px 20px;
+    text-align: center;
+    
+    p {
+      margin: 12px 0;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      
+      strong {
+        color: var(--ion-color-primary);
+      }
+    }
   }
   
   .alert-button-group {
@@ -188,6 +198,7 @@ ion-chip {
       border-radius: 8px;
       font-weight: 600;
       text-transform: none;
+      font-size: 1rem;
     }
   }
 }
