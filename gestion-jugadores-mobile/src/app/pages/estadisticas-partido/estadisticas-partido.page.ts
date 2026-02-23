@@ -478,10 +478,10 @@ export class EstadisticasPartidoPage implements OnInit {
     // Formatear tipo de evento
     const tipoEvento = this.formatearTipoEvento(evento.tipoEvento);
     
-    // Crear alert con la información
+    // Crear alert con la información (sin HTML, solo texto)
     const alert = await this.alertController.create({
       header: `${this.getIconoEventoTipo(evento.tipoEvento)} ${tipoEvento}`,
-      message: `<p><strong>⏱️ Minuto:</strong> ${evento.minuto}'</p><p><strong>👤 Jugador:</strong> ${jugadorNombre}</p>`,
+      message: `⏱️ Minuto: ${evento.minuto}'\n\n👤 Jugador: ${jugadorNombre}`,
       buttons: ['Cerrar'],
       cssClass: 'evento-detalle-alert'
     });
