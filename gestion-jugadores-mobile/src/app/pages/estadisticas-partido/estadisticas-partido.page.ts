@@ -481,7 +481,7 @@ export class EstadisticasPartidoPage implements OnInit {
     // Crear alert con la información (sin HTML, solo texto)
     const alert = await this.alertController.create({
       header: `${this.getIconoEventoTipo(evento.tipoEvento)} ${tipoEvento}`,
-      message: `⏱️ Minuto: ${evento.minuto}'\n\n👤 Jugador: ${jugadorNombre}`,
+      message: `⏱️ Minuto: ${evento.minuto}'\n\n👤 Jugador:\n${jugadorNombre}`,
       buttons: ['Cerrar'],
       cssClass: 'evento-detalle-alert'
     });
