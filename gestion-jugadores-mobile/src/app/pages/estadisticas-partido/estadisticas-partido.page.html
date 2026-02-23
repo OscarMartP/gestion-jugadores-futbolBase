@@ -80,9 +80,9 @@
               class="timeline-event"
               [style.left.%]="getPosicionEvento(evento.minuto)"
               [style.background-color]="getColorEvento(evento.tipoEvento)"
-              [title]="evento.tipoEvento + ' - Min ' + evento.minuto">
+              (click)="mostrarDetalleEvento(evento)"
+              [title]="'Click para ver detalles'">
               <span class="event-icon">{{ getIconoEventoTipo(evento.tipoEvento) }}</span>
-              <span class="event-minute">{{ evento.minuto }}'</span>
             </div>
           </div>
         </div>

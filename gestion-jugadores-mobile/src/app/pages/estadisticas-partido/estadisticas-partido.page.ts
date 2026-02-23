@@ -6,7 +6,7 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonSpinner,
   IonChip, IonLabel, IonSegment, IonSegmentButton, IonList, IonItem,
-  IonBadge, IonProgressBar
+  IonBadge, IonProgressBar, AlertController
 } from '@ionic/angular/standalone';
 import { EventoJugadorService } from '../../core/services/evento-jugador.service';
 import { PartidoService } from '../../core/services/partido.service';
@@ -43,7 +43,8 @@ export class EstadisticasPartidoPage implements OnInit {
     private router: Router,
     private eventoService: EventoJugadorService,
     private partidoService: PartidoService,
-    private jugadorService: JugadorService
+    private jugadorService: JugadorService,
+    private alertController: AlertController
   ) {}
 
   ngOnInit() {
@@ -451,6 +452,73 @@ export class EstadisticasPartidoPage implements OnInit {
     if (!this.estadisticas) return 0;
     const duracion = this.estadisticas.duracion || 90;
     return Math.min((minuto / duracion) * 100, 100);
+  }
+
+  /**
+   * Muestra los detalles de un evento al hacer clic
+   */
+  async mostrarDetalleEvento(evento: EventoJugador) {
+    // Obtener nombre del jugador si existe
+    let jugadorNombre = 'Sin asignar';
+    
+    if (evento.jugadorId) {
+      try {
+        const jugador = await this.jugadorService.obtenerJugadorPorId(evento.jugadorId).toPromise();
+        if (jugador) {
+          jugadorNombre = `${jugador.nombre} ${jugador.apellido}`;
+        }
+      } catch (error) {
+        console.warn('No se pudo cargar el jugador:', error);
+      }
+    } else if ((evento as any).jugador) {
+      const jug = (evento as any).jugador;
+      jugadorNombre = `${jug.nombre || ''} ${jug.apellido || ''}`;
+    }
+
+    // Formatear tipo de evento
+    const tipoEvento = this.formatearTipoEvento(evento.tipoEvento);
+    
+    // Crear alert con la información
+    const alert = await this.alertController.create({
+      header: `${this.getIconoEventoTipo(evento.tipoEvento)} ${tipoEvento}`,
+      message: `
+        <div style="text-align: center; padding: 12px;">
+          <p style="margin: 8px 0; font-size: 1.1rem;">
+            <strong>⏱️ Minuto:</strong> ${evento.minuto}'
+          </p>
+          <p style="margin: 8px 0; font-size: 1.1rem;">
+            <strong>👤 Jugador:</strong> ${jugadorNombre}
+          </p>
+        </div>
+      `,
+      buttons: ['Cerrar'],
+      cssClass: 'evento-detalle-alert'
+    });
+
+    await alert.present();
+  }
+
+  /**
+   * Formatea el tipo de evento para mostrarlo
+   */
+  private formatearTipoEvento(tipo: string): string {
+    const tipoNormalizado = (tipo || '').toLowerCase().replace(/\s+/g, '_');
+    
+    const nombres: { [key: string]: string } = {
+      'gol': 'Gol',
+      'gol_rival': 'Gol Rival',
+      'asistencia': 'Asistencia',
+      'pase_clave': 'Pase Clave',
+      'tiro_a_puerta': 'Tiro a Puerta',
+      'tiro_puerta': 'Tiro a Puerta',
+      'robo': 'Robo',
+      'perdida': 'Pérdida',
+      'tarjeta_amarilla': 'Tarjeta Amarilla',
+      'tarjeta_roja': 'Tarjeta Roja',
+      'sustitucion': 'Sustitución'
+    };
+    
+    return nombres[tipoNormalizado] || tipo;
   }
 }
 
