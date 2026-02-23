@@ -32,6 +32,7 @@ export class EstadisticasPartidoPage implements OnInit {
   partidoId: number = 0;
   cargando = true;
   estadisticas: EstadisticasPartido | null = null;
+  eventos: EventoJugador[] = [];
   
   // Vista seleccionada
   vistaSeleccionada: 'general' | 'pasesClave' | 'tirosAPuerta' | 'robos' | 'perdidas' = 'general';
@@ -65,6 +66,7 @@ export class EstadisticasPartidoPage implements OnInit {
       console.log('📊 Partido recibido:', partido);
       console.log('📋 Eventos recibidos:', eventos);
       if (partido && eventos) {
+        this.eventos = eventos;
         this.procesarEstadisticas(partido, eventos);
       }
       this.cargando = false;
@@ -365,6 +367,90 @@ export class EstadisticasPartidoPage implements OnInit {
     if (this.vistaSeleccionada === 'robos') return 'shield-outline';
     if (this.vistaSeleccionada === 'perdidas') return 'close-circle-outline';
     return 'stats-chart-outline';
+  }
+
+  /**
+   * Obtiene los eventos filtrados según la vista seleccionada
+   */
+  getEventosFiltrados(): EventoJugador[] {
+    if (!this.eventos || this.eventos.length === 0) return [];
+    
+    // Si está en vista general, mostrar todos los eventos relevantes
+    if (this.vistaSeleccionada === 'general') {
+      return this.eventos.filter(e => {
+        const tipo = (e.tipoEvento || '').toLowerCase().replace(/\s+/g, '_');
+        return ['gol', 'gol_rival', 'asistencia', 'tarjeta_amarilla', 'tarjeta_roja', 'sustitucion'].includes(tipo);
+      });
+    }
+    
+    // Filtrar según el tipo seleccionado
+    const tipoFiltro = this.vistaSeleccionada === 'pasesClave' ? 'pase_clave' :
+                       this.vistaSeleccionada === 'tirosAPuerta' ? 'tiro' :
+                       this.vistaSeleccionada === 'robos' ? 'robo' :
+                       this.vistaSeleccionada === 'perdidas' ? 'perdida' : '';
+    
+    return this.eventos.filter(e => {
+      const tipo = (e.tipoEvento || '').toLowerCase().replace(/\s+/g, '_');
+      
+      if (this.vistaSeleccionada === 'tirosAPuerta') {
+        return tipo === 'tiro_a_puerta' || tipo === 'tiro_puerta';
+      }
+      
+      return tipo === tipoFiltro;
+    }).sort((a, b) => a.minuto - b.minuto);
+  }
+
+  /**
+   * Obtiene el icono para un tipo de evento
+   */
+  getIconoEventoTipo(tipoEvento: string): string {
+    const tipo = (tipoEvento || '').toLowerCase().replace(/\s+/g, '_');
+    
+    switch(tipo) {
+      case 'gol': return '⚽';
+      case 'gol_rival': return '😞';
+      case 'asistencia': return '🎯';
+      case 'pase_clave': return '🎪';
+      case 'tiro_a_puerta':
+      case 'tiro_puerta': return '🎯';
+      case 'robo': return '🛡️';
+      case 'perdida': return '❌';
+      case 'tarjeta_amarilla': return '🟨';
+      case 'tarjeta_roja': return '🟥';
+      case 'sustitucion': return '🔄';
+      default: return '📍';
+    }
+  }
+
+  /**
+   * Obtiene el color para un tipo de evento
+   */
+  getColorEvento(tipoEvento: string): string {
+    const tipo = (tipoEvento || '').toLowerCase().replace(/\s+/g, '_');
+    
+    switch(tipo) {
+      case 'gol': return '#10dc60';
+      case 'gol_rival': return '#f04141';
+      case 'asistencia': return '#3880ff';
+      case 'pase_clave': return '#7044ff';
+      case 'tiro_a_puerta':
+      case 'tiro_puerta': return '#ffc409';
+      case 'robo': return '#ffce00';
+      case 'perdida': return '#f04141';
+      case 'tarjeta_amarilla': return '#ffc409';
+      case 'tarjeta_roja': return '#f04141';
+      case 'sustitucion': return '#92949c';
+      default: return '#3880ff';
+    }
+  }
+
+  /**
+   * Calcula la posición porcentual del evento en la línea de tiempo
+   */
+  getPosicionEvento(minuto: number): number {
+    if (!this.estadisticas) return 0;
+    const duracion = this.estadisticas.duracion || 90;
+    return Math.min((minuto / duracion) * 100, 100);
   }
 }
 
