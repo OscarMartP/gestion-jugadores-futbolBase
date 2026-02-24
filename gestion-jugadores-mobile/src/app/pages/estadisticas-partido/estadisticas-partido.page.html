@@ -57,32 +57,49 @@
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <!-- Línea de tiempo horizontal -->
-        <div class="timeline-container">
-          <!-- Línea base -->
-          <div class="timeline-line"></div>
-          
-          <!-- Marcadores de minutos -->
-          <div class="timeline-markers">
-            <span class="marker">0'</span>
-            <span class="marker">15'</span>
-            <span class="marker">30'</span>
-            <span class="marker">45'</span>
-            <span class="marker">60'</span>
-            <span class="marker">75'</span>
-            <span class="marker">{{ estadisticas.duracion || 90 }}'</span>
-          </div>
-          
-          <!-- Eventos en la línea -->
-          <div class="timeline-events">
-            <div 
-              *ngFor="let evento of getEventosFiltrados()" 
-              class="timeline-event"
-              [style.left.%]="getPosicionEvento(evento.minuto)"
-              [style.background-color]="getColorEvento(evento.tipoEvento)"
-              (click)="mostrarDetalleEvento(evento)"
-              [title]="'Click para ver detalles'">
-              <span class="event-icon">{{ getIconoEventoTipo(evento.tipoEvento) }}</span>
+        <!-- Controles de zoom -->
+        <div class="zoom-info" *ngIf="zoomScale > 1">
+          <ion-chip color="primary" (click)="resetZoom()">
+            <ion-icon name="contract-outline"></ion-icon>
+            <ion-label>Zoom: {{ zoomScale.toFixed(1) }}x - Toca para resetear</ion-label>
+          </ion-chip>
+        </div>
+        
+        <!-- Línea de tiempo horizontal con zoom -->
+        <div 
+          class="timeline-wrapper"
+          (touchstart)="onTouchStart($event)"
+          (touchmove)="onTouchMove($event)"
+          (touchend)="onTouchEnd($event)">
+          <div 
+            class="timeline-container"
+            [style.transform]="'scaleX(' + zoomScale + ')'"
+            [style.transform-origin]="'left center'">
+            <!-- Línea base -->
+            <div class="timeline-line"></div>
+            
+            <!-- Marcadores de minutos -->
+            <div class="timeline-markers">
+              <span class="marker">0'</span>
+              <span class="marker">15'</span>
+              <span class="marker">30'</span>
+              <span class="marker">45'</span>
+              <span class="marker">60'</span>
+              <span class="marker">75'</span>
+              <span class="marker">{{ estadisticas.duracion || 90 }}'</span>
+            </div>
+            
+            <!-- Eventos en la línea -->
+            <div class="timeline-events">
+              <div 
+                *ngFor="let evento of getEventosFiltrados()" 
+                class="timeline-event"
+                [style.left.%]="getPosicionEvento(evento.minuto)"
+                [style.background-color]="getColorEvento(evento.tipoEvento)"
+                (click)="mostrarDetalleEvento(evento)"
+                [title]="'Click para ver detalles'">
+                <span class="event-icon">{{ getIconoEventoTipo(evento.tipoEvento) }}</span>
+              </div>
             </div>
           </div>
         </div>

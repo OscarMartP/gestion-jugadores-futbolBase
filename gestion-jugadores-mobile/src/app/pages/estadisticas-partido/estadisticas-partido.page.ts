@@ -38,6 +38,11 @@ export class EstadisticasPartidoPage implements OnInit {
   vistaSeleccionada: 'general' | 'pasesClave' | 'tirosAPuerta' | 'robos' | 'perdidas' = 'general';
   seccionSeleccionada: 'resultado' | 'tiempo' = 'resultado';
 
+  // Propiedades para zoom con dos dedos
+  zoomScale = 1;
+  lastDistance = 0;
+  isZooming = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -510,6 +515,59 @@ export class EstadisticasPartidoPage implements OnInit {
     };
     
     return nombres[tipoNormalizado] || tipo;
+  }
+
+  /**
+   * Maneja el inicio del gesto touch para zoom
+   */
+  onTouchStart(event: TouchEvent) {
+    if (event.touches.length === 2) {
+      this.isZooming = true;
+      this.lastDistance = this.getDistance(event.touches[0], event.touches[1]);
+      event.preventDefault();
+    }
+  }
+
+  /**
+   * Maneja el movimiento del gesto touch para zoom
+   */
+  onTouchMove(event: TouchEvent) {
+    if (this.isZooming && event.touches.length === 2) {
+      const currentDistance = this.getDistance(event.touches[0], event.touches[1]);
+      const delta = currentDistance - this.lastDistance;
+      
+      // Ajustar la escala basada en el cambio de distancia
+      const scaleDelta = delta * 0.01;
+      this.zoomScale = Math.max(1, Math.min(5, this.zoomScale + scaleDelta));
+      
+      this.lastDistance = currentDistance;
+      event.preventDefault();
+    }
+  }
+
+  /**
+   * Maneja el fin del gesto touch
+   */
+  onTouchEnd(event: TouchEvent) {
+    if (event.touches.length < 2) {
+      this.isZooming = false;
+    }
+  }
+
+  /**
+   * Calcula la distancia entre dos puntos touch
+   */
+  private getDistance(touch1: Touch, touch2: Touch): number {
+    const dx = touch1.clientX - touch2.clientX;
+    const dy = touch1.clientY - touch2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  /**
+   * Resetea el zoom a la escala original
+   */
+  resetZoom() {
+    this.zoomScale = 1;
   }
 }
 
