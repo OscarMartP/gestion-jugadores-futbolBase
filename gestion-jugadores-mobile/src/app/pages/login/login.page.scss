@@ -140,21 +140,6 @@
       }
     }
   }
-
-  .demo-section {
-    margin-top: 1rem;
-
-    .demo-button {
-      --border-color: rgba(255, 255, 255, 0.5);
-      --color: white;
-      --border-radius: 12px;
-      font-weight: 500;
-
-      &:hover {
-        --background: rgba(255, 255, 255, 0.1);
-      }
-    }
-  }
 }
 
 // Animaciones

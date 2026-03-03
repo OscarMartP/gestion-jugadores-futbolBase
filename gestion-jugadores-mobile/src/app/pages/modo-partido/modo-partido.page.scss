@@ -1,3 +1,7 @@
+ion-content {
+  --background: linear-gradient(181deg, #45b22f 0%, #31602b 40%, #f2f2f2 70%);
+}
+
 .timer-card {
   text-align: center;
   background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);

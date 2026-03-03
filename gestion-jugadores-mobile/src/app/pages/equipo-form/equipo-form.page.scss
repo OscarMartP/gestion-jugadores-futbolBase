@@ -1,5 +1,9 @@
 // Estilos para el formulario de equipos
 
+ion-content {
+  --background: linear-gradient(181deg, #45b22f 0%, #31602b 40%, #f2f2f2 70%);
+}
+
 .form-card {
   margin: 16px;
   --border-radius: 16px;

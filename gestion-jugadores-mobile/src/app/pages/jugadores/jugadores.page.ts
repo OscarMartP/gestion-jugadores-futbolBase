@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, 
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, IonIcon, 
   IonFab, IonFabButton, IonSearchbar, IonRefresher, IonRefresherContent, 
   IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonSpinner, IonSelect, IonSelectOption, IonItem, IonLabel
 } from '@ionic/angular/standalone';
@@ -12,6 +12,7 @@ import { JugadorService } from '../../core/services/jugador.service';
 import { EquipoService } from '../../core/services/equipo.service';
 import { RefreshService } from '../../core/services/refresh.service';
 import { AiAnalysisService } from '../../core/services/ai-analysis.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Jugador } from '../../core/models/jugador';
 import { Equipo } from '../../core/models/equipo';
 import { InformeIaModalComponent } from './informe-ia-modal.component';
@@ -22,7 +23,7 @@ import { InformeIaModalComponent } from './informe-ia-modal.component';
   styleUrls: ['./jugadores.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, 
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, IonIcon, 
     IonFab, IonFabButton, IonSearchbar, IonRefresher, IonRefresherContent, 
     IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonSpinner, IonSelect, IonSelectOption, IonItem, IonLabel,
     CommonModule, FormsModule
@@ -43,6 +44,7 @@ export class JugadoresPage implements OnInit {
     private equipoService: EquipoService,
     private refreshService: RefreshService,
     private aiService: AiAnalysisService,
+    private authService: AuthService,
     private router: Router,
     private alertController: AlertController,
     private loadingCtrl: LoadingController,
@@ -315,6 +317,31 @@ export class JugadoresPage implements OnInit {
       'DELANTERO_CENTRO': 'DC'
     };
     return iniciales[posicion] || posicion.substring(0, 3).toUpperCase();
+  }
+
+  /**
+   * Cierra la sesión del usuario.
+   */
+  async cerrarSesion() {
+    const alert = await this.alertController.create({
+      header: 'Confirmar',
+      message: '¿Estás seguro de que deseas cerrar sesión?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Cerrar sesión',
+          handler: () => {
+            this.authService.logout();
+            this.router.navigate(['/login']);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
 }

@@ -1,126 +1,338 @@
-// Estilos específicos para la página de jugadores
+// Estilos específicos para la página de jugadores - Basado en SVG
 
+// ===== FONDO CON GRADIENTE =====
+ion-content {
+  --background: linear-gradient(181deg, #45b22f 0%, #31602b 40%, #f2f2f2 70%);
+}
+
+// ===== HEADER =====
+.header-custom {
+  --background: #45b22f;
+  --color: white;
+  --min-height: 56px;
+  
+  ion-toolbar {
+    --background: #45b22f;
+    --color: white;
+    --padding-start: 16px;
+    --padding-end: 16px;
+  }
+}
+
+.header-title {
+  color: white;
+  font-weight: 800;
+  font-size: 18px;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+  padding-left: 8px;
+}
+
+.header-logo-space {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.exit-button {
+  --border-color: white;
+  --border-width: 1px;
+  --border-radius: 18px;
+  --color: white;
+  --background: transparent;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: none;
+  height: 32px;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: 0;
+}
+
+// ===== ESTADÍSTICAS =====
 .stats-card {
   margin: 16px;
-  --background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(30, 58, 138, 0.05));
-  border-left: 4px solid var(--ion-color-primary);
+  --background: #f2f2f2;
+  border-radius: 0;
+  border-left: 4px solid #31602b;
+  box-shadow: none;
+  
+  ion-card-content {
+    padding: 20px 16px;
+  }
+}
+
+.stats-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-badge-square {
+  width: 45px;
+  height: 44px;
+  border-radius: 5px;
+  background: #0268dd;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 31px;
+  font-weight: 800;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+}
+
+.stat-badge-circle {
+  width: 21px;
+  height: 21px;
+  border-radius: 5px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 800;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+  
+  &.green {
+    background: #09ca37;
+  }
+  
+  &.yellow {
+    background: #e7d600;
+  }
+  
+  &.red {
+    background: #d92828;
+  }
+}
+
+.stat-label {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #7d7d7d;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+}
+
+// ===== BARRA DE BÚSQUEDA =====
+.search-bar-custom {
+  --background: #f2f2f2;
+  --border-radius: 13px;
+  --box-shadow: none;
+  --placeholder-color: rgba(69, 178, 47, 0.48);
+  --placeholder-opacity: 1;
+  --color: rgba(69, 178, 47, 0.48);
+  margin: 16px 12px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  
+  .searchbar-search-icon {
+    color: #45b22f !important;
+  }
+}
+
+// ===== FILTROS LADO A LADO =====
+.filters-row {
+  display: flex;
+  gap: 8px;
+  margin: 0 14px 16px 14px;
+}
+
+.filter-box {
+  flex: 1;
+  height: 27px;
+  border-radius: 11px;
+  background: #f2f2f2;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(69, 178, 47, 0.48);
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+}
+
+.filter-team {
+  span {
+    color: rgba(69, 178, 47, 0.48);
+  }
+}
+
+.filter-select {
+  padding: 0;
+  position: relative;
+  
+  ion-select {
+    width: 100%;
+    height: 100%;
+    --placeholder-color: rgba(69, 178, 47, 0.48);
+    --placeholder-opacity: 1;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 0 12px;
+  }
+}
+
+// ===== CARDS DE JUGADORES =====
+.player-card {
+  margin: 8px 17px;
+  --background: #f2f2f2;
+  border-radius: 7px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.161);
+  transition: all 0.3s ease;
+  
+  &:active {
+    transform: scale(0.98);
+  }
   
   ion-card-content {
     padding: 16px;
   }
 }
 
-.player-card {
-  margin: 8px 16px;
-  --border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
-  transition: all 0.3s ease;
-  
-  &:active {
-    transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(30, 58, 138, 0.15);
-  }
-  
-  ion-card-header {
-    padding: 16px 16px 8px 16px;
-  }
-  
-  ion-card-content {
-    padding: 8px 16px 16px 16px;
-  }
+// ===== HEADER DE JUGADOR =====
+.player-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
-.position-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  
-  &.portero {
-    background: var(--ion-color-warning);
-    color: var(--ion-color-warning-contrast);
-  }
-  
-  &.defensa {
-    background: var(--ion-color-primary);
-    color: var(--ion-color-primary-contrast);
-  }
-  
-  &.centrocampista {
-    background: var(--ion-color-tertiary);
-    color: var(--ion-color-tertiary-contrast);
-  }
-  
-  &.delantero {
-    background: var(--ion-color-danger);
-    color: var(--ion-color-danger-contrast);
-  }
-}
-
-.position-badge-large {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+.position-badge-square {
+  width: 59px;
+  height: 59px;
+  background: #fff;
+  border: 1px solid #09ca37;
+  border-radius: 13px;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.161);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 24px;
+  font-weight: 800;
+  color: #09ca37;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+  flex-shrink: 0;
+}
+
+.player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-name {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #525252;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+}
+
+.position-badge-pill {
+  display: inline-block;
+  background: #09ca37;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 9px;
+  font-size: 13px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+}
+
+.player-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.shield-icon {
+  font-size: 32px;
+  color: #45b22f;
+}
+
+// ===== BOTONES =====
+.button-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
   
-  &.portero {
-    background: var(--ion-color-warning);
-    color: var(--ion-color-warning-contrast);
+  &:last-child {
+    margin-bottom: 0;
   }
   
-  &.defensa, &.lateral_derecho, &.lateral_izquierdo, &.central {
-    background: var(--ion-color-primary);
-    color: var(--ion-color-primary-contrast);
-  }
-  
-  &.centrocampista, &.medio_centro, &.mediocentro_defensivo, &.mediocentro_ofensivo, &.extremo_derecho, &.extremo_izquierdo {
-    background: var(--ion-color-tertiary);
-    color: var(--ion-color-tertiary-contrast);
-  }
-  
-  &.delantero, &.delantero_centro {
-    background: var(--ion-color-danger);
-    color: var(--ion-color-danger-contrast);
+  ion-button {
+    flex: 1;
+    margin: 0;
+    --border-radius: 10px;
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: none;
+    height: 30px;
+    font-family: 'Source Sans 3', sans-serif;
+    letter-spacing: -0.075em;
   }
 }
 
-.search-bar-custom {
-  --background: #ffffff;
-  --border-radius: 12px;
-  --box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
-  margin: 16px;
+.btn-analysis,
+.btn-edit {
+  --border-color: #09ca37;
+  --border-width: 1px;
+  --color: #09ca37;
+  --background: transparent;
+  
+  &:active {
+    --background: rgba(9, 202, 55, 0.1);
+  }
 }
 
-.header-custom {
-  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+.btn-generate-ia {
+  --background: rgba(9, 202, 55, 0.5);
+  --background-activated: rgba(9, 202, 55, 0.6);
   --color: white;
-  
-  ion-title {
-    font-weight: 600;
-  }
+  --border-color: #09ca37;
+  --border-width: 1px;
 }
 
+.btn-delete {
+  --background: rgba(202, 9, 9, 0.5);
+  --background-activated: rgba(202, 9, 9, 0.6);
+  --color: white;
+  --border-color: #ca0909;
+  --border-width: 1px;
+}
+
+// ===== FAB =====
 .fab-custom {
-  --background: var(--ion-color-secondary);
+  --background: #45b22f;
   --color: white;
-  --box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+  --box-shadow: 0 4px 12px rgba(69, 178, 47, 0.4);
   
   &:hover {
-    --box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+    --box-shadow: 0 6px 16px rgba(69, 178, 47, 0.5);
   }
 }
 
-// Animaciones
+// ===== ANIMACIONES =====
 .fade-in {
   animation: fadeIn 0.6s ease-in-out;
 }
@@ -133,20 +345,5 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-// Responsive design
-@media (max-width: 576px) {
-  .stats-card ion-card-content > div {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 16px;
-    
-    > div {
-      min-width: 120px;
-      text-align: center;
-    }
   }
 }
