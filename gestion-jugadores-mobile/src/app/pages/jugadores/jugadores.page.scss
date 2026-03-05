@@ -10,46 +10,77 @@ ion-content {
   --background: #45b22f;
   --color: white;
   --min-height: 56px;
-  
-  ion-toolbar {
-    --background: #45b22f;
-    --color: white;
-    --padding-start: 16px;
-    --padding-end: 16px;
-  }
+  --padding-start: 10px;
+  --padding-end: 10px;
+
+  position: relative;
 }
 
-.header-title {
-  color: white;
-  font-weight: 800;
-  font-size: 18px;
-  font-family: 'Source Sans 3', sans-serif;
-  letter-spacing: -0.075em;
-  padding-left: 8px;
-}
-
-.header-logo-space {
+/* CONTENEDOR DEL LOGO CENTRADO */
+.header-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  min-height: 40px;
+  width: auto;
+  height: auto;
+  pointer-events: none; // evita bloquear botones
 }
 
+/* LOGO */
+.header-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* TEXTO JUGADORES */
+.header-title {
+  color: white;
+  font-weight: 800;
+  font-size: 15px;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* BOTON SALIR */
 .exit-button {
   --border-color: white;
   --border-width: 1px;
   --border-radius: 18px;
   --color: white;
   --background: transparent;
-  --padding-start: 16px;
-  --padding-end: 16px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   text-transform: none;
-  height: 32px;
+  height: 30px;
   font-family: 'Source Sans 3', sans-serif;
-  letter-spacing: 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 360px) {
+  .header-title {
+    font-size: 14px;
+  }
+
+  .exit-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    font-size: 12px;
+  }
+
+  .header-logo {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 // ===== ESTADÍSTICAS =====

@@ -1,11 +1,16 @@
 <ion-header [translucent]="true">
   <ion-toolbar class="header-custom">
-    <div slot="start" class="header-title">
-      JUGADORES
+    <!-- IZQUIERDA -->
+    <ion-buttons slot="start">
+      <span class="header-title">JUGADORES</span>
+    </ion-buttons>
+
+    <!-- LOGO CENTRADO REAL -->
+    <div class="header-center">
+      <img src="assets/img/logo-fb.svg" class="header-logo" alt="Logo FBE" />
     </div>
-    <div class="header-logo-space">
-      <!-- Espacio reservado para el logo -->
-    </div>
+
+    <!-- DERECHA -->
     <ion-buttons slot="end">
       <ion-button fill="outline" class="exit-button" (click)="cerrarSesion()">
         Salir
