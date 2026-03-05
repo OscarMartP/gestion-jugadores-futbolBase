@@ -1,0 +1,209 @@
+.login-content {
+  --background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  
+  .login-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 2rem 1.5rem;
+    justify-content: center;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+
+    .logo {
+      .logo-icon {
+        font-size: 4rem;
+        color: white;
+        margin-bottom: 1rem;
+        display: block;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0 0 0.5rem 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      p {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin: 0;
+        font-weight: 300;
+      }
+    }
+  }
+
+  .login-form-container,
+  .register-form-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+
+    .auth-form {
+      h2 {
+        text-align: center;
+        color: #1e40af;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 2rem 0;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+
+        ion-item {
+          --background: transparent;
+          --border-radius: 12px;
+          --border-color: #e5e7eb;
+          --border-width: 2px;
+          --inner-padding-end: 0;
+          --min-height: 50px;
+
+          &:hover {
+            --border-color: #3b82f6;
+          }
+
+          &.is-invalid {
+            --border-color: #ef4444;
+          }
+
+          ion-input {
+            --color: white;
+            --placeholder-color: rgba(255, 255, 255, 0.7);
+          }
+
+          ion-button {
+            --color: #6b7280;
+            margin: 0;
+          }
+        }
+
+        .error-text {
+          color: #ef4444;
+          font-size: 0.8rem;
+          margin-top: 0.5rem;
+          margin-left: 0.5rem;
+        }
+      }
+
+      .auth-button {
+        --background: linear-gradient(45deg, #1e40af, #3b82f6);
+        --color: white;
+        --border-radius: 12px;
+        --box-shadow: 0 4px 15px rgba(30, 64, 175, 0.4);
+        font-weight: 600;
+        font-size: 1rem;
+        height: 50px;
+        margin: 1.5rem 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        &:hover {
+          --box-shadow: 0 6px 20px rgba(30, 64, 175, 0.6);
+          transform: translateY(-1px);
+        }
+
+        &[disabled] {
+          opacity: 0.6;
+          --box-shadow: none;
+          transform: none;
+        }
+      }
+
+      .auth-links {
+        text-align: center;
+        margin-top: 1rem;
+
+        p {
+          color: white;
+          margin: 0;
+          font-size: 0.9rem;
+        }
+
+        ion-button {
+          --color: white;
+          font-weight: 600;
+          text-decoration: none;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
+  }
+}
+
+// Animaciones
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-form-container,
+.register-form-container {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .login-content .login-container {
+    padding: 1rem;
+
+    .login-form-container,
+    .register-form-container {
+      padding: 1.5rem;
+    }
+
+    .login-header .logo {
+      .logo-icon {
+        font-size: 3rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .login-content {
+    .login-form-container,
+    .register-form-container {
+      background: rgba(30, 30, 30, 0.95);
+
+      .auth-form h2 {
+        color: #60a5fa;
+      }
+
+      ion-item {
+        --border-color: #374151;
+
+        ion-input {
+          --color: #f9fafb;
+          --placeholder-color: #9ca3af;
+        }
+      }
+
+      .auth-links p {
+        color: #d1d5db;
+      }
+    }
+  }
+}

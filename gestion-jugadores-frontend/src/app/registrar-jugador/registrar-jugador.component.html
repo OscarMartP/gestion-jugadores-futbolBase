@@ -1,0 +1,58 @@
+<div class="col-md-6 offset-md-3">
+  <h3 class="text-center">Registro de Jugador</h3>
+
+  <form [formGroup]="jugadorForm" (ngSubmit)="onSubmit()" novalidate>
+
+    <!-- Nombre -->
+    <div class="form-group mb-3">
+      <label for="nombre">Nombre:</label>
+      <input type="text" class="form-control" id="nombre" formControlName="nombre" placeholder="Escriba su nombre" />
+      <div *ngIf="jugadorForm.get('nombre')?.invalid && jugadorForm.get('nombre')?.touched" class="text-danger">
+        <div *ngIf="jugadorForm.get('nombre')?.errors?.['required']">Nombre requerido</div>
+        <div *ngIf="jugadorForm.get('nombre')?.errors?.['minlength']">Mínimo 4 caracteres</div>
+        <div *ngIf="jugadorForm.get('nombre')?.errors?.['maxlength']">Máximo 10 caracteres</div>
+      </div>
+    </div>
+
+    <!-- Apellido -->
+    <div class="form-group mb-3">
+      <label for="apellido">Apellido:</label>
+      <input type="text" class="form-control" id="apellido" formControlName="apellido"
+        placeholder="Escriba su apellido" />
+      <div *ngIf="jugadorForm.get('apellido')?.invalid && jugadorForm.get('apellido')?.touched" class="text-danger">
+        <div *ngIf="jugadorForm.get('apellido')?.errors?.['required']">Apellido requerido</div>
+        <div *ngIf="jugadorForm.get('apellido')?.errors?.['minlength']">Mínimo 4 caracteres</div>
+        <div *ngIf="jugadorForm.get('apellido')?.errors?.['maxlength']">Máximo 10 caracteres</div>
+      </div>
+    </div>
+
+    <!-- Posición -->
+    <div class="form-group mb-3">
+      <label for="posicion">Posición:</label>
+      <select class="form-select" id="posicion" formControlName="posicion">
+        <option value="" disabled selected>Seleccione una posición</option>
+        <option *ngFor="let pos of posiciones" [value]="pos">{{ pos }}</option>
+      </select>
+      <div *ngIf="jugadorForm.get('posicion')?.invalid && jugadorForm.get('posicion')?.touched" class="text-danger">
+        Posición requerida
+      </div>
+    </div>
+
+    <!-- Equipo -->
+    <div class="form-group mb-3">
+      <label for="equipo">Equipo:</label>
+      <select class="form-select" id="equipo" formControlName="equipoId">
+        <option [ngValue]="" disabled>Seleccione un equipo</option>
+        <option *ngFor="let equipo of equipos" [ngValue]="equipo.id">{{ equipo.nombre }}</option>
+      </select>
+      <div *ngIf="jugadorForm.get('equipoId')?.invalid && jugadorForm.get('equipoId')?.touched" class="text-danger">
+        Equipo requerido
+      </div>
+    </div>
+
+    <!-- Botón -->
+    <div class="text-center">
+      <button type="submit" class="btn btn-success" [disabled]="jugadorForm.invalid">Guardar</button>
+    </div>
+  </form>
+</div>

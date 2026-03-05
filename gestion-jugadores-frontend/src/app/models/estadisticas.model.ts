@@ -1,0 +1,127 @@
+// Interfaces para el sistema de estadísticas
+
+export interface EstadisticasJugadorDTO {
+  id: number;
+  jugadorId: number;
+  jugadorNombre: string;
+  jugadorApellido: string;
+  posicion: string;
+  temporada: string;
+  totalGoles: number;
+  golesEnCasa: number;
+  golesFuera: number;
+  totalAsistencias: number;
+  tarjetasAmarillas: number;
+  tarjetasRojas: number;
+  paradas: number; // Específico para porteros
+  partidosJugados: number;
+  partidosTitular: number;
+  minutosJugados: number;
+  totalPasesClave: number;
+  pasesClave0_15: number;
+  pasesClave16_30: number;
+  pasesClave31_45: number;
+  pasesClave46_60: number;
+  pasesClave61_75: number;
+  pasesClave76_90: number;
+  pasesClaveGanando: number;
+  pasesClaveEmpatando: number;
+  pasesClavePerdiendo: number;
+  pasesClaveP90: number;
+  totalTirosAPuerta: number;
+  tirosAPuerta0_15: number;
+  tirosAPuerta16_30: number;
+  tirosAPuerta31_45: number;
+  tirosAPuerta46_60: number;
+  tirosAPuerta61_75: number;
+  tirosAPuerta76_90: number;
+  tirosAPuertaGanando: number;
+  tirosAPuertaEmpatando: number;
+  tirosAPuertaPerdiendo: number;
+  tirosAPuertaP90: number;
+  totalRobos: number;
+  robos0_15: number;
+  robos16_30: number;
+  robos31_45: number;
+  robos46_60: number;
+  robos61_75: number;
+  robos76_90: number;
+  robosGanando: number;
+  robosEmpatando: number;
+  robosPerdiendo: number;
+  robosP90: number;
+  promedioGoles: number;
+  promedioAsistencias: number;
+  rating: number;
+}
+
+export interface EstadisticasEquipoDTO {
+  id: number;
+  equipoId: number;
+  equipoNombre: string;
+  temporada: string;
+  partidosJugados: number;
+  partidosGanados: number;
+  partidosEmpatados: number;
+  partidosPerdidos: number;
+  puntos: number;
+  golesFavor: number;
+  golesContra: number;
+  diferenciaGoles: number;
+  tarjetasAmarillas: number;
+  tarjetasRojas: number;
+  totalPasesClave: number;
+  pasesClave0_15: number;
+  pasesClave16_30: number;
+  pasesClave31_45: number;
+  pasesClave46_60: number;
+  pasesClave61_75: number;
+  pasesClave76_90: number;
+  pasesClaveGanando: number;
+  pasesClaveEmpatando: number;
+  pasesClavePerdiendo: number;
+  pasesClaveP90: number;
+  mayorPasador: string;
+  totalTirosAPuerta: number;
+  tirosAPuerta0_15: number;
+  tirosAPuerta16_30: number;
+  tirosAPuerta31_45: number;
+  tirosAPuerta46_60: number;
+  tirosAPuerta61_75: number;
+  tirosAPuerta76_90: number;
+  tirosAPuertaGanando: number;
+  tirosAPuertaEmpatando: number;
+  tirosAPuertaPerdiendo: number;
+  tirosAPuertaP90: number;
+  mayorTirador: string;
+  totalTirosRecibidos: number;
+  tirosRecibidos0_15: number;
+  tirosRecibidos16_30: number;
+  tirosRecibidos31_45: number;
+  tirosRecibidos46_60: number;
+  tirosRecibidos61_75: number;
+  tirosRecibidos76_90: number;
+  totalRobos: number;
+  robos0_15: number;
+  robos16_30: number;
+  robos31_45: number;
+  robos46_60: number;
+  robos61_75: number;
+  robos76_90: number;
+  robosGanando: number;
+  robosEmpatando: number;
+  robosPerdiendo: number;
+  robosP90: number;
+  mayorRecuperador: string;
+  promedioGolesFavor: number;
+  promedioGolesContra: number;
+  efectividad: number;
+}
+
+export interface ResumenEstadisticasDTO {
+  estadisticasEquipo: EstadisticasEquipoDTO;
+  topGoleadores: EstadisticasJugadorDTO[];
+  topAsistentes: EstadisticasJugadorDTO[];
+  menosTargetas: EstadisticasJugadorDTO[];
+  totalJugadores: number;
+}

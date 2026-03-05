@@ -1,0 +1,128 @@
+// Estilos para el formulario de jugadores
+
+ion-content {
+  --background: linear-gradient(181deg, #45b22f 0%, #31602b 40%, #f2f2f2 70%);
+}
+
+.form-card {
+  margin: 16px;
+  --border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+  
+  ion-card-header {
+    padding: 16px 16px 8px 16px;
+    
+    ion-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+  }
+  
+  ion-card-content {
+    padding: 8px 16px 16px 16px;
+  }
+}
+
+.form-item {
+  --border-radius: 12px;
+  --background: rgba(var(--ion-color-primary-rgb), 0.02);
+  margin-bottom: 16px;
+  
+  &.ion-invalid {
+    --border-color: var(--ion-color-danger);
+    --highlight-color: var(--ion-color-danger);
+  }
+  
+  ion-label {
+    color: var(--ion-color-primary);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  ion-input, ion-select, ion-textarea {
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+  
+  ion-note {
+    font-size: 0.8rem;
+    margin-top: 4px;
+  }
+}
+
+.action-button {
+  height: 56px;
+  --border-radius: 16px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  
+  &.primary {
+    --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+    --box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  }
+  
+  &.secondary {
+    --border-color: var(--ion-color-medium);
+    --color: var(--ion-color-medium-shade);
+  }
+}
+
+.header-custom {
+  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+  --color: white;
+  
+  ion-title {
+    font-weight: 600;
+  }
+  
+  ion-back-button {
+    --color: white;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive
+@media (max-width: 576px) {
+  .form-card {
+    margin: 8px;
+  }
+  
+  .action-button {
+    height: 48px;
+    font-size: 1rem;
+  }
+}
+
+// Estilos para Select personalizado
+ion-select {
+  --placeholder-color: var(--ion-color-medium);
+}
+
+ion-select-option {
+  --color: var(--ion-text-color);
+}
+
+// Animaciones de validación
+.form-item.ng-invalid.ng-touched {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}

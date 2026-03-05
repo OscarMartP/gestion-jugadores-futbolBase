@@ -1,0 +1,164 @@
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-container">
+    
+    <!-- Header -->
+    <div class="login-header">
+      <div class="logo">
+        <ion-icon name="football-outline" class="logo-icon"></ion-icon>
+        <h1>Fútbol Base</h1>
+        <p>Gestión de equipos y jugadores</p>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="login-form-container" *ngIf="!showRegister">
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form">
+        <h2>Iniciar Sesión</h2>
+
+        <div class="form-group">
+          <ion-item lines="none" fill="outline">
+            <ion-input 
+              type="email" 
+              placeholder="Email"
+              formControlName="email"
+              [class.is-invalid]="isFieldInvalid('email')">
+            </ion-input>
+          </ion-item>
+          <div *ngIf="isFieldInvalid('email')" class="error-text">
+            Email es requerido y debe ser válido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <ion-item lines="none" fill="outline">
+            <ion-input 
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Contraseña"
+              formControlName="password"
+              [class.is-invalid]="isFieldInvalid('password')">
+            </ion-input>
+            <ion-button 
+              fill="clear" 
+              slot="end"
+              (click)="togglePassword()">
+              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <div *ngIf="isFieldInvalid('password')" class="error-text">
+            Contraseña es requerida (mín. 6 caracteres)
+          </div>
+        </div>
+
+        <ion-button 
+          expand="block" 
+          type="submit"
+          [disabled]="loginForm.invalid || isLoading"
+          class="auth-button">
+          <ion-spinner name="crescent" *ngIf="isLoading"></ion-spinner>
+          <span *ngIf="!isLoading">Iniciar Sesión</span>
+        </ion-button>
+
+        <div class="auth-links">
+          <p>¿No tienes cuenta? 
+            <ion-button fill="clear" (click)="toggleForm()">
+              Regístrate aquí
+            </ion-button>
+          </p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Register Form -->
+    <div class="register-form-container" *ngIf="showRegister">
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form">
+        <h2>Crear Cuenta</h2>
+
+        <div class="form-group">
+          <ion-item lines="none" fill="outline">
+            <ion-input 
+              type="text" 
+              placeholder="Nombre completo"
+              formControlName="nombre"
+              [class.is-invalid]="isRegisterFieldInvalid('nombre')">
+            </ion-input>
+          </ion-item>
+          <div *ngIf="isRegisterFieldInvalid('nombre')" class="error-text">
+            Nombre es requerido (mín. 3 caracteres)
+          </div>
+        </div>
+
+        <div class="form-group">
+          <ion-item lines="none" fill="outline">
+            <ion-input 
+              type="text" 
+              placeholder="Apellido (opcional)"
+              formControlName="apellido">
+            </ion-input>
+          </ion-item>
+        </div>
+
+        <div class="form-group">
+          <ion-item lines="none" fill="outline">
+            <ion-input 
+              type="email" 
+              placeholder="Email"
+              formControlName="email"
+              [class.is-invalid]="isRegisterFieldInvalid('email')">
+            </ion-input>
+          </ion-item>
+          <div *ngIf="isRegisterFieldInvalid('email')" class="error-text">
+            Email es requerido y debe ser válido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <ion-item lines="none" fill="outline">
+            <ion-input 
+              type="tel" 
+              placeholder="Teléfono (opcional)"
+              formControlName="telefono">
+            </ion-input>
+          </ion-item>
+        </div>
+
+        <div class="form-group">
+          <ion-item lines="none" fill="outline">
+            <ion-input 
+              [type]="showRegisterPassword ? 'text' : 'password'"
+              placeholder="Contraseña"
+              formControlName="password"
+              [class.is-invalid]="isRegisterFieldInvalid('password')">
+            </ion-input>
+            <ion-button 
+              fill="clear" 
+              slot="end"
+              (click)="toggleRegisterPassword()">
+              <ion-icon [name]="showRegisterPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <div *ngIf="isRegisterFieldInvalid('password')" class="error-text">
+            Contraseña es requerida (mín. 6 caracteres)
+          </div>
+        </div>
+
+        <ion-button 
+          expand="block" 
+          type="submit"
+          [disabled]="registerForm.invalid || isLoading"
+          class="auth-button">
+          <ion-spinner name="crescent" *ngIf="isLoading"></ion-spinner>
+          <span *ngIf="!isLoading">Crear Cuenta</span>
+        </ion-button>
+
+        <div class="auth-links">
+          <p>¿Ya tienes cuenta? 
+            <ion-button fill="clear" (click)="toggleForm()">
+              Inicia sesión aquí
+            </ion-button>
+          </p>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</ion-content>

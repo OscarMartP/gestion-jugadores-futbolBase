@@ -1,0 +1,23 @@
+<div class="modo-partido-container">
+  <h2>Modo Partido</h2>
+
+  <div class="timer-section">
+    <p><strong>Tiempo transcurrido:</strong> {{ tiempoFormateado }}</p>
+    <button (click)="toggleTimer()">
+      {{ timerActivo ? 'Pausar' : 'Reanudar' }} Partido
+    </button>
+  </div>
+
+  <div class="jugadores-lista">
+    <div *ngFor="let jugador of jugadores" class="jugador-card">
+      <h3>{{ jugador.nombre }} {{ jugador.apellido }} ({{ jugador.posicion }})</h3>
+      <div class="botones-evento">
+        <button (click)="registrarEvento(jugador.id, 'gol')">Gol</button>
+        <button (click)="registrarEvento(jugador.id, 'asistencia')">Asistencia</button>
+        <button (click)="registrarEvento(jugador.id, 'robo')">Robo</button>
+        <button (click)="registrarEvento(jugador.id, 'pase_clave')">Pase Clave</button>
+        <button (click)="registrarEvento(jugador.id, 'perdida')">Pérdida</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1001.99 993.41">
+	<defs>
+		<style>
+			.cls-1 {
+				fill: #fff;
+			}
+
+			.cls-2 {
+				fill: none;
+			}
+
+			.cls-3 {
+				fill: #f2f2f2;
+			}
+
+			.cls-4 {
+				fill: url(#Degradado_sin_nombre_732);
+			}
+
+			.cls-5 {
+				fill: #31602b;
+			}
+
+			.cls-6 {
+				fill: #45b22f;
+			}
+
+			.cls-7 {
+				clip-path: url(#clippath);
+			}
+		</style>
+		<radialGradient id="Degradado_sin_nombre_732" data-name="Degradado sin nombre 732" cx="768.29" cy="647.07" fx="768.29" fy="647.07" r="56.91" gradientTransform="translate(1510.6 228.99) rotate(106.78)" gradientUnits="userSpaceOnUse">
+			<stop offset="0" stop-color="#45b22f"/>
+			<stop offset=".19" stop-color="#43ac2e"/>
+			<stop offset=".44" stop-color="#3f9c2d"/>
+			<stop offset=".72" stop-color="#39822c"/>
+			<stop offset="1" stop-color="#31602b"/>
+		</radialGradient>
+		<clipPath id="clippath">
+			<circle class="cls-2" cx="669.24" cy="777.71" r="56.89"/>
+		</clipPath>
+	</defs>
+	<g id="B_Huecos_" data-name="B (Huecos)">
+		<g>
+			<rect class="cls-6" width="1001.99" height="993.41" rx="153.31" ry="153.31" transform="translate(1001.99 993.41) rotate(180)"/>
+			<path class="cls-3" d="M669.24,843.63c-16.99,0-32.37-6.89-43.5-18.03-16.23,19.92-34.46,29.54-37.54,30.99h-262.98v-308.2l.37-.22-.38-147.83,177.93.47,117.58-117.58h-291.23v-84.42h343.7l132.66-132.66H184.78v865.29h621.08l-91.67-107.38c-11.23,12.02-27.21,19.55-44.95,19.55Z"/>
+			<g id="Pelota">
+				<circle class="cls-4" cx="669.24" cy="777.71" r="56.89"/>
+				<g class="cls-7">
+					<polygon class="cls-5" points="681.15 759.15 658.79 758.11 646.88 776.67 657.33 796.27 679.69 797.31 691.6 778.75 681.15 759.15"/>
+					<polygon class="cls-5" points="718.99 739.28 696.64 738.24 684.73 756.8 695.18 776.4 717.53 777.44 729.44 758.88 718.99 739.28"/>
+					<polygon class="cls-5" points="682.76 717.01 660.4 715.97 648.5 734.53 658.94 754.13 681.3 755.17 693.21 736.61 682.76 717.01"/>
+					<polygon class="cls-5" points="679.54 801.29 657.18 800.25 645.27 818.81 655.72 838.41 678.08 839.45 689.99 820.89 679.54 801.29"/>
+					<polygon class="cls-5" points="717.36 782.05 695 781.01 683.09 799.57 693.54 819.17 715.9 820.21 727.81 801.65 717.36 782.05"/>
+					<polygon class="cls-5" points="644.75 735.83 622.39 734.79 610.48 753.35 620.93 772.95 643.29 773.99 655.19 755.43 644.75 735.83"/>
+					<polygon class="cls-5" points="643.11 778.6 620.75 777.56 608.85 796.12 619.29 815.72 641.65 816.76 653.56 798.2 643.11 778.6"/>
+				</g>
+			</g>
+			<path class="cls-1" d="M442.26,667.74v95.03h56.96s31.95-4.47,31.95-29.57v-48.64s-.09-32.35-34.96-32.35h-53.95v15.53Z"/>
+			<path class="cls-1" d="M442.26,514.35v95.03h56.96s31.95-4.47,31.95-29.57v-48.64s-.09-32.35-34.96-32.35h-53.95v15.53Z"/>
+		</g>
+	</g>
+</svg>

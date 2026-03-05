@@ -1,0 +1,164 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="header-custom">
+    <!-- IZQUIERDA -->
+    <ion-buttons slot="start">
+      <span class="header-title">JUGADORES</span>
+    </ion-buttons>
+
+    <!-- LOGO CENTRADO REAL -->
+    <div class="header-center">
+      <img src="assets/img/logo-fb.svg" class="header-logo" alt="Logo FBE" />
+    </div>
+
+    <!-- DERECHA -->
+    <ion-buttons slot="end">
+      <ion-button fill="outline" class="exit-button" (click)="cerrarSesion()">
+        Salir
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="fade-in">
+  <!-- Estadísticas rápidas -->
+  <ion-card class="stats-card">
+    <ion-card-content>
+      <div class="stats-container">
+        <div class="stat-item">
+          <div class="stat-badge-square">
+            {{ jugadoresFiltrados.length }}
+          </div>
+          <p class="stat-label">TOTAL</p>
+        </div>
+        <div class="stat-item">
+          <div class="stat-badge-circle green">
+            {{ obtenerJugadoresPorPosicion('DELANTERO').length }}
+          </div>
+          <p class="stat-label">Delanteros</p>
+        </div>
+        <div class="stat-item">
+          <div class="stat-badge-circle yellow">
+            {{ obtenerJugadoresPorPosicion('CENTROCAMPISTA').length }}
+          </div>
+          <p class="stat-label">Medios</p>
+        </div>
+        <div class="stat-item">
+          <div class="stat-badge-circle red">
+            {{ obtenerJugadoresPorPosicion('DEFENSA').length }}
+          </div>
+          <p class="stat-label">Defensas</p>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Barra de búsqueda mejorada -->
+  <ion-searchbar 
+    class="search-bar-custom"
+    placeholder="Buscar jugador por nombre..." 
+    (ionInput)="buscarJugadores($event)"
+    [debounce]="300"
+    show-clear-button="focus">
+  </ion-searchbar>
+
+  <!-- Filtros lado a lado -->
+  <div class="filters-row">
+    <div class="filter-box filter-team">
+      <span>Filtrar por equipo...</span>
+    </div>
+    <div class="filter-box filter-select">
+      <ion-select 
+        [(ngModel)]="equipoSeleccionado"
+        (ionChange)="filtrarPorEquipo($event)"
+        placeholder="Todos los equipos"
+        interface="popover"
+        class="team-select">
+        <ion-select-option [value]="null">
+          Todos los equipos
+        </ion-select-option>
+        <ion-select-option *ngFor="let equipo of equipos" [value]="equipo.id">
+          {{ equipo.nombre }}
+        </ion-select-option>
+      </ion-select>
+    </div>
+  </div>
+
+  <!-- Pull to refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="refrescarJugadores($event)">
+    <ion-refresher-content 
+      pullingIcon="chevron-down-circle-outline"
+      pulling-text="Desliza para refrescar"
+      refreshingSpinner="circles"
+      refreshing-text="Actualizando jugadores...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading spinner -->
+  <div *ngIf="cargando" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px;">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p style="margin-top: 16px; color: var(--ion-color-primary);">Cargando jugadores...</p>
+  </div>
+
+  <!-- Lista de jugadores mejorada -->
+  <div *ngIf="!cargando">
+    <ion-card 
+      *ngFor="let jugador of jugadoresFiltrados" 
+      class="player-card">
+      
+      <ion-card-content>
+        <div class="player-header">
+          <div class="position-badge-square">
+            {{ obtenerInicialPosicion(jugador.posicion) }}
+          </div>
+          <div class="player-info">
+            <h2 class="player-name">{{ jugador.nombre }} {{ jugador.apellido }}</h2>
+            <span class="position-badge-pill">{{ obtenerInicialPosicion(jugador.posicion) }}</span>
+          </div>
+          <div class="player-icons">
+            <ion-icon name="shield" class="shield-icon"></ion-icon>
+          </div>
+        </div>
+        
+        <div class="button-row">
+          <ion-button fill="outline" size="small" class="btn-analysis" (click)="verAnalisisJugador(jugador)">
+            Análisis
+          </ion-button>
+          <ion-button fill="solid" size="small" class="btn-generate-ia" (click)="generarAnalisisIA(jugador)">
+            Generar IA
+          </ion-button>
+        </div>
+        
+        <div class="button-row">
+          <ion-button fill="outline" size="small" class="btn-edit" (click)="editarJugador(jugador)">
+            Editar
+          </ion-button>
+          <ion-button fill="solid" size="small" class="btn-delete" (click)="eliminarJugador(jugador)">
+            Eliminar
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Mensaje cuando no hay jugadores -->
+    <div *ngIf="jugadoresFiltrados.length === 0" 
+         style="text-align: center; padding: 60px 20px;">
+      <ion-icon 
+        name="people-outline" 
+        size="large" 
+        style="color: var(--ion-color-medium); margin-bottom: 16px; font-size: 4rem;">
+      </ion-icon>
+      <h2 style="color: var(--ion-color-medium); margin-bottom: 8px;">No hay jugadores</h2>
+      <p style="color: var(--ion-color-medium); margin-bottom: 24px;">
+        Agrega tu primer jugador presionando el botón +
+      </p>
+    </div>
+  </div>
+
+  <!-- FAB mejorado -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button class="fab-custom" (click)="agregarJugador()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

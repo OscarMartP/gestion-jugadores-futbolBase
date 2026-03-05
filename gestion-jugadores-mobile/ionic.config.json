@@ -1,0 +1,8 @@
+{
+  "name": "gestion-jugadores-mobile",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "app_id": "gestion-jugadores-mobile"
+}
