@@ -24,29 +24,29 @@
   <ion-card class="stats-card">
     <ion-card-content>
       <div class="stats-container">
-        <div class="stat-item">
+        <div class="stat-item stat-item-total">
           <div class="stat-badge-square">
             {{ jugadoresFiltrados.length }}
           </div>
-          <p class="stat-label">TOTAL</p>
+          <p class="stat-label stat-label-total">Total</p>
         </div>
-        <div class="stat-item">
+        <div class="stat-item stat-item-position">
           <div class="stat-badge-circle green">
             {{ obtenerJugadoresPorPosicion('DELANTERO').length }}
           </div>
-          <p class="stat-label">Delanteros</p>
+          <p class="stat-label stat-label-position green">Delanteros</p>
         </div>
-        <div class="stat-item">
+        <div class="stat-item stat-item-position">
           <div class="stat-badge-circle yellow">
             {{ obtenerJugadoresPorPosicion('CENTROCAMPISTA').length }}
           </div>
-          <p class="stat-label">Medios</p>
+          <p class="stat-label stat-label-position yellow">Medios</p>
         </div>
-        <div class="stat-item">
+        <div class="stat-item stat-item-position">
           <div class="stat-badge-circle red">
             {{ obtenerJugadoresPorPosicion('DEFENSA').length }}
           </div>
-          <p class="stat-label">Defensas</p>
+          <p class="stat-label stat-label-position red">Defensas</p>
         </div>
       </div>
     </ion-card-content>
