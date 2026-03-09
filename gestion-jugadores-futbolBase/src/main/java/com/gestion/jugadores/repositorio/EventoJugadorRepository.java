@@ -24,7 +24,8 @@ public interface EventoJugadorRepository extends JpaRepository<EventoJugador, Lo
     );
     
     // Filtrar eventos de un equipo por rango de fechas (para temporada)
-    @Query("SELECT e FROM EventoJugador e WHERE e.partido.equipo.id = :equipoId AND e.partido.fecha BETWEEN :fechaInicio AND :fechaFin")
+    // Cambiado: filtrar por e.jugador.equipo.id en lugar de e.partido.equipo.id para obtener solo eventos de jugadores del equipo
+    @Query("SELECT e FROM EventoJugador e WHERE e.jugador.equipo.id = :equipoId AND e.partido.fecha BETWEEN :fechaInicio AND :fechaFin")
     List<EventoJugador> findByEquipoIdAndFechaPartidoBetween(
         @Param("equipoId") Long equipoId, 
         @Param("fechaInicio") LocalDateTime fechaInicio, 
