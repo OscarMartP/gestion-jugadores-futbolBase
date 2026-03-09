@@ -613,11 +613,6 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         
         // ✅ OPTIMIZACIÓN: Procesar eventos ya filtrados en lugar de hacer queries por cada jugador
         for (EventoJugador evento : todosEventosEquipo) {
-                // ⚠️ SEGURIDAD: Saltar eventos del rival (ya filtrados en query, pero doble verificación)
-                if (Boolean.TRUE.equals(evento.getEsEventoRival())) {
-                    continue;
-                }
-                
                 String tipo = evento.getTipoEvento().toUpperCase();
                 if (tipo.contains("AMARILLA")) {
                     stats.setTarjetasAmarillas(stats.getTarjetasAmarillas() + 1);
