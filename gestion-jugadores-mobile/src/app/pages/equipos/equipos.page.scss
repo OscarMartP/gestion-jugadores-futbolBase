@@ -1,18 +1,167 @@
 // Estilos específicos para la página de equipos
 
+// ===== FONDO CON GRADIENTE =====
 ion-content {
   --background: linear-gradient(181deg, #45b22f 0%, #31602b 40%, #f2f2f2 70%);
 }
 
+// ===== HEADER =====
+.header-custom {
+  --background: #45b22f;
+  --color: white;
+  --min-height: 56px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+
+  position: relative;
+}
+
+/* CONTENEDOR DEL LOGO CENTRADO */
+.header-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+}
+
+/* LOGO */
+.header-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* TEXTO EQUIPOS */
+.header-title {
+  color: white;
+  font-weight: 800;
+  font-size: 15px;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* BOTON SALIR */
+.exit-button {
+  --border-color: white;
+  --border-width: 1px;
+  --border-radius: 18px;
+  --color: white;
+  --background: transparent;
+  --padding-start: 10px;
+  --padding-end: 10px;
+
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: none;
+  height: 30px;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+// ===== ESTADÍSTICAS =====
+.stats-card {
+  margin: 16px;
+  --background: #f2f2f2;
+  border-radius: 0;
+  border-left: 4px solid #31602b;
+  box-shadow: none;
+  
+  ion-card-content {
+    padding: 20px 16px;
+  }
+}
+
+.stats-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 74px;
+}
+
+.stat-badge-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+  
+  &.blue {
+    background: rgba(2, 104, 221, 0.5);
+    border: 1px solid #0268dd;
+  }
+  
+  &.purple {
+    background: rgba(168, 85, 247, 0.5);
+    border: 1px solid #a855f7;
+  }
+  
+  &.orange {
+    background: rgba(255, 152, 0, 0.5);
+    border: 1px solid #ff9800;
+  }
+}
+
+.stat-label {
+  min-width: 74px;
+  height: 24px;
+  border-radius: 999px;
+  margin: 0;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+  color: white;
+
+  &.blue {
+    background: rgba(2, 104, 221, 0.5);
+    border: 1px solid #0268dd;
+  }
+
+  &.purple {
+    background: rgba(168, 85, 247, 0.5);
+    border: 1px solid #a855f7;
+  }
+
+  &.orange {
+    background: rgba(255, 152, 0, 0.5);
+    border: 1px solid #ff9800;
+  }
+}
+
 .team-card {
   margin: 8px 16px;
-  --border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+  --background: #f2f2f2;
+  border-radius: 7px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.161);
   transition: all 0.3s ease;
   
   &:active {
     transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(30, 58, 138, 0.15);
   }
   
   ion-card-header {
@@ -22,67 +171,52 @@ ion-content {
   ion-card-content {
     padding: 8px 16px 16px 16px;
   }
+
+  ion-card-title {
+    color: #525252;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 800;
+  }
 }
 
 .team-type-badge {
   display: inline-block;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
   text-transform: uppercase;
-  
-  &.futbol-11 {
-    background: var(--ion-color-primary);
-    color: var(--ion-color-primary-contrast);
-  }
-  
-  &.futbol-7 {
-    background: var(--ion-color-secondary);
-    color: var(--ion-color-secondary-contrast);
-  }
-  
-  &.futbol-5 {
-    background: var(--ion-color-tertiary);
-    color: var(--ion-color-tertiary-contrast);
-  }
+  background: rgba(2, 104, 221, 0.5);
+  border: 1px solid #0268dd;
+  color: #0268dd;
+  font-family: 'Source Sans 3', sans-serif;
 }
 
 .duration-badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background: rgba(var(--ion-color-medium-rgb), 0.2);
-  color: var(--ion-color-medium-shade);
-}
-
-.stats-card {
-  margin: 16px;
-  --background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(30, 58, 138, 0.05));
-  border-left: 4px solid var(--ion-color-primary);
-  
-  ion-card-content {
-    padding: 16px;
-  }
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: #d9d9d9;
+  color: #525252;
+  font-family: 'Source Sans 3', sans-serif;
 }
 
 .search-bar-custom {
-  --background: #ffffff;
-  --border-radius: 12px;
-  --box-shadow: 0 2px 8px rgba(30, 58, 138, 0.1);
-  margin: 16px;
-}
-
-.header-custom {
-  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
-  --color: white;
-  
-  ion-title {
-    font-weight: 600;
-  }
+  --background: #f2f2f2;
+  --border-radius: 13px;
+  --box-shadow: none;
+  --placeholder-color: rgba(69, 178, 47, 0.48);
+  --placeholder-opacity: 1;
+  --color: rgba(69, 178, 47, 0.48);
+  width: calc(100% - 32px);
+  margin: 16px auto;
+  padding-inline-start: 0;
+  padding-inline-end: 0;
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 600;
 }
 
 .fab-custom {
@@ -91,17 +225,3 @@ ion-content {
   --box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
 }
 
-.fade-in {
-  animation: fadeIn 0.6s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}

@@ -1,14 +1,21 @@
 <ion-header [translucent]="true">
   <ion-toolbar class="header-custom">
-    <ion-title>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <ion-icon name="football" size="large"></ion-icon>
-        <span>Mis Partidos</span>
-      </div>
-    </ion-title>
-    <ion-button slot="end" fill="clear" (click)="verEstadisticasEquipo()">
-      <ion-icon name="statsChart"></ion-icon>
-    </ion-button>
+    <!-- IZQUIERDA -->
+    <ion-buttons slot="start">
+      <span class="header-title">PARTIDOS</span>
+    </ion-buttons>
+
+    <!-- LOGO CENTRADO REAL -->
+    <div class="header-center">
+      <img src="assets/img/logo-fb.svg" class="header-logo" alt="Logo FBE" />
+    </div>
+
+    <!-- DERECHA -->
+    <ion-buttons slot="end">
+      <ion-button fill="outline" class="exit-button" (click)="cerrarSesion()">
+        Salir
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -16,55 +23,31 @@
   <!-- Estadísticas de partidos -->
   <ion-card class="stats-card">
     <ion-card-content>
-      <div style="display: flex; justify-content: space-around; text-align: center;">
-        <div>
-          <h2 style="margin: 0; color: var(--ion-color-primary);">{{ partidos.length }}</h2>
-          <p style="margin: 0; font-size: 0.9rem;">Total</p>
+      <div class="stats-container">
+        <div class="stat-item">
+          <div class="stat-badge-circle blue">
+            {{ partidos.length }}
+          </div>
+          <p class="stat-label blue">Total</p>
         </div>
-        <div>
-          <h2 style="margin: 0; color: var(--ion-color-success);">{{ contarPartidosPorResultado('victoria') }}</h2>
-          <p style="margin: 0; font-size: 0.9rem;">Ganados</p>
+        <div class="stat-item">
+          <div class="stat-badge-circle green">
+            {{ contarPartidosPorResultado('victoria') }}
+          </div>
+          <p class="stat-label green">Ganados</p>
         </div>
-        <div>
-          <h2 style="margin: 0; color: var(--ion-color-warning);">{{ contarPartidosPorResultado('empate') }}</h2>
-          <p style="margin: 0; font-size: 0.9rem;">Empatados</p>
+        <div class="stat-item">
+          <div class="stat-badge-circle yellow">
+            {{ contarPartidosPorResultado('empate') }}
+          </div>
+          <p class="stat-label yellow">Empatados</p>
         </div>
-        <div>
-          <h2 style="margin: 0; color: var(--ion-color-danger);">{{ contarPartidosPorResultado('derrota') }}</h2>
-          <p style="margin: 0; font-size: 0.9rem;">Perdidos</p>
+        <div class="stat-item">
+          <div class="stat-badge-circle red">
+            {{ contarPartidosPorResultado('derrota') }}
+          </div>
+          <p class="stat-label red">Perdidos</p>
         </div>
-      </div>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- Filtros de partidos -->
-  <ion-card class="filter-card">
-    <ion-card-content>
-      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-        <ion-chip 
-          [color]="filtroActivo === 'TODOS' ? 'primary' : 'medium'"
-          (click)="filtrarPartidos('TODOS')"
-          style="cursor: pointer;">
-          <ion-label>Todos</ion-label>
-        </ion-chip>
-        <ion-chip 
-          [color]="filtroActivo === 'GANADOS' ? 'success' : 'medium'"
-          (click)="filtrarPartidos('GANADOS')"
-          style="cursor: pointer;">
-          <ion-label>Ganados</ion-label>
-        </ion-chip>
-        <ion-chip 
-          [color]="filtroActivo === 'EMPATADOS' ? 'warning' : 'medium'"
-          (click)="filtrarPartidos('EMPATADOS')"
-          style="cursor: pointer;">
-          <ion-label>Empatados</ion-label>
-        </ion-chip>
-        <ion-chip 
-          [color]="filtroActivo === 'PERDIDOS' ? 'danger' : 'medium'"
-          (click)="filtrarPartidos('PERDIDOS')"
-          style="cursor: pointer;">
-          <ion-label>Perdidos</ion-label>
-        </ion-chip>
       </div>
     </ion-card-content>
   </ion-card>
@@ -196,7 +179,7 @@
             *ngIf="!partido.partidoActivo"
             fill="outline" 
             size="small" 
-            color="primary"
+            color="success"
             (click)="verDetalles(partido.id)">
             <ion-icon name="eye-outline" slot="start"></ion-icon>
             Ver Detalles
@@ -215,9 +198,9 @@
     </ion-card>
   </div>
 
-  <!-- FAB para agregar partido -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button class="fab-custom" (click)="iniciarNuevoPartido()">
+  <!-- Botón flotante para crear nuevo partido -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="iniciarNuevoPartido()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

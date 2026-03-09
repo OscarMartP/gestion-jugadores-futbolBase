@@ -5,8 +5,9 @@ import { Router } from '@angular/router';
 import { PartidoService } from '../../core/services/partido.service';
 import { EquipoService } from '../../core/services/equipo.service';
 import { RefreshService } from '../../core/services/refresh.service';
+import { AuthService } from '../../core/services/auth.service';
 import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, 
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, IonIcon, 
   IonFab, IonFabButton, IonRefresher, IonRefresherContent, 
   IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonSpinner,
   IonChip, IonLabel, AlertController
@@ -32,7 +33,7 @@ interface PartidoView {
   styleUrls: ['./partidos.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, 
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, IonIcon, 
     IonFab, IonFabButton, IonRefresher, IonRefresherContent, 
     IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonSpinner,
     IonChip, IonLabel,
@@ -52,7 +53,8 @@ export class PartidosPage implements OnInit {
     private alertController: AlertController,
     private partidoService: PartidoService,
     private equipoService: EquipoService,
-    private refreshService: RefreshService
+    private refreshService: RefreshService,
+    private authService: AuthService
   ) {
     addIcons({ statsChart });
   }
@@ -273,5 +275,11 @@ export class PartidosPage implements OnInit {
       buttons: ['OK']
     });
     await alert.present();
+
+  }
+
+  cerrarSesion() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, 
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, IonIcon, 
   IonFab, IonFabButton, IonSearchbar, IonRefresher, IonRefresherContent, 
   IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonSpinner
 } from '@ionic/angular/standalone';
 import { EquipoService } from '../../core/services/equipo.service';
 import { JugadorService } from '../../core/services/jugador.service';
 import { RefreshService } from '../../core/services/refresh.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Equipo } from '../../core/models/equipo';
 import { Jugador } from '../../core/models/jugador';
 
@@ -20,7 +21,7 @@ import { Jugador } from '../../core/models/jugador';
   styleUrls: ['./equipos.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon, 
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, IonIcon, 
     IonFab, IonFabButton, IonSearchbar, IonRefresher, IonRefresherContent, 
     IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonSpinner, 
     CommonModule, FormsModule
@@ -39,7 +40,8 @@ export class EquiposPage implements OnInit {
     private jugadorService: JugadorService,
     private refreshService: RefreshService,
     private router: Router,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -196,4 +198,8 @@ export class EquiposPage implements OnInit {
     this.router.navigate(['/equipo-form']);
   }
 
+  cerrarSesion() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }

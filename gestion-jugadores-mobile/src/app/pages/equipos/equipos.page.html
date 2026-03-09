@@ -1,11 +1,21 @@
 <ion-header [translucent]="true">
   <ion-toolbar class="header-custom">
-    <ion-title>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <ion-icon name="shield" size="large"></ion-icon>
-        <span>Mis Equipos</span>
-      </div>
-    </ion-title>
+    <!-- IZQUIERDA -->
+    <ion-buttons slot="start">
+      <span class="header-title">EQUIPOS</span>
+    </ion-buttons>
+
+    <!-- LOGO CENTRADO REAL -->
+    <div class="header-center">
+      <img src="assets/img/logo-fb.svg" class="header-logo" alt="Logo FBE" />
+    </div>
+
+    <!-- DERECHA -->
+    <ion-buttons slot="end">
+      <ion-button fill="outline" class="exit-button" (click)="cerrarSesion()">
+        Salir
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -13,22 +23,30 @@
   <!-- Estadísticas de equipos -->
   <ion-card class="stats-card">
     <ion-card-content>
-      <div style="display: flex; justify-content: space-around; text-align: center;">
-        <div>
-          <h2 style="margin: 0; color: var(--ion-color-primary);">{{ equipos.length }}</h2>
-          <p style="margin: 0; font-size: 0.9rem;">Total Equipos</p>
+      <div class="stats-container">
+        <div class="stat-item">
+          <div class="stat-badge-circle blue">
+            {{ equipos.length }}
+          </div>
+          <p class="stat-label blue">Total</p>
         </div>
-        <div>
-          <h2 style="margin: 0; color: var(--ion-color-secondary);">{{ obtenerEquiposPorTipo('FUTBOL_11').length }}</h2>
-          <p style="margin: 0; font-size: 0.9rem;">Fútbol 11</p>
+        <div class="stat-item">
+          <div class="stat-badge-circle blue">
+            {{ obtenerEquiposPorTipo('FUTBOL_11').length }}
+          </div>
+          <p class="stat-label blue">Fútbol11</p>
         </div>
-        <div>
-          <h2 style="margin: 0; color: var(--ion-color-tertiary);">{{ obtenerEquiposPorTipo('FUTBOL_7').length }}</h2>
-          <p style="margin: 0; font-size: 0.9rem;">Fútbol 7</p>
+        <div class="stat-item">
+          <div class="stat-badge-circle purple">
+            {{ obtenerEquiposPorTipo('FUTBOL_7').length }}
+          </div>
+          <p class="stat-label purple">Fútbol7</p>
         </div>
-        <div>
-          <h2 style="margin: 0; color: var(--ion-color-success);">{{ obtenerEquiposPorTipo('FUTBOL_5').length }}</h2>
-          <p style="margin: 0; font-size: 0.9rem;">Fútbol 5</p>
+        <div class="stat-item">
+          <div class="stat-badge-circle orange">
+            {{ obtenerEquiposPorTipo('FUTBOL_5').length }}
+          </div>
+          <p class="stat-label orange">Fútbol5</p>
         </div>
       </div>
     </ion-card-content>
@@ -101,17 +119,12 @@
         </div>
         
         <div style="display: flex; gap: 8px; margin-top: 12px;">
-          <ion-button fill="outline" size="small" color="primary" (click)="verEquipo(equipo)">
-            <ion-icon name="eye-outline" slot="start"></ion-icon>
-            Ver
-          </ion-button>
-          
-          <ion-button fill="outline" size="small" color="secondary" (click)="editarEquipo(equipo)">
+          <ion-button fill="outline" size="small" color="success" (click)="editarEquipo(equipo)">
             <ion-icon name="create-outline" slot="start"></ion-icon>
             Editar
           </ion-button>
           
-          <ion-button fill="clear" color="danger" size="small" (click)="eliminarEquipo(equipo)">
+          <ion-button fill="outline" size="small" color="danger" (click)="eliminarEquipo(equipo)">
             <ion-icon name="trash-outline" slot="start"></ion-icon>
             Eliminar
           </ion-button>
