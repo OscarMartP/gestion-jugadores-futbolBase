@@ -1167,11 +1167,12 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         // Actualizar estadísticas del jugador
         actualizarEstadisticasJugador(jugadorId, temporada);
         
-        // Actualizar estadísticas del equipo del jugador
-        Jugador jugador = jugadorRepositorio.findById(jugadorId).orElse(null);
-        if (jugador != null && jugador.getEquipo() != null) {
-            actualizarEstadisticasEquipo(jugador.getEquipo().getId(), temporada);
-        }
+        // ⚠️ NO actualizar estadísticas del equipo aquí para evitar llamadas recursivas innecesarias
+        // Las estadísticas del equipo se actualizan una sola vez después de procesar todos los jugadores
+        // Jugador jugador = jugadorRepositorio.findById(jugadorId).orElse(null);
+        // if (jugador != null && jugador.getEquipo() != null) {
+        //     actualizarEstadisticasEquipo(jugador.getEquipo().getId(), temporada);
+        // }
     }
     
     // ========== MÉTODOS DE CONVERSIÓN ==========
