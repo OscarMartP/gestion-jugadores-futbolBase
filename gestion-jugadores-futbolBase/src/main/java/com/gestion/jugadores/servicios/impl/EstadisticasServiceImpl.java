@@ -607,13 +607,29 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         
         System.out.println("Total de eventos del equipo en temporada: " + todosEventosEquipo.size());
         
+        // 🔍 DEBUG: Contar eventos PERDIDA específicamente
+        long eventosPerdida = todosEventosEquipo.stream()
+            .filter(e -> "PERDIDA".equals(e.getTipoEvento().toUpperCase()) || "PERDIDAS".equals(e.getTipoEvento().toUpperCase()))
+            .count();
+        System.out.println("🔍 DEBUG: Eventos PERDIDA encontrados en query: " + eventosPerdida);
+        
         // Contar tarjetas y eventos de todos los jugadores del equipo
         List<Jugador> jugadores = jugadorRepositorio.findByEquipo_Id(equipoId);
         System.out.println("Total de jugadores del equipo: " + jugadores.size());
         
         // ✅ OPTIMIZACIÓN: Procesar eventos ya filtrados en lugar de hacer queries por cada jugador
+        int contadorPerdidas = 0;
         for (EventoJugador evento : todosEventosEquipo) {
                 String tipo = evento.getTipoEvento().toUpperCase();
+                
+                // 🔍 DEBUG: Log cada evento PERDIDA procesado
+                if (tipo.equals("PERDIDA") || tipo.equals("PERDIDAS")) {
+                    contadorPerdidas++;
+                    System.out.println("🔍 DEBUG Pérdida #" + contadorPerdidas + " - EventoID: " + evento.getId() + 
+                                     ", JugadorID: " + evento.getJugador().getId() + 
+                                     ", Jugador: " + evento.getJugador().getNombre() + 
+                                     ", PartidoID: " + evento.getPartido().getId());
+                }
                 if (tipo.contains("AMARILLA")) {
                     stats.setTarjetasAmarillas(stats.getTarjetasAmarillas() + 1);
                 } else if (tipo.contains("ROJA")) {
@@ -748,6 +764,10 @@ public class EstadisticasServiceImpl implements EstadisticasService {
                     }
                 }
             }
+        
+        // 🔍 DEBUG: Mostrar total final de pérdidas calculado
+        System.out.println("🔍 DEBUG: Total pérdidas procesadas: " + contadorPerdidas);
+        System.out.println("🔍 DEBUG: Total pérdidas en stats: " + stats.getTotalPerdidas());
         
         // Calcular tiros recibidos del rival (PARADAS + GOLES_RIVAL)
         // Inicializar contadores de tiros recibidos
