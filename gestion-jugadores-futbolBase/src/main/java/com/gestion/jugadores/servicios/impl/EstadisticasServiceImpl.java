@@ -550,6 +550,18 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         stats.setRobosEmpatando(0);
         stats.setRobosPerdiendo(0);
         
+        // Inicializar campos de pérdidas a 0
+        stats.setTotalPerdidas(0);
+        stats.setPerdidas0_15(0);
+        stats.setPerdidas16_30(0);
+        stats.setPerdidas31_45(0);
+        stats.setPerdidas46_60(0);
+        stats.setPerdidas61_75(0);
+        stats.setPerdidas76_90(0);
+        stats.setPerdidasGanando(0);
+        stats.setPerdidasEmpatando(0);
+        stats.setPerdidasPerdiendo(0);
+        
         // Obtener todos los partidos del equipo (finalizados y activos)
         List<Partido> partidos = partidoRepository.findByEquipo_Id(equipoId);
         System.out.println("Total de partidos encontrados: " + partidos.size());
@@ -1167,12 +1179,11 @@ public class EstadisticasServiceImpl implements EstadisticasService {
         // Actualizar estadísticas del jugador
         actualizarEstadisticasJugador(jugadorId, temporada);
         
-        // ⚠️ NO actualizar estadísticas del equipo aquí para evitar llamadas recursivas innecesarias
-        // Las estadísticas del equipo se actualizan una sola vez después de procesar todos los jugadores
-        // Jugador jugador = jugadorRepositorio.findById(jugadorId).orElse(null);
-        // if (jugador != null && jugador.getEquipo() != null) {
-        //     actualizarEstadisticasEquipo(jugador.getEquipo().getId(), temporada);
-        // }
+        // Actualizar estadísticas del equipo del jugador
+        Jugador jugador = jugadorRepositorio.findById(jugadorId).orElse(null);
+        if (jugador != null && jugador.getEquipo() != null) {
+            actualizarEstadisticasEquipo(jugador.getEquipo().getId(), temporada);
+        }
     }
     
     // ========== MÉTODOS DE CONVERSIÓN ==========
