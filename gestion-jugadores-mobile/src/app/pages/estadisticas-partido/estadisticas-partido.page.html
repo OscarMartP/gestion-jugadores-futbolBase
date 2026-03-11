@@ -1,9 +1,23 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-button slot="start" fill="clear" (click)="volver()">
-      <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
-    </ion-button>
-    <ion-title>Estadísticas del Partido</ion-title>
+<ion-header [translucent]="true">
+  <ion-toolbar class="header-custom">
+    <!-- IZQUIERDA -->
+    <ion-buttons slot="start">
+      <ion-button fill="outline" class="back-button" (click)="volver()">
+        Volver
+      </ion-button>
+    </ion-buttons>
+
+    <!-- LOGO CENTRADO REAL -->
+    <div class="header-center">
+      <img src="assets/img/logo-fb.svg" class="header-logo" alt="Logo FBE" />
+    </div>
+
+    <!-- DERECHA -->
+    <ion-buttons slot="end">
+      <ion-button fill="outline" class="exit-button" (click)="cerrarSesion()">
+        Salir
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -19,7 +33,7 @@
     <ion-card class="resultado-card">
       <ion-card-header>
         <ion-card-title>{{ estadisticas.titulo }}</ion-card-title>
-        <p style="margin: 4px 0 0 0; color: var(--ion-color-medium); font-size: 0.9rem;">
+        <p style="margin: 4px 0 0 0; color: #7d7d7d; font-size: 0.9rem;">
           <ion-icon name="calendar-outline"></ion-icon>
           {{ estadisticas.fecha | date:'dd/MM/yyyy HH:mm' }}
         </p>
@@ -28,13 +42,13 @@
         <!-- Resultado -->
         <div style="display: flex; justify-content: center; align-items: center; gap: 24px; margin: 16px 0;">
           <div style="text-align: center;">
-            <h1 style="margin: 0; font-size: 3rem; color: var(--ion-color-primary);">{{ estadisticas.golesEquipo }}</h1>
-            <p style="margin: 0; font-size: 0.9rem; color: var(--ion-color-medium);">{{ estadisticas.equipoNombre }}</p>
+            <h1 style="margin: 0; font-size: 3rem; color: #525252; font-weight: 800;">{{ estadisticas.golesEquipo }}</h1>
+            <p style="margin: 0; font-size: 0.9rem; color: #7d7d7d;">{{ estadisticas.equipoNombre }}</p>
           </div>
-          <div style="font-size: 2rem; color: var(--ion-color-medium);">-</div>
+          <div style="font-size: 2rem; color: #7d7d7d;">-</div>
           <div style="text-align: center;">
-            <h1 style="margin: 0; font-size: 3rem; color: var(--ion-color-primary);">{{ estadisticas.golesRival }}</h1>
-            <p style="margin: 0; font-size: 0.9rem; color: var(--ion-color-medium);">Rival</p>
+            <h1 style="margin: 0; font-size: 3rem; color: #525252; font-weight: 800;">{{ estadisticas.golesRival }}</h1>
+            <p style="margin: 0; font-size: 0.9rem; color: #7d7d7d;">Rival</p>
           </div>
         </div>
 
@@ -57,62 +71,53 @@
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <!-- Controles de zoom -->
-        <div class="zoom-info" *ngIf="zoomScale > 1">
-          <ion-chip color="primary" (click)="resetZoom()">
+        <!-- Info de zoom -->
+        <div class="zoom-info" *ngIf="timelineZoom > 1">
+          <ion-chip color="primary" (click)="resetTimelineZoom()">
             <ion-icon name="contract-outline"></ion-icon>
-            <ion-label>Zoom: {{ zoomScale.toFixed(1) }}x - Toca para resetear</ion-label>
+            <ion-label>Zoom: {{ (timelineZoom * 100).toFixed(0) }}% - Toca para resetear</ion-label>
           </ion-chip>
         </div>
         
-        <!-- Línea de tiempo horizontal con zoom -->
+        <!-- Línea de tiempo horizontal con scroll y zoom -->
         <div 
-          class="timeline-wrapper"
-          (touchstart)="onTouchStart($event)"
-          (touchmove)="onTouchMove($event)"
-          (touchend)="onTouchEnd($event)">
+          class="timeline-wrapper" 
+          #timelineWrapper
+          (touchstart)="onTimelineTouchStart($event)"
+          (touchmove)="onTimelineTouchMove($event)"
+          (touchend)="onTimelineTouchEnd($event)">
           <div 
-            class="timeline-container"
-            [style.transform]="'scaleX(' + zoomScale + ')'"
+            class="timeline-container-scroll"
+            [style.transform]="'scale(' + timelineZoom + ')'"
             [style.transform-origin]="'left center'">
-            <!-- Línea base -->
-            <div class="timeline-line"></div>
-            
-            <!-- Marcadores de minutos -->
-            <div class="timeline-markers">
-              <span class="marker">0'</span>
-              <span class="marker">15'</span>
-              <span class="marker">30'</span>
-              <span class="marker">45'</span>
-              <span class="marker">60'</span>
-              <span class="marker">75'</span>
-              <span class="marker">{{ estadisticas.duracion || 90 }}'</span>
-            </div>
-            
-            <!-- Eventos en la línea -->
-            <div class="timeline-events">
-              <div 
-                *ngFor="let evento of getEventosFiltrados()" 
-                class="timeline-event"
-                [style.left.%]="getPosicionEvento(evento.minuto)"
-                [style.background-color]="getColorEvento(evento.tipoEvento)"
-                (click)="mostrarDetalleEvento(evento)"
-                [title]="'Click para ver detalles'">
-                <span class="event-icon">{{ getIconoEventoTipo(evento.tipoEvento) }}</span>
+            <!-- Línea de tiempo: 0-90 minutos -->
+            <div class="timeline-segment">
+              <!-- Línea base -->
+              <div class="timeline-line"></div>
+              
+              <!-- Marcadores de minutos cada 5 minutos -->
+              <div class="timeline-markers">
+                <span class="marker" *ngFor="let min of minutosArray" [style.left.px]="getMarkerPosition(min)">{{ min }}'</span>
+              </div>
+              
+              <!-- Eventos en la línea -->
+              <div class="timeline-events">
+                <div 
+                  *ngFor="let evento of getEventosFiltrados()" 
+                  class="timeline-event"
+                  [style.left.px]="getEventPosition(evento.minuto)"
+                  [style.background-color]="getColorEvento(evento.tipoEvento)"
+                  (click)="mostrarDetalleEvento(evento)"
+                  [title]="'Click para ver detalles'">
+                  <span class="event-icon">{{ getIconoEventoTipo(evento.tipoEvento) }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
         
-        <!-- Leyenda de eventos -->
-        <div class="timeline-legend" *ngIf="getEventosFiltrados().length > 0">
-          <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: var(--ion-color-medium);">
-            <strong>{{ getEventosFiltrados().length }}</strong> evento(s) mostrado(s)
-          </p>
-        </div>
-        
         <!-- Mensaje cuando no hay eventos -->
-        <div *ngIf="getEventosFiltrados().length === 0" style="text-align: center; padding: 20px; color: var(--ion-color-medium);">
+        <div *ngIf="getEventosFiltrados().length === 0" style="text-align: center; padding: 20px; color: #7d7d7d;">
           <ion-icon name="information-circle-outline" style="font-size: 2rem;"></ion-icon>
           <p style="margin: 8px 0 0 0;">No hay eventos de este tipo registrados</p>
         </div>
@@ -120,21 +125,21 @@
     </ion-card>
 
     <!-- Selector de Vista -->
-    <ion-segment [(ngModel)]="vistaSeleccionada" style="margin-bottom: 16px;">
+    <ion-segment [(ngModel)]="vistaSeleccionada" class="event-filter-segment">
       <ion-segment-button value="general">
         <ion-label>General</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="pasesClave">
-        <ion-label>Pases Clave</ion-label>
+      <ion-segment-button value="pasesClave" class="icon-segment-button">
+        <img src="assets/img/pase-clave-icon.svg" alt="Pases Clave" class="event-icon">
       </ion-segment-button>
-      <ion-segment-button value="tirosAPuerta">
-        <ion-label>Tiros</ion-label>
+      <ion-segment-button value="tirosAPuerta" class="icon-segment-button">
+        <img src="assets/img/tiro-puerta-icon.svg" alt="Tiros" class="event-icon">
       </ion-segment-button>
-      <ion-segment-button value="robos">
-        <ion-label>Robos</ion-label>
+      <ion-segment-button value="robos" class="icon-segment-button">
+        <img src="assets/img/robo-icon.svg" alt="Robos" class="event-icon">
       </ion-segment-button>
-      <ion-segment-button value="perdidas">
-        <ion-label>Pérdidas</ion-label>
+      <ion-segment-button value="perdidas" class="icon-segment-button">
+        <img src="assets/img/perdida-icon.svg" alt="Pérdidas" class="event-icon">
       </ion-segment-button>
     </ion-segment>
 
@@ -333,7 +338,7 @@
         <ion-card-content>
           <div style="text-align: center; padding: 16px;">
             <ion-icon [name]="getIconoEvento()" size="large" color="primary" style="font-size: 3rem;"></ion-icon>
-            <h2 style="margin: 16px 0 8px 0; color: var(--ion-color-primary);">{{ top.jugadorNombre }}</h2>
+            <h2 style="margin: 16px 0 8px 0; color: #525252; font-weight: 800;">{{ top.jugadorNombre }}</h2>
             <p style="margin: 0; font-size: 1.5rem;"><strong>{{ top.cantidad }}</strong> {{ getTituloEvento() }}</p>
           </div>
         </ion-card-content>
