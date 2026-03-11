@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon,
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, IonIcon,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonSpinner,
   IonChip, IonLabel, IonSegment, IonSegmentButton, IonList, IonItem,
   IonBadge, IonProgressBar, AlertController
@@ -11,6 +11,7 @@ import {
 import { EventoJugadorService } from '../../core/services/evento-jugador.service';
 import { PartidoService } from '../../core/services/partido.service';
 import { JugadorService } from '../../core/services/jugador.service';
+import { AuthService } from '../../core/services/auth.service';
 import { EstadisticasPartido, EventoJugadorResumen, TopJugador } from '../../core/models/estadisticas-partido';
 import { EventoJugador } from '../../core/models/partido';
 
@@ -20,14 +21,16 @@ import { EventoJugador } from '../../core/models/partido';
   styleUrls: ['./estadisticas-partido.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon,
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, IonIcon,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonSpinner,
     IonChip, IonLabel, IonSegment, IonSegmentButton, IonList, IonItem,
     IonBadge, IonProgressBar,
     CommonModule, FormsModule
   ]
 })
-export class EstadisticasPartidoPage implements OnInit {
+export class EstadisticasPartidoPage implements OnInit, AfterViewInit {
+
+  @ViewChild('timelineWrapper', { read: ElementRef }) timelineWrapper?: ElementRef;
 
   partidoId: number = 0;
   cargando = true;
@@ -38,10 +41,17 @@ export class EstadisticasPartidoPage implements OnInit {
   vistaSeleccionada: 'general' | 'pasesClave' | 'tirosAPuerta' | 'robos' | 'perdidas' = 'general';
   seccionSeleccionada: 'resultado' | 'tiempo' = 'resultado';
 
-  // Propiedades para zoom con dos dedos
-  zoomScale = 1;
-  lastDistance = 0;
-  isZooming = false;
+  // Array de minutos para la línea de tiempo (cada 5 minutos)
+  minutosArray: number[] = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90];
+  
+  // Propiedades para zoom con pinch en timeline
+  timelineZoom: number = 1;
+  lastTouchDistance: number = 0;
+  isTimelineZooming: boolean = false;
+  
+  // Ancho de la línea de tiempo (px por minuto * 90 minutos + padding)
+  readonly TIMELINE_WIDTH: number = 2400; // ~26.6px por minuto
+  readonly TIMELINE_PADDING: number = 40; // padding lateral
 
   constructor(
     private route: ActivatedRoute,
@@ -49,7 +59,8 @@ export class EstadisticasPartidoPage implements OnInit {
     private eventoService: EventoJugadorService,
     private partidoService: PartidoService,
     private jugadorService: JugadorService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -57,8 +68,17 @@ export class EstadisticasPartidoPage implements OnInit {
     this.cargarEstadisticas();
   }
 
+  ngAfterViewInit() {
+    // Método implementado para interfaz AfterViewInit
+  }
+
   volver() {
     this.router.navigate(['/tabs/partidos']);
+  }
+
+  cerrarSesion() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   cargarEstadisticas() {
@@ -451,12 +471,26 @@ export class EstadisticasPartidoPage implements OnInit {
   }
 
   /**
-   * Calcula la posición porcentual del evento en la línea de tiempo
+   * Formatea el tipo de evento para mostrarlo
    */
-  getPosicionEvento(minuto: number): number {
-    if (!this.estadisticas) return 0;
-    const duracion = this.estadisticas.duracion || 90;
-    return Math.min((minuto / duracion) * 100, 100);
+  private formatearTipoEvento(tipo: string): string {
+    const tipoNormalizado = (tipo || '').toLowerCase().replace(/\s+/g, '_');
+    
+    const nombres: { [key: string]: string } = {
+      'gol': 'Gol',
+      'gol_rival': 'Gol Rival',
+      'asistencia': 'Asistencia',
+      'pase_clave': 'Pase Clave',
+      'tiro_a_puerta': 'Tiro a Puerta',
+      'tiro_puerta': 'Tiro a Puerta',
+      'robo': 'Robo',
+      'perdida': 'Pérdida',
+      'tarjeta_amarilla': 'Tarjeta Amarilla',
+      'tarjeta_roja': 'Tarjeta Roja',
+      'sustitucion': 'Sustitución'
+    };
+    
+    return nombres[tipoNormalizado] || tipo;
   }
 
   /**
@@ -493,81 +527,74 @@ export class EstadisticasPartidoPage implements OnInit {
 
     await alert.present();
   }
-
+  
   /**
-   * Formatea el tipo de evento para mostrarlo
+   * Calcula la posición en px de un marcador de minuto
    */
-  private formatearTipoEvento(tipo: string): string {
-    const tipoNormalizado = (tipo || '').toLowerCase().replace(/\s+/g, '_');
-    
-    const nombres: { [key: string]: string } = {
-      'gol': 'Gol',
-      'gol_rival': 'Gol Rival',
-      'asistencia': 'Asistencia',
-      'pase_clave': 'Pase Clave',
-      'tiro_a_puerta': 'Tiro a Puerta',
-      'tiro_puerta': 'Tiro a Puerta',
-      'robo': 'Robo',
-      'perdida': 'Pérdida',
-      'tarjeta_amarilla': 'Tarjeta Amarilla',
-      'tarjeta_roja': 'Tarjeta Roja',
-      'sustitucion': 'Sustitución'
-    };
-    
-    return nombres[tipoNormalizado] || tipo;
+  getMarkerPosition(minuto: number): number {
+    const usableWidth = this.TIMELINE_WIDTH - (this.TIMELINE_PADDING * 2);
+    return this.TIMELINE_PADDING + (minuto / 90) * usableWidth;
   }
-
+  
   /**
-   * Maneja el inicio del gesto touch para zoom
+   * Calcula la posición en px de un evento
    */
-  onTouchStart(event: TouchEvent) {
+  getEventPosition(minuto: number): number {
+    const usableWidth = this.TIMELINE_WIDTH - (this.TIMELINE_PADDING * 2);
+    return this.TIMELINE_PADDING + (minuto / 90) * usableWidth;
+  }
+  
+  /**
+   * Maneja el inicio del gesto de zoom (pinch) en timeline
+   */
+  onTimelineTouchStart(event: TouchEvent) {
     if (event.touches.length === 2) {
-      this.isZooming = true;
-      this.lastDistance = this.getDistance(event.touches[0], event.touches[1]);
+      this.isTimelineZooming = true;
+      this.lastTouchDistance = this.getTouchDistance(event.touches[0], event.touches[1]);
       event.preventDefault();
     }
   }
-
+  
   /**
-   * Maneja el movimiento del gesto touch para zoom
+   * Maneja el movimiento del gesto de zoom en timeline
    */
-  onTouchMove(event: TouchEvent) {
-    if (this.isZooming && event.touches.length === 2) {
-      const currentDistance = this.getDistance(event.touches[0], event.touches[1]);
-      const delta = currentDistance - this.lastDistance;
+  onTimelineTouchMove(event: TouchEvent) {
+    if (this.isTimelineZooming && event.touches.length === 2) {
+      const currentDistance = this.getTouchDistance(event.touches[0], event.touches[1]);
+      const distanceDelta = currentDistance - this.lastTouchDistance;
       
-      // Ajustar la escala basada en el cambio de distancia
-      const scaleDelta = delta * 0.01;
-      this.zoomScale = Math.max(1, Math.min(5, this.zoomScale + scaleDelta));
+      // Ajustar zoom basado en el cambio de distancia
+      const zoomDelta = distanceDelta * 0.005;
+      this.timelineZoom = Math.max(1, Math.min(4, this.timelineZoom + zoomDelta));
       
-      this.lastDistance = currentDistance;
+      this.lastTouchDistance = currentDistance;
       event.preventDefault();
     }
   }
-
+  
   /**
-   * Maneja el fin del gesto touch
+   * Maneja el fin del gesto de zoom en timeline
    */
-  onTouchEnd(event: TouchEvent) {
+  onTimelineTouchEnd(event: TouchEvent) {
     if (event.touches.length < 2) {
-      this.isZooming = false;
+      this.isTimelineZooming = false;
     }
   }
-
+  
   /**
    * Calcula la distancia entre dos puntos touch
    */
-  private getDistance(touch1: Touch, touch2: Touch): number {
+  private getTouchDistance(touch1: Touch, touch2: Touch): number {
     const dx = touch1.clientX - touch2.clientX;
     const dy = touch1.clientY - touch2.clientY;
     return Math.sqrt(dx * dx + dy * dy);
   }
-
+  
   /**
-   * Resetea el zoom a la escala original
+   * Resetea el zoom de la timeline
    */
-  resetZoom() {
-    this.zoomScale = 1;
+  resetTimelineZoom() {
+    this.timelineZoom = 1;
   }
 }
 
