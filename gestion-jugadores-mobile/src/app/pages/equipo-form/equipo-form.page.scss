@@ -4,79 +4,171 @@ ion-content {
   --background: linear-gradient(181deg, #45b22f 0%, #31602b 40%, #f2f2f2 70%);
 }
 
+// ===== HEADER =====
+.header-custom {
+  --background: #45b22f;
+  --color: white;
+  --min-height: 56px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+
+  position: relative;
+}
+
+/* CONTENEDOR DEL LOGO CENTRADO */
+.header-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+}
+
+/* LOGO */
+.header-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* TEXTO DEL TÍTULO */
+.header-title {
+  color: white;
+  font-weight: 800;
+  font-size: 15px;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* BOTON VOLVER */
+.back-button {
+  --border-color: white;
+  --border-width: 1px;
+  --border-radius: 18px;
+  --color: white;
+  --background: transparent;
+  --padding-start: 10px;
+  --padding-end: 10px;
+
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: none;
+  height: 30px;
+  font-family: 'Source Sans 3', sans-serif;
+  margin-left: 8px;
+}
+
+/* BOTON ELIMINAR */
+.delete-button {
+  --border-radius: 50%;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  width: 36px;
+  height: 36px;
+  margin-right: 4px;
+  
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+// ===== FORMULARIO =====
 .form-card {
   margin: 16px;
-  --border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1);
+  --background: white;
+  border-radius: 0;
+  border-left: 4px solid #31602b;
+  box-shadow: none;
   
   ion-card-header {
-    padding: 16px 16px 8px 16px;
+    padding: 20px 16px 16px 16px;
+    border-bottom: 2px solid #e0e0e0;
     
     ion-card-title {
-      font-size: 1.1rem;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 700;
+      color: #2d2d2d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Source Sans 3', sans-serif;
+      
+      ion-icon {
+        font-size: 20px;
+        color: #45b22f;
+      }
     }
   }
   
   ion-card-content {
-    padding: 8px 16px 16px 16px;
+    padding: 16px;
   }
 }
 
 .form-item {
-  --border-radius: 12px;
-  --background: rgba(var(--ion-color-primary-rgb), 0.02);
+  --background: white;
+  --border-radius: 8px;
+  border: 1px solid #e0e0e0;
   margin-bottom: 16px;
   
   &.ion-invalid {
     --border-color: var(--ion-color-danger);
     --highlight-color: var(--ion-color-danger);
+    border-color: var(--ion-color-danger);
   }
   
   ion-label {
-    color: var(--ion-color-primary);
+    color: #2d2d2d;
     font-weight: 600;
-    margin-bottom: 8px;
+    font-size: 14px;
+    font-family: 'Source Sans 3', sans-serif;
   }
   
   ion-input, ion-select, ion-textarea {
     --padding-start: 12px;
     --padding-end: 12px;
+    color: #2d2d2d;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 15px;
   }
   
   ion-note {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     margin-top: 4px;
+    font-family: 'Source Sans 3', sans-serif;
   }
 }
 
 .action-button {
   height: 56px;
-  --border-radius: 16px;
+  --border-radius: 8px;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  font-family: 'Source Sans 3', sans-serif;
   
   &.primary {
-    --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
-    --box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    --background: #45b22f;
+    --color: white;
+    --box-shadow: none;
+    
+    &:hover {
+      --background: #31602b;
+    }
   }
   
   &.secondary {
-    --border-color: var(--ion-color-medium);
-    --color: var(--ion-color-medium-shade);
-  }
-}
-
-.header-custom {
-  --background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
-  --color: white;
-  
-  ion-title {
-    font-weight: 600;
-  }
-  
-  ion-back-button {
-    --color: white;
+    --border-color: #e0e0e0;
+    --border-width: 1px;
+    --color: #2d2d2d;
+    --background: white;
   }
 }
 

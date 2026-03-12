@@ -1,17 +1,22 @@
 <ion-header [translucent]="true">
   <ion-toolbar class="header-custom">
+    <!-- IZQUIERDA -->
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/equipos"></ion-back-button>
+      <span class="header-title">{{ esEdicion ? 'EDITAR EQUIPO' : 'NUEVO EQUIPO' }}</span>
     </ion-buttons>
-    <ion-title>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <ion-icon [name]="esEdicion ? 'create' : 'shield'" size="large"></ion-icon>
-        <span>{{ esEdicion ? 'Editar Equipo' : 'Nuevo Equipo' }}</span>
-      </div>
-    </ion-title>
+
+    <!-- LOGO CENTRADO REAL -->
+    <div class="header-center">
+      <img src="assets/img/logo-fb.svg" class="header-logo" alt="Logo FBE" />
+    </div>
+
+    <!-- DERECHA -->
     <ion-buttons slot="end">
-      <ion-button *ngIf="esEdicion" color="danger" fill="clear" (click)="eliminarEquipo()">
+      <ion-button *ngIf="esEdicion" fill="solid" color="danger" class="delete-button" (click)="eliminarEquipo()">
         <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="outline" class="back-button" (click)="volver()">
+        Volver
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -24,7 +29,7 @@
     <!-- Información básica -->
     <ion-card class="form-card">
       <ion-card-header>
-        <ion-card-title style="display: flex; align-items: center; gap: 8px; color: var(--ion-color-primary);">
+        <ion-card-title>
           <ion-icon name="shield-outline"></ion-icon>
           Información del Equipo
         </ion-card-title>
@@ -49,7 +54,7 @@
     <!-- Configuración de juego -->
     <ion-card class="form-card">
       <ion-card-header>
-        <ion-card-title style="display: flex; align-items: center; gap: 8px; color: var(--ion-color-primary);">
+        <ion-card-title>
           <ion-icon name="settings-outline"></ion-icon>
           Configuración de Juego
         </ion-card-title>

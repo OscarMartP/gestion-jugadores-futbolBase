@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, IonCard, 
+  IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonButtons,
   IonCardContent, IonCardHeader, IonCardTitle, IonIcon,
   IonRefresher, IonRefresherContent, IonSelect, IonSelectOption,
   IonItem, IonLabel, IonSegment, IonSegmentButton, IonList,
@@ -14,6 +15,7 @@ import { statsChart, trophy, football, shield, people, person, syncOutline } fro
 import { EstadisticasService } from '../../core/services/estadisticas.service';
 import { EquipoService } from '../../core/services/equipo.service';
 import { RefreshService } from '../../core/services/refresh.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-estadisticas',
@@ -21,7 +23,7 @@ import { RefreshService } from '../../core/services/refresh.service';
   styleUrls: ['./estadisticas.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, IonCard, 
+    IonContent, IonHeader, IonTitle, IonToolbar, IonCard, IonButtons,
     IonCardContent, IonCardHeader, IonCardTitle, IonIcon,
     IonRefresher, IonRefresherContent, IonSelect, IonSelectOption,
     IonItem, IonLabel, IonSegment, IonSegmentButton, IonList,
@@ -49,7 +51,9 @@ export class EstadisticasPage implements OnInit {
     private estadisticasService: EstadisticasService,
     private equipoService: EquipoService,
     private refreshService: RefreshService,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private router: Router,
+    private authService: AuthService
   ) {
     addIcons({ statsChart, trophy, football, shield, people, person, syncOutline });
   }
@@ -279,5 +283,10 @@ export class EstadisticasPage implements OnInit {
           loading.dismiss();
         }
       });
+  }
+
+  cerrarSesion() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

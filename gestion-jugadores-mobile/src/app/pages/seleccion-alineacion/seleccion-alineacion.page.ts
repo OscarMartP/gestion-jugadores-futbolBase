@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon,
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, IonIcon,
   IonList, IonItem, IonLabel, IonCheckbox, IonSelect, IonSelectOption,
   AlertController, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonInput
 } from '@ionic/angular/standalone';
@@ -20,7 +20,7 @@ import { Partido } from '../../core/models/partido';
   styleUrls: ['./seleccion-alineacion.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonIcon,
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, IonIcon,
     IonList, IonItem, IonLabel, IonCheckbox, IonSelect, IonSelectOption,
     IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonInput,
     CommonModule, FormsModule

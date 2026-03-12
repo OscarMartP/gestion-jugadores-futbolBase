@@ -1,6 +1,21 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="primary">
-    <ion-title>Estadísticas de Equipo</ion-title>
+  <ion-toolbar class="header-custom">
+    <!-- IZQUIERDA -->
+    <ion-buttons slot="start">
+      <span class="header-title">ESTADÍSTICAS</span>
+    </ion-buttons>
+
+    <!-- LOGO CENTRADO REAL -->
+    <div class="header-center">
+      <img src="assets/img/logo-fb.svg" class="header-logo" alt="Logo FBE" />
+    </div>
+
+    <!-- DERECHA -->
+    <ion-buttons slot="end">
+      <ion-button fill="outline" class="exit-button" (click)="cerrarSesion()">
+        Salir
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -21,16 +36,6 @@
             {{ equipo.nombre }}
           </ion-select-option>
         </ion-select>
-        <ion-button 
-          *ngIf="equipoSeleccionado" 
-          (click)="actualizarEstadisticas()" 
-          slot="end"
-          fill="outline"
-          size="small" 
-          color="warning">
-          <ion-icon slot="start" name="sync-outline"></ion-icon>
-          Recalcular
-        </ion-button>
       </ion-item>
     </ion-card-content>
   </ion-card>
@@ -48,8 +53,20 @@
     <ion-card class="resumen-card">
       <ion-card-header>
         <ion-card-title>
-          <ion-icon name="statsChart"></ion-icon>
-          {{ estadisticasEquipo.equipoNombre }}
+          <span style="display: flex; align-items: center; gap: 8px;">
+            <ion-icon name="statsChart"></ion-icon>
+            {{ estadisticasEquipo.equipoNombre }}
+          </span>
+          <ion-button 
+            *ngIf="equipoSeleccionado" 
+            (click)="actualizarEstadisticas()" 
+            fill="outline"
+            size="small" 
+            color="warning"
+            class="recalcular-btn">
+            <ion-icon slot="start" name="sync-outline"></ion-icon>
+            Recalcular
+          </ion-button>
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>

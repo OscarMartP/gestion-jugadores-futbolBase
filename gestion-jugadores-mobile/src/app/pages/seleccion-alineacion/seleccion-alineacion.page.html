@@ -1,13 +1,21 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Selección de Alineación</ion-title>
-    <ion-button slot="start" fill="clear" (click)="volver()">
-      <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
-    </ion-button>
-    <ion-button slot="end" fill="solid" color="danger" (click)="cancelar()">
-      <ion-icon name="close" slot="start"></ion-icon>
-      Cancelar
-    </ion-button>
+<ion-header [translucent]="true">
+  <ion-toolbar class="header-custom">
+    <!-- IZQUIERDA -->
+    <ion-buttons slot="start">
+      <span class="header-title">SELECCIÓN ALINEACIÓN</span>
+    </ion-buttons>
+
+    <!-- LOGO CENTRADO REAL -->
+    <div class="header-center">
+      <img src="assets/img/logo-fb.svg" class="header-logo" alt="Logo FBE" />
+    </div>
+
+    <!-- DERECHA -->
+    <ion-buttons slot="end">
+      <ion-button fill="outline" class="back-button" (click)="volver()">
+        Volver
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

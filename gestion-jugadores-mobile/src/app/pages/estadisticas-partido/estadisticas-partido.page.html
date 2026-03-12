@@ -2,9 +2,7 @@
   <ion-toolbar class="header-custom">
     <!-- IZQUIERDA -->
     <ion-buttons slot="start">
-      <ion-button fill="outline" class="back-button" (click)="volver()">
-        Volver
-      </ion-button>
+      <span class="header-title">ESTADÍSTICAS PARTIDO</span>
     </ion-buttons>
 
     <!-- LOGO CENTRADO REAL -->
@@ -14,8 +12,8 @@
 
     <!-- DERECHA -->
     <ion-buttons slot="end">
-      <ion-button fill="outline" class="exit-button" (click)="cerrarSesion()">
-        Salir
+      <ion-button fill="outline" class="back-button" (click)="volver()">
+        Volver
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -126,8 +124,8 @@
 
     <!-- Selector de Vista -->
     <ion-segment [(ngModel)]="vistaSeleccionada" class="event-filter-segment">
-      <ion-segment-button value="general">
-        <ion-label>General</ion-label>
+      <ion-segment-button value="general" class="icon-segment-button">
+        <img src="assets/img/general-icon.svg" alt="General" class="event-icon">
       </ion-segment-button>
       <ion-segment-button value="pasesClave" class="icon-segment-button">
         <img src="assets/img/pase-clave-icon.svg" alt="Pases Clave" class="event-icon">

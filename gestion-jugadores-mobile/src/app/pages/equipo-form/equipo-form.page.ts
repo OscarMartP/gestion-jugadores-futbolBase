@@ -240,4 +240,8 @@ export class EquipoFormPage implements OnInit {
     this.router.navigate(['/tabs/equipos']);
   }
 
+  volver() {
+    this.router.navigate(['/tabs/equipos']);
+  }
+
 }

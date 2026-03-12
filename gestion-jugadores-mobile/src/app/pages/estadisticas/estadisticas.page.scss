@@ -1,7 +1,69 @@
+// ===== FONDO CON GRADIENTE =====
 ion-content {
   --background: linear-gradient(181deg, #45b22f 0%, #31602b 40%, #f2f2f2 70%);
 }
 
+// ===== HEADER =====
+.header-custom {
+  --background: #45b22f;
+  --color: white;
+  --min-height: 56px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+
+  position: relative;
+}
+
+/* CONTENEDOR DEL LOGO CENTRADO */
+.header-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+}
+
+/* LOGO */
+.header-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* TEXTO ESTADÍSTICAS */
+.header-title {
+  color: white;
+  font-weight: 800;
+  font-size: 15px;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* BOTON SALIR */
+.exit-button {
+  --border-color: white;
+  --border-width: 1px;
+  --border-radius: 18px;
+  --color: white;
+  --background: transparent;
+  --padding-start: 10px;
+  --padding-end: 10px;
+
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: none;
+  height: 30px;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+// ===== LOADING & NO DATA =====
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -11,7 +73,7 @@ ion-content {
   gap: 16px;
   
   p {
-    color: var(--ion-color-medium);
+    color: #4d4d4d;
     font-size: 14px;
   }
 }
@@ -26,130 +88,190 @@ ion-content {
   
   ion-icon {
     font-size: 64px;
-    color: var(--ion-color-medium);
+    color: #4d4d4d;
     opacity: 0.5;
   }
   
   p {
-    color: var(--ion-color-medium);
+    color: #4d4d4d;
     font-size: 16px;
     text-align: center;
   }
 }
 
+// ===== CARDS GENERALES =====
+ion-card {
+  margin: 16px;
+  --background: #f2f2f2;
+  border-radius: 0;
+  border-left: 4px solid #31602b;
+  box-shadow: none;
+  
+  ion-card-header {
+    padding: 16px;
+    padding-bottom: 12px;
+  }
+  
+  ion-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2d2d2d;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    
+    ion-icon {
+      font-size: 20px;
+      color: #2d2d2d;
+    }
+  }
+  
+  ion-card-content {
+    padding: 16px;
+  }
+}
+
+// ===== CARD DE RESUMEN (ESPECIAL) =====
 .resumen-card {
-  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
-  color: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  margin: 16px;
+  --background: #f2f2f2;
+  background: #f2f2f2 !important;
+  border-radius: 0;
+  border-left: 4px solid #31602b;
+  box-shadow: none;
   
   ion-card-title {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: white;
-    font-size: 20px;
+    justify-content: space-between;
+    gap: 12px;
+    color: #2d2d2d;
+    font-size: 18px;
     font-weight: 700;
+    font-family: 'Source Sans 3', sans-serif;
+    
+    ion-icon {
+      color: #2d2d2d;
+    }
+    
+    .recalcular-btn {
+      --border-color: #fbbf24;
+      --border-width: 1.5px;
+      --border-radius: 8px;
+      --color: #f59e0b;
+      --background: transparent;
+      --padding-start: 8px;
+      --padding-end: 8px;
+      
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: none;
+      height: 30px;
+      font-family: 'Source Sans 3', sans-serif;
+      flex-shrink: 0;
+      
+      ion-icon {
+        color: #f59e0b;
+        font-size: 16px;
+      }
+      
+      &:hover {
+        --background: rgba(251, 191, 36, 0.1);
+      }
+    }
   }
   
   .stat-box {
     text-align: center;
     padding: 12px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
     
     h2 {
       margin: 0;
       font-size: 32px;
       font-weight: 700;
-      color: white;
+      color: #2d2d2d;
+      font-family: 'Source Sans 3', sans-serif;
     }
     
     p {
       margin: 4px 0 0;
       font-size: 12px;
-      color: rgba(255,255,255,0.9);
+      color: #4d4d4d;
       text-transform: uppercase;
       letter-spacing: 1px;
+      font-family: 'Source Sans 3', sans-serif;
     }
   }
   
   ion-chip {
-    --background: rgba(255,255,255,0.2);
-    --color: white;
     font-weight: 600;
+    font-family: 'Source Sans 3', sans-serif;
   }
 }
 
+// ===== SEGMENTOS =====
 ion-segment {
   margin: 16px;
   padding: 4px;
-  background: var(--ion-color-light);
-  border-radius: 12px;
+  background: #f2f2f2;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
 }
 
 ion-segment-button {
-  --indicator-color: var(--ion-color-primary);
-  --color-checked: white;
+  --indicator-color: #45b22f;
+  --color: #2d2d2d;
+  --color-checked: #1a1a1a;
   min-height: 36px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 600;
   font-size: 13px;
+  font-family: 'Source Sans 3', sans-serif;
 }
 
-ion-card {
-  margin: 12px 16px;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  
-  ion-card-header {
-    padding-bottom: 12px;
-  }
-  
-  ion-card-title {
-    font-size: 18px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    
-    ion-icon {
-      font-size: 24px;
-      color: var(--ion-color-primary);
-    }
-  }
-}
-
+// ===== ESTADÍSTICAS DESTACADAS =====
 .stat-highlight {
   text-align: center;
   padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
   
   h1 {
     margin: 0;
     font-size: 48px;
     font-weight: 700;
-    color: var(--ion-color-primary);
+    color: #45b22f;
     line-height: 1;
+    font-family: 'Source Sans 3', sans-serif;
   }
   
   p {
     margin: 8px 0 0;
     font-size: 13px;
-    color: var(--ion-color-medium);
+    color: #4d4d4d;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-family: 'Source Sans 3', sans-serif;
   }
 }
 
+// ===== LISTAS =====
 ion-list {
   background: transparent;
   
   ion-item {
+    --background: white;
     --padding-start: 16px;
     --inner-padding-end: 16px;
-    --border-color: var(--ion-color-light);
-    margin-bottom: 12px;
-    border-radius: 12px;
+    --border-color: #e0e0e0;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
     
     ion-label {
       margin: 12px 0;
@@ -158,6 +280,8 @@ ion-list {
         font-weight: 600;
         font-size: 15px;
         margin-bottom: 4px;
+        color: #2d2d2d;
+        font-family: 'Source Sans 3', sans-serif;
       }
       
       h3 {
@@ -167,12 +291,15 @@ ion-list {
         display: flex;
         align-items: center;
         gap: 6px;
+        color: #2d2d2d;
+        font-family: 'Source Sans 3', sans-serif;
       }
       
       p {
         font-size: 13px;
-        color: var(--ion-color-medium);
+        color: #4d4d4d;
         margin: 4px 0;
+        font-family: 'Source Sans 3', sans-serif;
       }
       
       .stat-detail {
@@ -180,13 +307,13 @@ ion-list {
         line-height: 1.4;
         
         strong {
-          color: var(--ion-color-primary);
+          color: #45b22f;
           font-weight: 700;
         }
         
         .promedio {
           font-size: 12px;
-          color: var(--ion-color-medium);
+          color: #4d4d4d;
           font-style: italic;
         }
       }
@@ -203,6 +330,7 @@ ion-list {
       font-size: 13px;
       padding: 6px 12px;
       border-radius: 8px;
+      font-family: 'Source Sans 3', sans-serif;
     }
   }
 }
@@ -217,8 +345,10 @@ ion-item ion-badge[slot="start"] {
   font-size: 14px;
   font-weight: 700;
   border-radius: 50%;
+  font-family: 'Source Sans 3', sans-serif;
 }
 
+// ===== GRID =====
 ion-grid {
   padding: 0;
   
@@ -235,7 +365,81 @@ ion-grid {
   }
 }
 
+// ===== FORMULARIOS =====
 ion-select {
   max-width: 100%;
   font-weight: 600;
+  font-family: 'Source Sans 3', sans-serif;
+  color: #2d2d2d;
+}
+
+ion-item {
+  --background: #f2f2f2;
+  
+  ion-label {
+    color: #2d2d2d;
+    font-weight: 600;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  
+  ion-button {
+    --color: #45b22f;
+    --border-color: #45b22f;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+}
+
+// ===== CHIPS Y BADGES CON TEXTO NEGRO =====
+ion-chip {
+  font-family: 'Source Sans 3', sans-serif;
+  
+  ion-label {
+    color: #1a1a1a !important;
+    font-weight: 700;
+  }
+  
+  &[color="success"] ion-label {
+    color: #1a1a1a !important;
+  }
+  
+  &[color="warning"] ion-label {
+    color: #1a1a1a !important;
+  }
+  
+  &[color="danger"] ion-label {
+    color: #1a1a1a !important;
+  }
+  
+  &[color="primary"] ion-label {
+    color: #1a1a1a !important;
+  }
+}
+
+ion-badge {
+  font-family: 'Source Sans 3', sans-serif;
+  color: #1a1a1a !important;
+  font-weight: 700;
+  
+  &[color="success"] {
+    color: #1a1a1a !important;
+  }
+  
+  &[color="warning"] {
+    color: #1a1a1a !important;
+  }
+  
+  &[color="danger"] {
+    color: #1a1a1a !important;
+  }
+  
+  &[color="primary"] {
+    color: #1a1a1a !important;
+  }
+}
+
+// Labels dentro de items con colores también en negro
+ion-item ion-label h3,
+ion-item ion-label h2,
+ion-item ion-label p {
+  color: #2d2d2d !important;
 }
