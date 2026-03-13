@@ -46,11 +46,11 @@
 			<scope>runtime</scope>
 		</dependency>
 		
-<!-- PostgreSQL Driver 42.6.0 - Compatible con Neon PostgreSQL pooler -->
+<!-- PostgreSQL Driver 42.2.27 - Sin validación estricta de iteraciones SCRAM -->
 	<dependency>
 		<groupId>org.postgresql</groupId>
 		<artifactId>postgresql</artifactId>
-		<version>42.6.0</version>
+		<version>42.2.27</version>
 			<scope>runtime</scope>
 		</dependency>
 		
