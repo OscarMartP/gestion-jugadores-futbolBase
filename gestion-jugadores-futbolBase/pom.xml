@@ -46,13 +46,15 @@
 			<scope>runtime</scope>
 		</dependency>
 		
-		<!-- PostgreSQL Driver para producción -->
+		<!-- PostgreSQL Driver para producción (última versión estable con soporte SCRAM) -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>42.7.4</version>
 			<scope>runtime</scope>
 		</dependency>
+		
+		<!-- HikariCP viene incluido en spring-boot-starter-data-jpa -->
 	
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
