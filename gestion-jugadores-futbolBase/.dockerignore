@@ -1,0 +1,12 @@
+target/
+!target/gestion-jugadores-futbolBase-1.0.jar
+.git
+.gitignore
+README.md
+*.md
+.env
+.DS_Store
+.vscode
+.idea
+*.iml
+logs/
