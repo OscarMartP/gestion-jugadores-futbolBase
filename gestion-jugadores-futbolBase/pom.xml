@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.6</version>
+		<version>2.7.18</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.gestion.jugadores</groupId>
@@ -40,19 +40,15 @@
 		<optional>true</optional>
 	</dependency>
 	-->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		
-<!-- PostgreSQL Driver 42.7.3 - Última versión estable con soporte completo SCRAM-SHA-256 -->
+	
+	<!-- PostgreSQL Driver 42.7.3 - Última versión estable con soporte completo SCRAM-SHA-256 -->
+	<!-- MySQL ELIMINADO - Solo usamos PostgreSQL en producción -->
 	<dependency>
 		<groupId>org.postgresql</groupId>
 		<artifactId>postgresql</artifactId>
 		<version>42.7.3</version>
-			<scope>runtime</scope>
-		</dependency>
+		<scope>runtime</scope>
+	</dependency>
 		
 		<!-- HikariCP viene incluido en spring-boot-starter-data-jpa -->
 	
