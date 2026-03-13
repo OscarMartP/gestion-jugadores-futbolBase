@@ -46,11 +46,11 @@
 			<scope>runtime</scope>
 		</dependency>
 		
-		<!-- PostgreSQL Driver para producción (última versión estable con soporte SCRAM) -->
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>42.7.4</version>
+<!-- PostgreSQL Driver 42.6.0 - Compatible con Neon PostgreSQL pooler -->
+	<dependency>
+		<groupId>org.postgresql</groupId>
+		<artifactId>postgresql</artifactId>
+		<version>42.6.0</version>
 			<scope>runtime</scope>
 		</dependency>
 		
