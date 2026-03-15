@@ -11,10 +11,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gestion.jugadores.configuraciones.JwtUtils;
@@ -40,6 +43,12 @@ public class AuthenticationController {
 	
 	@Autowired
 	private UsuarioService usuarioService;
+
+	// Manejar explícitamente OPTIONS para CORS preflight
+	@RequestMapping(value = "/generate-token", method = RequestMethod.OPTIONS)
+	public ResponseEntity<?> handleOptionsGenerateToken() {
+		return ResponseEntity.ok().build();
+	}
 
 	@PostMapping("/generate-token")
 	public ResponseEntity<?> generarToken(@RequestBody JwtRequest jwtRequest) throws Exception {
@@ -68,6 +77,12 @@ public class AuthenticationController {
 	@GetMapping("/actual-usuario")
 	public Usuario obtenerUsuarioActual(Principal principal) {
 		return (Usuario) this.userDetailsService.loadUserByUsername(principal.getName());
+	}
+	
+	// Manejar explícitamente OPTIONS para CORS preflight en registro
+	@RequestMapping(value = "/api/v1/register", method = RequestMethod.OPTIONS)
+	public ResponseEntity<?> handleOptionsRegister() {
+		return ResponseEntity.ok().build();
 	}
 	
 	@PostMapping("/api/v1/register")
