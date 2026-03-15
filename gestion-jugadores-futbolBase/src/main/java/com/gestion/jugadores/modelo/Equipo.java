@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 //Modelo Equipo
@@ -28,6 +29,7 @@ public class Equipo {
 
     @OneToMany(mappedBy = "equipo", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @JsonIgnore  // Evitar lazy loading exception al serializar a JSON
     private List<Jugador> jugadores = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -79,6 +81,7 @@ public class Equipo {
         this.tipoFutbol = tipoFutbol;
     }
 
+    @JsonIgnore  // Jackson usa el getter para serializar
     public List<Jugador> getJugadores() {
         return jugadores;
     }
