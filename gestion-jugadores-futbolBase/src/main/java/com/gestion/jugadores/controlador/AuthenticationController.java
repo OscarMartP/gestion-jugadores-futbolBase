@@ -30,6 +30,7 @@ import com.gestion.jugadores.servicios.UsuarioService;
 import com.gestion.jugadores.servicios.impl.UserDetailsServiceImpl;
 //Logica Inicio Sesión
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class AuthenticationController {
 
 	@Autowired
