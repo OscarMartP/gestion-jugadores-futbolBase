@@ -8,6 +8,7 @@ import com.gestion.jugadores.modelo.Partido;
 import com.gestion.jugadores.servicios.PartidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -89,6 +90,7 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
      * Obtener partidos por equipo
      */
     @GetMapping("/equipo/{equipoId}")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<PartidoDTO>> getByEquipo(@PathVariable Long equipoId) {
         List<Partido> partidos = partidoService.obtenerPartidosPorEquipo(equipoId);
         return ResponseEntity.ok(partidos.stream()
@@ -101,6 +103,7 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
      * Obtener partidos activos por equipo
      */
     @GetMapping("/activos/equipo/{equipoId}")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<PartidoDTO>> getActivosByEquipo(@PathVariable Long equipoId) {
         List<Partido> partidos = partidoService.obtenerPartidosActivosPorEquipo(equipoId);
         return ResponseEntity.ok(partidos.stream()

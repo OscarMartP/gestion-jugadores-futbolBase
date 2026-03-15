@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://gestion-jugadores-futbolbase-production.up.railway.app/api/v1'
+  apiUrl: 'https://gestion-jugadores-futbolbase-production-5d4d.up.railway.app/api/v1'
 };
 
 /*

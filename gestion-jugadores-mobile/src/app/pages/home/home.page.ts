@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonSpinner } from '@ionic/angular/standalone';
-import baserUrl from '../../core/services/helper';
+import { EquipoService } from '../../core/services/equipo.service';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +21,7 @@ export class HomePage implements OnInit {
 
   constructor(
     private router: Router,
-    private http: HttpClient
+    private equipoService: EquipoService
   ) {}
 
   ngOnInit() {
@@ -38,10 +37,8 @@ export class HomePage implements OnInit {
       return;
     }
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    
-    // Llamar al endpoint de equipos
-    this.http.get<any[]>(`${baserUrl}/api/v1/equipos`, { headers }).subscribe({
+    // Usar el servicio en lugar de llamada HTTP directa
+    this.equipoService.obtenerEquiposMe().subscribe({
       next: (equipos) => {
         if (equipos && equipos.length > 0) {
           // Tiene equipos, ir a jugadores
