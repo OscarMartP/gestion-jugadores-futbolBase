@@ -24,7 +24,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.7.3</version>
+				<version>42.6.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -53,12 +53,12 @@
 	</dependency>
 	-->
 	
-	<!-- PostgreSQL Driver 42.7.3 - Última versión estable con soporte completo SCRAM-SHA-256 -->
+	<!-- PostgreSQL Driver 42.6.0 - Versión estable compatible con Neon SCRAM-SHA-256 -->
 	<!-- MySQL ELIMINADO - Solo usamos PostgreSQL en producción -->
 	<dependency>
 		<groupId>org.postgresql</groupId>
 		<artifactId>postgresql</artifactId>
-		<version>42.7.3</version>
+		<version>42.6.0</version>
 		<scope>runtime</scope>
 	</dependency>
 		
