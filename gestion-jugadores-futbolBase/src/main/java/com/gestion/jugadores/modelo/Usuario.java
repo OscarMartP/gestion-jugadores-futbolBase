@@ -95,6 +95,7 @@ public class Usuario implements UserDetails {
 		this.perfil = perfil;
 	}
 
+	@JsonIgnore  // Jackson usa el getter para serializar
 	public List<Equipo> getEquipo() {
 		return equipos;
 	}
