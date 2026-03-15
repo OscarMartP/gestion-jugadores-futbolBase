@@ -60,21 +60,26 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		// Usar origins desde application.properties (valores separados por coma)
-		String[] origins = allowedOrigins.split(",");
-		java.util.List<String> patterns = new java.util.ArrayList<>();
-		for (String origin : origins) {
-			patterns.add(origin.trim());
-		}
-		// Agregar patrones adicionales para localhost
-		patterns.add("http://localhost:*");
-		patterns.add("https://localhost:*");
 		
-		configuration.setAllowedOriginPatterns(patterns);
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+		// Configuración permisiva para desarrollo (localhost y dominios configurados)
+		configuration.addAllowedOriginPattern("http://localhost:*");
+		configuration.addAllowedOriginPattern("https://localhost:*");
+		configuration.addAllowedOriginPattern("http://127.0.0.1:*");
+		
+		// Agregar origins desde application.properties
+		if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
+			String[] origins = allowedOrigins.split(",");
+			for (String origin : origins) {
+				configuration.addAllowedOriginPattern(origin.trim());
+			}
+		}
+		
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
+		configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
 		configuration.setAllowCredentials(true);
-		configuration.setMaxAge(3600L); // Cache preflight por 1 hora
+		configuration.setMaxAge(3600L);
+		
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
