@@ -90,6 +90,8 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 	    http.csrf().disable()
 	        .cors().configurationSource(corsConfigurationSource()).and()
 	        .authorizeRequests()
+	        // IMPORTANTE: Permitir OPTIONS primero para CORS preflight
+	        .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 			.antMatchers("/generate-token", "/usuarios/", "/api/v1/register", "/register").permitAll()
 			// Permitir acceso público a Swagger UI y OpenAPI docs
 			.antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
@@ -106,7 +108,6 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.GET, "/api/v1/estadisticas/**").permitAll()
 			// Permitir acceso a equipos y partidos
 			.antMatchers("/equipos/**", "/partidos/**", "/api/v2/**").permitAll()
-	        .antMatchers(HttpMethod.OPTIONS).permitAll()
 	        .anyRequest().authenticated()
 	        .and()
 	        .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
