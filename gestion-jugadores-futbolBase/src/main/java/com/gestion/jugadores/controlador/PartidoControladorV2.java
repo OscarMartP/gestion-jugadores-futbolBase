@@ -86,6 +86,18 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
     // ========== ENDPOINTS ESPECÍFICOS DE PARTIDO ==========
 
     /**
+     * GET /api/v1/partidos/{id}
+     * Override del método base para agregar @Transactional y evitar lazy loading exception
+     */
+    @Override
+    @GetMapping("/{id}")
+    @Transactional(readOnly = true)
+    public ResponseEntity<PartidoDTO> getById(@PathVariable Long id) {
+        Partido entity = getService().findById(id);
+        return ResponseEntity.ok(toDto(entity));
+    }
+
+    /**
      * GET /api/v1/partidos/equipo/{equipoId}
      * Obtener partidos por equipo
      */
