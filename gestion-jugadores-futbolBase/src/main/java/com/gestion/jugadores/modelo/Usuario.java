@@ -29,7 +29,7 @@ public class Usuario implements UserDetails {
 	private String perfil;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonIgnore  // Evitar lazy loading exception al serializar a JSON
     private List<Equipo> equipos;
 	
 	private boolean enabled = true;
