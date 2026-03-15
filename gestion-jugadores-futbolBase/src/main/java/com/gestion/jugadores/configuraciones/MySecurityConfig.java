@@ -61,10 +61,20 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		// Usar origins desde application.properties (valores separados por coma)
-		configuration.setAllowedOriginPatterns(Arrays.asList(allowedOrigins.split(",")));
+		String[] origins = allowedOrigins.split(",");
+		java.util.List<String> patterns = new java.util.ArrayList<>();
+		for (String origin : origins) {
+			patterns.add(origin.trim());
+		}
+		// Agregar patrones adicionales para localhost
+		patterns.add("http://localhost:*");
+		patterns.add("https://localhost:*");
+		
+		configuration.setAllowedOriginPatterns(patterns);
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setAllowCredentials(true);
+		configuration.setMaxAge(3600L); // Cache preflight por 1 hora
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
