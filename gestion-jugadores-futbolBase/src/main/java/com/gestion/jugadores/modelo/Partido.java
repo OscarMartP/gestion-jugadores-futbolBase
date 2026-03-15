@@ -1,6 +1,7 @@
 package com.gestion.jugadores.modelo;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDateTime;
@@ -44,11 +45,13 @@ public class Partido {
 	 @ElementCollection(fetch = FetchType.LAZY)
 	 @CollectionTable(name = "partido_titulares", joinColumns = @JoinColumn(name = "partido_id"))
 	 @Column(name = "jugador_id")
+	 @JsonIgnore  // Evitar lazy loading exception al serializar a JSON
 	 private List<Long> titulares;
 
 	 @ElementCollection(fetch = FetchType.LAZY)
 	 @CollectionTable(name = "partido_suplentes", joinColumns = @JoinColumn(name = "partido_id"))
 	 @Column(name = "jugador_id")
+	 @JsonIgnore  // Evitar lazy loading exception al serializar a JSON
 	 private List<Long> suplentes;
 
 	 public Partido() {}
@@ -86,9 +89,11 @@ public class Partido {
         this.partidoActivo = partidoActivo;
     }
 
+	 @JsonIgnore  // Jackson usa el getter para serializar
 	 public List<Long> getTitulares() { return titulares; }
 	 public void setTitulares(List<Long> titulares) { this.titulares = titulares; }
 
+	 @JsonIgnore  // Jackson usa el getter para serializar
 	 public List<Long> getSuplentes() { return suplentes; }
 	 public void setSuplentes(List<Long> suplentes) { this.suplentes = suplentes; }
 
