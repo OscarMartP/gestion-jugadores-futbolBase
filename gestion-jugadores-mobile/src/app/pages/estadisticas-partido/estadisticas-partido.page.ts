@@ -497,30 +497,42 @@ export class EstadisticasPartidoPage implements OnInit, AfterViewInit {
    * Muestra los detalles de un evento al hacer clic
    */
   async mostrarDetalleEvento(evento: EventoJugador) {
-    // Obtener nombre del jugador si existe
-    let jugadorNombre = 'Sin asignar';
-    
-    if (evento.jugadorId) {
-      try {
-        const jugador = await this.jugadorService.obtenerJugadorPorId(evento.jugadorId).toPromise();
-        if (jugador) {
-          jugadorNombre = `${jugador.nombre} ${jugador.apellido}`;
-        }
-      } catch (error) {
-        console.warn('No se pudo cargar el jugador:', error);
-      }
-    } else if ((evento as any).jugador) {
-      const jug = (evento as any).jugador;
-      jugadorNombre = `${jug.nombre || ''} ${jug.apellido || ''}`;
-    }
-
     // Formatear tipo de evento
     const tipoEvento = this.formatearTipoEvento(evento.tipoEvento);
+    
+    // Verificar si es un evento del rival (gol rival)
+    const esEventoRival = evento.esEventoRival === true || 
+                          evento.tipoEvento.toLowerCase().includes('rival') ||
+                          evento.tipoEvento.toLowerCase() === 'gol_rival';
+    
+    let mensaje = `⏱️ Minuto: ${evento.minuto}'`;
+    
+    // Solo mostrar jugador si NO es un evento del rival
+    if (!esEventoRival) {
+      // Obtener nombre del jugador si existe
+      let jugadorNombre = 'Sin asignar';
+      
+      if (evento.jugadorId) {
+        try {
+          const jugador = await this.jugadorService.obtenerJugadorPorId(evento.jugadorId).toPromise();
+          if (jugador) {
+            jugadorNombre = `${jugador.nombre} ${jugador.apellido}`;
+          }
+        } catch (error) {
+          console.warn('No se pudo cargar el jugador:', error);
+        }
+      } else if ((evento as any).jugador) {
+        const jug = (evento as any).jugador;
+        jugadorNombre = `${jug.nombre || ''} ${jug.apellido || ''}`;
+      }
+      
+      mensaje += `\n\n👤 Jugador:\n${jugadorNombre}`;
+    }
     
     // Crear alert con la información (sin HTML, solo texto)
     const alert = await this.alertController.create({
       header: `${this.getIconoEventoTipo(evento.tipoEvento)} ${tipoEvento}`,
-      message: `⏱️ Minuto: ${evento.minuto}'\n\n👤 Jugador:\n${jugadorNombre}`,
+      message: mensaje,
       buttons: ['Cerrar'],
       cssClass: 'evento-detalle-alert'
     });

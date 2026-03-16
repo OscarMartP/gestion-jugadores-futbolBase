@@ -18,6 +18,7 @@ export interface EventoJugador {
   partidoId: number;
   tipoEvento: string;
   minuto: number;
+  esEventoRival?: boolean;
   jugadorSaleId?: number;
   jugadorEntraId?: number;
 }
