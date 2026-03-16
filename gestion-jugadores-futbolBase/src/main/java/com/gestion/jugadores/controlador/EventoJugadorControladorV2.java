@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controlador REST para gestión de Eventos de Jugador
@@ -153,9 +154,11 @@ public class EventoJugadorControladorV2 extends BaseController<EventoJugador, Ev
      */
     @GetMapping("/jugador/{jugadorId}")
     @Transactional(readOnly = true)
-    public ResponseEntity<List<EventoJugador>> eventosPorJugador(@PathVariable Long jugadorId) {
+    public ResponseEntity<List<EventoJugadorDTO>> eventosPorJugador(@PathVariable Long jugadorId) {
         List<EventoJugador> eventos = eventoJugadorService.obtenerEventosPorJugador(jugadorId);
-        return ResponseEntity.ok(eventos);
+        return ResponseEntity.ok(eventos.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -164,9 +167,11 @@ public class EventoJugadorControladorV2 extends BaseController<EventoJugador, Ev
      */
     @GetMapping("/partido/{partidoId}")
     @Transactional(readOnly = true)
-    public ResponseEntity<List<EventoJugador>> eventosPorPartido(@PathVariable Long partidoId) {
+    public ResponseEntity<List<EventoJugadorDTO>> eventosPorPartido(@PathVariable Long partidoId) {
         List<EventoJugador> eventos = eventoJugadorService.obtenerEventosPorPartido(partidoId);
-        return ResponseEntity.ok(eventos);
+        return ResponseEntity.ok(eventos.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList()));
     }
 
     /**
