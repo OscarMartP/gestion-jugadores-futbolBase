@@ -13,6 +13,7 @@ import com.gestion.jugadores.servicios.PartidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -151,6 +152,7 @@ public class EventoJugadorControladorV2 extends BaseController<EventoJugador, Ev
      * Obtener eventos de un jugador específico
      */
     @GetMapping("/jugador/{jugadorId}")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<EventoJugador>> eventosPorJugador(@PathVariable Long jugadorId) {
         List<EventoJugador> eventos = eventoJugadorService.obtenerEventosPorJugador(jugadorId);
         return ResponseEntity.ok(eventos);
@@ -161,6 +163,7 @@ public class EventoJugadorControladorV2 extends BaseController<EventoJugador, Ev
      * Obtener eventos de un partido específico
      */
     @GetMapping("/partido/{partidoId}")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<EventoJugador>> eventosPorPartido(@PathVariable Long partidoId) {
         List<EventoJugador> eventos = eventoJugadorService.obtenerEventosPorPartido(partidoId);
         return ResponseEntity.ok(eventos);
@@ -171,6 +174,7 @@ public class EventoJugadorControladorV2 extends BaseController<EventoJugador, Ev
      * Obtener resumen de eventos de un jugador
      */
     @GetMapping("/resumen/jugador/{jugadorId}")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<EventoResumenDTO>> resumenEventosPorJugador(@PathVariable Long jugadorId) {
         List<EventoResumenDTO> resumen = eventoJugadorService.resumenEventosPorJugador(jugadorId);
         return ResponseEntity.ok(resumen);
