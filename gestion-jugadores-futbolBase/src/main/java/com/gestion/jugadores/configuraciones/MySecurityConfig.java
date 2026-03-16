@@ -65,6 +65,8 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 		configuration.addAllowedOriginPattern("http://localhost:*");
 		configuration.addAllowedOriginPattern("https://localhost:*");
 		configuration.addAllowedOriginPattern("http://127.0.0.1:*");
+		configuration.addAllowedOriginPattern("capacitor://localhost");
+		configuration.addAllowedOriginPattern("ionic://localhost");
 		
 		// Agregar origins desde application.properties
 		if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
