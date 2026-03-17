@@ -96,6 +96,19 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
         return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED).body(toDto(created));
     }
 
+    /**
+     * PUT /api/v1/partidos/{id}
+     * Override del método base para agregar @Transactional y evitar lazy loading exception al actualizar
+     */
+    @Override
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<PartidoDTO> update(@PathVariable Long id, @RequestBody PartidoDTO dto) {
+        Partido entity = toEntity(dto);
+        Partido updated = getService().update(id, entity);
+        return ResponseEntity.ok(toDto(updated));
+    }
+
     // ========== ENDPOINTS ESPECÍFICOS DE PARTIDO ==========
 
     /**
@@ -141,6 +154,7 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
      * Obtener todos los partidos activos
      */
     @GetMapping("/activos")
+    @Transactional(readOnly = true)
     public ResponseEntity<List<PartidoDTO>> getActivos() {
         List<Partido> partidos = partidoService.obtenerPartidosActivos();
         return ResponseEntity.ok(partidos.stream()
@@ -153,6 +167,7 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
      * Activar un partido
      */
     @PutMapping("/{id}/activar")
+    @Transactional
     public ResponseEntity<PartidoDTO> activar(@PathVariable Long id) {
         Partido partido = partidoService.activarPartido(id);
         return ResponseEntity.ok(partidoMapper.toDto(partido));
@@ -163,6 +178,7 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
      * Desactivar un partido
      */
     @PutMapping("/{id}/desactivar")
+    @Transactional
     public ResponseEntity<PartidoDTO> desactivar(@PathVariable Long id) {
         Partido partido = partidoService.desactivarPartido(id);
         return ResponseEntity.ok(partidoMapper.toDto(partido));
@@ -184,6 +200,7 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
      * Valida que no haya jugadores duplicados entre titulares y suplentes
      */
     @PutMapping("/{id}/alineacion")
+    @Transactional
     public ResponseEntity<PartidoDTO> actualizarAlineacion(
             @PathVariable Long id, 
             @RequestBody AlineacionRequest alineacion) {
