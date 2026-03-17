@@ -109,12 +109,18 @@ public class PartidoServiceImpl implements PartidoService {
         try {
             List<EventoJugador> eventos = eventoJugadorRepository.findByPartido_Id(id);
             
+            // Contar goles del equipo: tipo GOL y NO es evento rival
             long golesEquipo = eventos.stream()
-                .filter(e -> e.getTipoEvento() != null && e.getTipoEvento().toUpperCase().equals("GOL"))
+                .filter(e -> e.getTipoEvento() != null && 
+                            e.getTipoEvento().toUpperCase().equals("GOL") &&
+                            !Boolean.TRUE.equals(e.getEsEventoRival()))
                 .count();
             
+            // Contar goles del rival: tipo GOL_RIVAL O esEventoRival = true
             long golesRival = eventos.stream()
-                .filter(e -> e.getTipoEvento() != null && e.getTipoEvento().toUpperCase().equals("GOL_RIVAL"))
+                .filter(e -> e.getTipoEvento() != null && 
+                            (e.getTipoEvento().toUpperCase().equals("GOL_RIVAL") ||
+                             Boolean.TRUE.equals(e.getEsEventoRival())))
                 .count();
             
             partido.setGolesEquipo((int) golesEquipo);
