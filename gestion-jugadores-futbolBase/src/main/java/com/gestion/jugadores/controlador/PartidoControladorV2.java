@@ -83,6 +83,19 @@ public class PartidoControladorV2 extends BaseController<Partido, PartidoDTO, Lo
         return partidoMapper.toEntity(dto);
     }
 
+    /**
+     * POST /api/v1/partidos
+     * Override del método base para agregar @Transactional y evitar lazy loading exception al crear
+     */
+    @Override
+    @PostMapping
+    @Transactional
+    public ResponseEntity<PartidoDTO> create(@RequestBody PartidoDTO dto) {
+        Partido entity = toEntity(dto);
+        Partido created = getService().save(entity);
+        return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED).body(toDto(created));
+    }
+
     // ========== ENDPOINTS ESPECÍFICOS DE PARTIDO ==========
 
     /**
