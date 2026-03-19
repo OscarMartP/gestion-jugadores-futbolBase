@@ -27,120 +27,99 @@
   <form [formGroup]="equipoForm" (ngSubmit)="guardarEquipo()">
     
     <!-- Información básica -->
-    <ion-card class="form-card">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="shield-outline"></ion-icon>
-          Información del Equipo
-        </ion-card-title>
-      </ion-card-header>
+    <div class="form-section">
+      <!-- Header de sección -->
+      <div class="section-header">
+        Información del equipo
+      </div>
       
-      <ion-card-content>
+      <div class="section-content">
         <!-- Nombre del equipo -->
-        <ion-item class="form-item">
-          <ion-label position="stacked">Nombre del Equipo *</ion-label>
+        <div class="form-field">
+          <label class="field-label">Nombre del equipo</label>
           <ion-input 
             formControlName="nombre"
             placeholder="Ingresa el nombre del equipo"
+            class="custom-input"
             [class.ion-invalid]="equipoForm.get('nombre')?.invalid && equipoForm.get('nombre')?.touched">
           </ion-input>
-          <ion-note *ngIf="equipoForm.get('nombre')?.invalid && equipoForm.get('nombre')?.touched" color="danger">
+          <ion-note *ngIf="equipoForm.get('nombre')?.invalid && equipoForm.get('nombre')?.touched" color="danger" class="error-note">
             El nombre del equipo es obligatorio
           </ion-note>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
+        </div>
+      </div>
+    </div>
 
     <!-- Configuración de juego -->
-    <ion-card class="form-card">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="settings-outline"></ion-icon>
-          Configuración de Juego
-        </ion-card-title>
-      </ion-card-header>
+    <div class="form-section">
+      <!-- Header de sección -->
+      <div class="section-header">
+        Configuración de juego
+      </div>
       
-      <ion-card-content>
+      <div class="section-content">
         <!-- Tipo de fútbol -->
-        <ion-item class="form-item">
-          <ion-label position="stacked">Tipo de Fútbol *</ion-label>
+        <div class="form-field">
+          <label class="field-label">Tipo de fútbol</label>
           <ion-select 
             formControlName="tipoFutbol"
             placeholder="Selecciona el tipo de fútbol"
             interface="action-sheet"
             (ionChange)="onTipoFutbolChange($event)"
+            class="custom-select"
             [class.ion-invalid]="equipoForm.get('tipoFutbol')?.invalid && equipoForm.get('tipoFutbol')?.touched">
-            <ion-select-option value="FUTBOL_11">
-              <div style="display: flex; flex-direction: column;">
-                <strong>🏆 Fútbol 11</strong>
-                <small style="color: var(--ion-color-medium);">Campo completo - 11 jugadores por equipo</small>
-              </div>
-            </ion-select-option>
-            <ion-select-option value="FUTBOL_7">
-              <div style="display: flex; flex-direction: column;">
-                <strong>⚽ Fútbol 7</strong>
-                <small style="color: var(--ion-color-medium);">Campo pequeño - 7 jugadores por equipo</small>
-              </div>
-            </ion-select-option>
-            <ion-select-option value="FUTBOL_5">
-              <div style="display: flex; flex-direction: column;">
-                <strong>🏅 Fútbol 5</strong>
-                <small style="color: var(--ion-color-medium);">Salón - 5 jugadores por equipo</small>
-              </div>
-            </ion-select-option>
+            <ion-select-option value="FUTBOL_11">Fútbol 11 Campo completo - 11 jugadores</ion-select-option>
+            <ion-select-option value="FUTBOL_7">Fútbol 7 Campo pequeño - 7 jugadores</ion-select-option>
+            <ion-select-option value="FUTBOL_5">Fútbol 5 Salón - 5 jugadores</ion-select-option>
           </ion-select>
-          <ion-note *ngIf="equipoForm.get('tipoFutbol')?.invalid && equipoForm.get('tipoFutbol')?.touched" color="danger">
+          <ion-note *ngIf="equipoForm.get('tipoFutbol')?.invalid && equipoForm.get('tipoFutbol')?.touched" color="danger" class="error-note">
             El tipo de fútbol es obligatorio
           </ion-note>
-        </ion-item>
+        </div>
 
         <!-- Duración del partido -->
-        <ion-item class="form-item">
-          <ion-label position="stacked">Duración del Partido (minutos) *</ion-label>
+        <div class="form-field">
+          <label class="field-label">Duración del partido (minutos)</label>
           <ion-input 
             formControlName="duracionPartido"
             type="number"
             min="30"
             max="120"
-            placeholder="Duración en minutos"
+            placeholder="90"
+            class="custom-input"
             [class.ion-invalid]="equipoForm.get('duracionPartido')?.invalid && equipoForm.get('duracionPartido')?.touched">
           </ion-input>
-          <ion-note *ngIf="equipoForm.get('duracionPartido')?.invalid && equipoForm.get('duracionPartido')?.touched" color="danger">
+          <ion-note *ngIf="equipoForm.get('duracionPartido')?.invalid && equipoForm.get('duracionPartido')?.touched" color="danger" class="error-note">
             <span *ngIf="equipoForm.get('duracionPartido')?.errors?.['required']">La duración es obligatoria</span>
             <span *ngIf="equipoForm.get('duracionPartido')?.errors?.['min']">Mínimo 30 minutos</span>
             <span *ngIf="equipoForm.get('duracionPartido')?.errors?.['max']">Máximo 120 minutos</span>
           </ion-note>
-          <ion-note *ngIf="duracionSugerida" color="primary">
-            ℹ️ Duración sugerida para {{ equipoForm.value.tipoFutbol?.replace('_', ' ') }}: {{ duracionSugerida }} minutos
+          <ion-note *ngIf="duracionSugerida" color="primary" class="info-note">
+            ℹ️ Duración sugerida: {{ duracionSugerida }} minutos
           </ion-note>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
+        </div>
+      </div>
+    </div>
 
     <!-- Botones de acción -->
-    <div style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-      
+    <div class="action-buttons-container">
       <!-- Botón principal -->
       <ion-button 
         expand="block" 
-        size="large"
         type="submit"
         [disabled]="equipoForm.invalid || guardando"
-        class="action-button primary">
-        <ion-icon [name]="esEdicion ? 'save-outline' : 'add-outline'" slot="start"></ion-icon>
-        <span *ngIf="!guardando">{{ esEdicion ? 'Guardar Cambios' : 'Crear Equipo' }}</span>
+        class="btn-primary">
+        <span *ngIf="!guardando">{{ esEdicion ? 'Guardar cambios' : 'Crear equipo' }}</span>
         <ion-spinner *ngIf="guardando" name="crescent"></ion-spinner>
       </ion-button>
       
       <!-- Botón cancelar -->
       <ion-button 
         expand="block" 
-        fill="outline" 
-        color="medium"
+        fill="outline"
         (click)="cancelar()"
         [disabled]="guardando"
-        class="action-button secondary">
-        <ion-icon name="close-outline" slot="start"></ion-icon>
+        class="btn-secondary">
         Cancelar
       </ion-button>
     </div>

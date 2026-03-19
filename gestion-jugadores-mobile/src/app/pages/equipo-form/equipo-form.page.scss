@@ -1,7 +1,255 @@
 // Estilos para el formulario de equipos
 
 ion-content {
-  --background: linear-gradient(181deg, #45b22f 0%, #31602b 40%, #f2f2f2 70%);
+  --background: #f5f5f5;
+}
+
+// ===== HEADER =====
+.header-custom {
+  --background: #45b22f;
+  --color: white;
+  --min-height: 56px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+
+  position: relative;
+}
+
+/* CONTENEDOR DEL LOGO CENTRADO */
+.header-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* LOGO */
+.header-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* TEXTO DEL TÍTULO */
+.header-title {
+  color: white;
+  font-weight: 800;
+  font-size: 15px;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: -0.075em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* BOTON VOLVER */
+.back-button {
+  --border-color: white;
+  --border-width: 1px;
+  --border-radius: 18px;
+  --color: white;
+  --background: transparent;
+  --padding-start: 10px;
+  --padding-end: 10px;
+
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: none;
+  height: 30px;
+  font-family: 'Source Sans 3', sans-serif;
+  margin-left: 8px;
+}
+
+/* BOTON ELIMINAR */
+.delete-button {
+  --border-radius: 50%;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  width: 36px;
+  height: 36px;
+  margin-right: 4px;
+  
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+// ===== FORMULARIO =====
+form {
+  padding: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.section-header {
+  background: #45b22f;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: 'Source Sans 3', sans-serif;
+  text-align: center;
+}
+
+.section-content {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+// ===== CAMPOS DE FORMULARIO =====
+.form-field {
+  margin-bottom: 20px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.custom-input,
+.custom-select {
+  --background: white;
+  --border-color: #cccccc;
+  --border-radius: 8px;
+  --border-width: 1px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --placeholder-color: #999999;
+  --placeholder-opacity: 1;
+  font-size: 15px;
+  color: #333333;
+  font-family: 'Source Sans 3', sans-serif;
+  min-height: 48px;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+
+  &.ion-invalid {
+    --border-color: #eb445a;
+    border-color: #eb445a;
+  }
+}
+
+.custom-input::part(native) {
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.error-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.info-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+// ===== BOTONES DE ACCIÓN =====
+.action-buttons-container {
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-primary {
+  --background: #45b22f;
+  --background-hover: #3a9625;
+  --background-activated: #338a20;
+  --color: white;
+  --border-radius: 8px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+  height: 50px;
+  font-family: 'Source Sans 3', sans-serif;
+  box-shadow: 0 2px 8px rgba(69, 178, 47, 0.3);
+
+  &:hover {
+    --background: #3a9625;
+  }
+}
+
+.btn-secondary {
+  --background: white;
+  --color: #666666;
+  --border-color: #999999;
+  --border-width: 1px;
+  --border-radius: 8px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+  height: 50px;
+  font-family: 'Source Sans 3', sans-serif;
+
+  &:hover {
+    --background: #f5f5f5;
+  }
+}
+
+// ===== ANIMACIÓN =====
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ===== RESPONSIVE =====
+@media (max-width: 576px) {
+  form {
+    padding: 12px;
+  }
+
+  .section-header {
+    font-size: 15px;
+    padding: 10px 14px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    height: 46px;
+    font-size: 15px;
+  }
 }
 
 // ===== HEADER =====
